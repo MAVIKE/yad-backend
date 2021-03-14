@@ -5,3 +5,7 @@
 ```
 make run
 ```
+
+## Схема БД
+
+![](docs/img/db-schema.svg)
