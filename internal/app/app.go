@@ -38,7 +38,7 @@ func Run(configPath string) {
 	app := echo.New()
 	handlers.Init(app)
 
-	if err := app.Start(":8000"); err != nil {
+	if err := app.Start(viper.GetString("port")); err != nil {
 		log.Fatalf("failed to listen: %s", err.Error())
 	}
 }

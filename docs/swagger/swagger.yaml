@@ -1,0 +1,9 @@
+basePath: /api/v1/
+host: localhost:9000
+info:
+  contact: {}
+  description: API Server for Yet Another Delivery App
+  title: Yet Another Delivery API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
