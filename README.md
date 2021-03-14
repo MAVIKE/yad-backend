@@ -1,2 +1,7 @@
-# yad-backend
-Yet Another Delivery Backend
+# Yet Another Delivery Backend
+
+## Запуск
+
+```
+make run
+```
