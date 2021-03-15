@@ -13,11 +13,24 @@ func (h *Handler) initAdminRoutes(api *echo.Group) {
 	}
 }
 
+type signInInput struct {
+	Name     string `json:"name" valid:"length(4|32)"`
+	Password string `json:"password" valid:"length(4|32)"`
+}
+
+// @Summary Admin SignIn
+// @Tags admins-auth
+// @Description admin sign in
+// @ModuleID adminSignIn
+// @Accept  json
+// @Produce  json
+// @Param input body signInInput true "sign up info"
+// @Success 200 {object} tokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /admins/sign-in [post]
 func (h *Handler) adminsSignIn(ctx echo.Context) error {
-	type signInInput struct {
-		Name     string `json:"name" valid:"length(4|32)"`
-		Password string `json:"password" valid:"length(4|32)"`
-	}
 	var input signInInput
 
 	if err := ctx.Bind(&input); err != nil {
