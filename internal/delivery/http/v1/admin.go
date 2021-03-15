@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -16,8 +15,8 @@ func (h *Handler) initAdminRoutes(api *echo.Group) {
 
 func (h *Handler) adminsSignIn(ctx echo.Context) error {
 	type signInInput struct {
-		Name     string `json:"name" valid:"length(3|32)"`
-		Password string `json:"password" valid:"length(6|32)"`
+		Name     string `json:"name" valid:"length(4|32)"`
+		Password string `json:"password" valid:"length(4|32)"`
 	}
 	var input signInInput
 
@@ -29,10 +28,12 @@ func (h *Handler) adminsSignIn(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	admin := &domain.Admin{
-		Name:     input.Name,
-		Password: input.Password,
+	token, err := h.services.Admin.SignIn(input.Name, input.Password)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, admin)
+	return ctx.JSON(http.StatusOK, tokenResponse{
+		AccessToken: token.AccessToken,
+	})
 }
