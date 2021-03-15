@@ -1,0 +1,37 @@
+package service
+
+import (
+	"github.com/MAVIKE/yad-backend/internal/repository"
+	"github.com/MAVIKE/yad-backend/pkg/auth"
+	"github.com/labstack/gommon/log"
+	"time"
+)
+
+type UserService struct {
+	repo           repository.User
+	tokenManager   auth.TokenManager
+	accessTokenTTL time.Duration
+}
+
+func NewUserService(repo repository.User, tokenManager auth.TokenManager, accessTokenTTL time.Duration) *UserService {
+	return &UserService{
+		repo:           repo,
+		tokenManager:   tokenManager,
+		accessTokenTTL: accessTokenTTL,
+	}
+}
+
+func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
+	log.Debug(phone, password)
+	user, err := s.repo.GetByCredentials(phone, password)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := s.tokenManager.NewJWT(user.Id, USER_TYPE, s.accessTokenTTL)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Tokens{AccessToken: token}, nil
+}
