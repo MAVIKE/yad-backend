@@ -16,3 +16,6 @@
 
 # Goland dir
 .idea/
+
+# Config file
+configs/config.yml
