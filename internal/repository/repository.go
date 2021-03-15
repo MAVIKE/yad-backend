@@ -9,12 +9,18 @@ type Admin interface {
 	GetByCredentials(name, password string) (*domain.Admin, error)
 }
 
+type Courier interface {
+	GetByCredentials(phone, password string) (*domain.Courier, error)
+}
+
 type Repository struct {
 	Admin
+	Courier
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Admin: NewAdminPg(db),
+		Admin:   NewAdminPg(db),
+		Courier: NewCourierPg(db),
 	}
 }
