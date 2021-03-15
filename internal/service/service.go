@@ -14,8 +14,13 @@ type Admin interface {
 	SignIn(name, password string) (*Tokens, error)
 }
 
+type User interface {
+	SignIn(phone, password string) (*Tokens, error)
+}
+
 type Service struct {
 	Admin
+	User
 }
 
 type Deps struct {
@@ -27,5 +32,6 @@ type Deps struct {
 func NewService(deps Deps) *Service {
 	return &Service{
 		Admin: NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
+		User:  NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
 	}
 }
