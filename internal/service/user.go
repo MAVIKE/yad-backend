@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
-	"github.com/labstack/gommon/log"
 	"time"
 )
 
@@ -22,7 +21,6 @@ func NewUserService(repo repository.User, tokenManager auth.TokenManager, access
 }
 
 func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
-	log.Debug(phone, password)
 	user, err := s.repo.GetByCredentials(phone, password)
 	if err != nil {
 		return nil, err
