@@ -10,6 +10,7 @@ import (
 const (
 	adminsTable    = "admins"
 	usersTable     = "users"
+	couriersTable  = "couriers"
 	locationsTable = "locations"
 )
 

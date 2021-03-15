@@ -18,9 +18,14 @@ type User interface {
 	SignIn(phone, password string) (*Tokens, error)
 }
 
+type Courier interface {
+	SignIn(phone, password string) (*Tokens, error)
+}
+
 type Service struct {
 	Admin
 	User
+	Courier
 }
 
 type Deps struct {
@@ -31,7 +36,8 @@ type Deps struct {
 
 func NewService(deps Deps) *Service {
 	return &Service{
-		Admin: NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
-		User:  NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
+		Admin:   NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
+		User:    NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
+		Courier: NewCourierService(deps.Repos.Courier, deps.TokenManager, deps.AccessTokenTTL),
 	}
 }

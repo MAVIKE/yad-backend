@@ -13,14 +13,20 @@ type User interface {
 	GetByCredentials(phone, password string) (*domain.User, error)
 }
 
+type Courier interface {
+	GetByCredentials(phone, password string) (*domain.Courier, error)
+}
+
 type Repository struct {
 	Admin
 	User
+	Courier
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Admin: NewAdminPg(db),
-		User:  NewUserPg(db),
+		Admin:   NewAdminPg(db),
+		User:    NewUserPg(db),
+		Courier: NewCourierPg(db),
 	}
 }
