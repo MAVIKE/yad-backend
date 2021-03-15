@@ -7,6 +7,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	adminsTable = "admins"
+)
+
 type Config struct {
 	Host     string
 	Port     string

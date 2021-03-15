@@ -7,8 +7,8 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
 	_ "github.com/MAVIKE/yad-backend/docs/swagger"
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -44,4 +44,3 @@ func (h *Handler) initAPI(router *echo.Echo) {
 		handlerV1.Init(api)
 	}
 }
-

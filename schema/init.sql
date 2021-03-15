@@ -78,5 +78,3 @@ CREATE TABLE IF NOT EXISTS order_items (
     menu_item_id INT REFERENCES menu_items (id) ON DELETE CASCADE NOT NULL,
     count INT NULL DEFAULT 1 CHECK (count > 0)
 );
-
-      

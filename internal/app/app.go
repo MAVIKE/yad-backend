@@ -4,6 +4,7 @@ import (
 	handler "github.com/MAVIKE/yad-backend/internal/delivery/http"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/internal/service"
+	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 	"log"
@@ -32,7 +33,19 @@ func Run(configPath string) {
 	}
 
 	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
+
+	// TODO signing key from configs
+	tokenManager, err := auth.NewManager(service.SIGNING_KEY)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	deps := service.Deps{
+		Repos:          repos,
+		TokenManager:   tokenManager,
+		AccessTokenTTL: service.ACCESS_TOKEN_TTL,
+	}
+
+	services := service.NewService(deps)
 	handlers := handler.NewHandler(services)
 
 	app := echo.New()

@@ -20,5 +20,7 @@ func (h *Handler) Init(api *echo.Group) {
 		v1.GET("/ping", func(c echo.Context) error {
 			return c.String(http.StatusOK, "pong")
 		})
+
+		h.initAdminRoutes(v1)
 	}
 }
