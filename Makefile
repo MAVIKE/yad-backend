@@ -9,3 +9,6 @@ config:
 
 swag:
 	swag init -d ./internal/delivery/http -o ./docs/swagger -g handler.go
+
+fmt:
+	go fmt ./...
