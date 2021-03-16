@@ -15,7 +15,7 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 }
 
 func (h *Handler) getRestaurants(ctx echo.Context) error {
-	userId, clientType, err := getClientParams(ctx)
+	userId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
