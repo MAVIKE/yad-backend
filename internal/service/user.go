@@ -34,7 +34,3 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 
 	return &Tokens{AccessToken: token}, nil
 }
-
-func (s *UserService) ParseToken(accessToken string) (int, string, error) {
-	return s.tokenManager.Parse(accessToken)
-}

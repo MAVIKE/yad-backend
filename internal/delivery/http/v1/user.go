@@ -11,8 +11,8 @@ import (
 
 const (
 	authorizationHeader = "Authorization"
-	IdCtx               = "id"
-	ClientTypeCtx       = "client_type"
+	idCtx               = "id"
+	clientTypeCtx       = "client_type"
 )
 
 func (h *Handler) initUserRoutes(api *echo.Group) {

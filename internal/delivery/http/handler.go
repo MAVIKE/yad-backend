@@ -1,22 +1,28 @@
 package handler
 
 import (
+	"net/http"
+
 	v1 "github.com/MAVIKE/yad-backend/internal/delivery/http/v1"
 	"github.com/MAVIKE/yad-backend/internal/service"
+	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"net/http"
 
 	_ "github.com/MAVIKE/yad-backend/docs/swagger"
 	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
-	services *service.Service
+	services     *service.Service
+	tokenManager *auth.Manager
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler {
+	return &Handler{
+		services:     services,
+		tokenManager: tokenManager,
+	}
 }
 
 // @title Yet Another Delivery API
@@ -38,7 +44,7 @@ func (h *Handler) Init(router *echo.Echo) {
 }
 
 func (h *Handler) initAPI(router *echo.Echo) {
-	handlerV1 := v1.NewHandler(h.services)
+	handlerV1 := v1.NewHandler(h.services, h.tokenManager)
 	api := router.Group("/api")
 	{
 		handlerV1.Init(api)

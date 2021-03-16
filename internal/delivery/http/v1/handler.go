@@ -5,16 +5,22 @@ import (
 	"strconv"
 
 	"errors"
+
 	"github.com/MAVIKE/yad-backend/internal/service"
+	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
-	services *service.Service
+	services     *service.Service
+	tokenManager *auth.Manager
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler {
+	return &Handler{
+		services:     services,
+		tokenManager: tokenManager,
+	}
 }
 
 func (h *Handler) Init(api *echo.Group) {
@@ -38,19 +44,19 @@ func (h *Handler) identity(next echo.HandlerFunc) echo.HandlerFunc {
 			return newResponse(ctx, http.StatusUnauthorized, err.Error())
 		}
 
-		userId, clientType, err := h.services.User.ParseToken(token)
+		userId, clientType, err := h.tokenManager.Parse(token)
 		if err != nil {
 			return newResponse(ctx, http.StatusUnauthorized, err.Error())
 		}
 
-		ctx.Request().Header.Set(IdCtx, strconv.Itoa(userId))
-		ctx.Request().Header.Set(ClientTypeCtx, clientType)
+		ctx.Request().Header.Set(idCtx, strconv.Itoa(userId))
+		ctx.Request().Header.Set(clientTypeCtx, clientType)
 		return next(ctx)
 	}
 }
 
 func (h *Handler) getClientParams(ctx echo.Context) (int, string, error) {
-	id := ctx.Request().Header.Get(IdCtx)
+	id := ctx.Request().Header.Get(idCtx)
 	if id == "" {
 		return 0, "", errors.New("user id not found")
 	}
@@ -60,7 +66,7 @@ func (h *Handler) getClientParams(ctx echo.Context) (int, string, error) {
 		return 0, "", errors.New("user id is of invalid type")
 	}
 
-	clientType := ctx.Request().Header.Get(ClientTypeCtx)
+	clientType := ctx.Request().Header.Get(clientTypeCtx)
 	if clientType == "" {
 		return 0, "", errors.New("client type not found")
 	}
