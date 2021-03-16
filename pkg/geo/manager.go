@@ -27,3 +27,31 @@ func NewManager(token, secret string) (*Manager, error) {
 
 	return &Manager{token: token, secret: secret}, nil
 }
+
+func (m *Manager) GetCoordinates(address string) (float32, float32, error) {
+	d := dadata.NewDaData(m.token, m.secret)
+
+	res, err := d.CleanAddresses(address)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	if len(res) == 0 {
+		return 0, 0, errors.New("empty result by address")
+	}
+
+	coords := res[0]
+
+	lat, err := strconv.ParseFloat(coords.GeoLat, 32)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	lon, err := strconv.ParseFloat(coords.GeoLon, 32)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return float32(lat), float32(lon), nil
+}
+
