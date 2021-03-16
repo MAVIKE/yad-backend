@@ -18,7 +18,6 @@ type Admin interface {
 
 type User interface {
 	SignIn(phone, password string) (*Tokens, error)
-	ParseToken(token string) (int, string, error)
 }
 
 type Restaurant interface {
