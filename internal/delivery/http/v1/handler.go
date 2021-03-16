@@ -1,9 +1,10 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 type Handler struct {
@@ -24,5 +25,6 @@ func (h *Handler) Init(api *echo.Group) {
 		h.initAdminRoutes(v1)
 		h.initUserRoutes(v1)
 		h.initCourierRoutes(v1)
+		h.initRestaurantRoutes(v1)
 	}
 }
