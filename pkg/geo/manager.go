@@ -20,11 +20,11 @@ type Manager struct {
 
 func NewManager(token, secret string) (*Manager, error) {
 	if token == "" {
-		return nil, errors.New("emoty token")
+		return nil, errors.New("empty token")
 	}
 
 	if secret == "" {
-		return nil, errors.New("emoty secret")
+		return nil, errors.New("empty secret")
 	}
 
 	return &Manager{token: token, secret: secret}, nil
