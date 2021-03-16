@@ -55,3 +55,16 @@ func (m *Manager) GetCoordinates(address string) (float32, float32, error) {
 	return float32(lat), float32(lon), nil
 }
 
+func (m *Manager) GetAddress(latitude, longitude float32) (string, error) {
+	d := dadata.NewDaData(m.token, m.secret)
+
+	request := dadata.GeolocateRequest{Lat: latitude, Lon: longitude}
+	res, err := d.GeolocateAddress(request)
+	if err != nil {
+		return "", err
+	}
+
+	address := res[0]
+	return address.Value, nil
+}
+
