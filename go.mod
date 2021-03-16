@@ -8,6 +8,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
+	github.com/gofiber/fiber v1.14.6
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/labstack/gommon v0.3.0

@@ -1,9 +1,10 @@
 package service
 
 import (
+	"time"
+
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
-	"time"
 )
 
 type UserService struct {
@@ -32,4 +33,8 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 	}
 
 	return &Tokens{AccessToken: token}, nil
+}
+
+func (s *UserService) ParseToken(accessToken string) (int, string, error) {
+	return s.tokenManager.Parse(accessToken)
 }

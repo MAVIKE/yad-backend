@@ -1,9 +1,10 @@
 package service
 
 import (
+	"time"
+
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
-	"time"
 )
 
 type Tokens struct {
@@ -16,6 +17,7 @@ type Admin interface {
 
 type User interface {
 	SignIn(phone, password string) (*Tokens, error)
+	ParseToken(token string) (int, string, error)
 }
 
 type Service struct {
