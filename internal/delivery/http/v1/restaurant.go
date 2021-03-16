@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,7 +15,15 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 }
 
 func (h *Handler) getRestaurants(ctx echo.Context) error {
-	userId, clientType, _ := getClientParams(ctx)
-	fmt.Println("params:", userId, clientType)
-	return nil
+	userId, clientType, err := getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurants, err := h.services.Restaurant.GetAll(userId, clientType)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurants)
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"time"
 
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 )
@@ -20,9 +21,14 @@ type User interface {
 	ParseToken(token string) (int, string, error)
 }
 
+type Restaurant interface {
+	GetAll(userId int, clientType string) ([]*domain.Restaurant, error)
+}
+
 type Service struct {
 	Admin
 	User
+	Restaurant
 }
 
 type Deps struct {
@@ -33,7 +39,8 @@ type Deps struct {
 
 func NewService(deps Deps) *Service {
 	return &Service{
-		Admin: NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
-		User:  NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
+		Admin:      NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
+		User:       NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
+		Restaurant: NewRestaurantService(deps.Repos.Restaurant),
 	}
 }

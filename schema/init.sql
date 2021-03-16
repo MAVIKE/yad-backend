@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS restaurants (
     name VARCHAR(50) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     password_hash VARCHAR(50) NOT NULL,
-    email VARCHAR(50) NOT NULL,
     address_id INT REFERENCES locations (id) ON DELETE CASCADE NOT NULL,
     working_status INT NOT NULL,
     image VARCHAR(100) NOT NULL DEFAULT ''
@@ -78,3 +77,9 @@ CREATE TABLE IF NOT EXISTS order_items (
     menu_item_id INT REFERENCES menu_items (id) ON DELETE CASCADE NOT NULL,
     count INT NULL DEFAULT 1 CHECK (count > 0)
 );
+
+CREATE OR REPLACE FUNCTION get_distance(lat1 float, lon1 float, lat2 float, lon2 float)
+RETURNS float AS $$
+	SELECT 2*6371*asin(sqrt(power(sin(radians((lat2 - lat1)/2)), 2) + 
+		cos(radians(lat1))*cos(radians(lat2))*power(sin(radians((lon2 - lon1)/2)), 2)))
+$$ LANGUAGE SQL;
