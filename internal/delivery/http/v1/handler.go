@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"errors"
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/labstack/echo/v4"
-	"errors"
 )
 
 type Handler struct {
