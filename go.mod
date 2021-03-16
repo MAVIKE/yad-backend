@@ -23,4 +23,5 @@ require (
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/sys v0.0.0-20210313202042-bd2e13477e9c // indirect
 	golang.org/x/tools v0.1.0 // indirect
+	gopkg.in/webdeskltd/dadata.v2 v2.0.0-20190503150402-ba1c2deb8492
 )
