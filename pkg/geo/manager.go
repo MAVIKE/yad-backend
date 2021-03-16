@@ -11,6 +11,8 @@ type GeoManager interface {
 	GetAddress(latitude, longitude float32) (string, error)
 }
 
+const floatBitSize = 32
+
 type Manager struct {
 	token  string
 	secret string
@@ -42,12 +44,12 @@ func (m *Manager) GetCoordinates(address string) (float32, float32, error) {
 
 	coords := res[0]
 
-	lat, err := strconv.ParseFloat(coords.GeoLat, 32)
+	lat, err := strconv.ParseFloat(coords.GeoLat, floatBitSize)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	lon, err := strconv.ParseFloat(coords.GeoLon, 32)
+	lon, err := strconv.ParseFloat(coords.GeoLon, floatBitSize)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -67,4 +69,3 @@ func (m *Manager) GetAddress(latitude, longitude float32) (string, error) {
 	address := res[0]
 	return address.Value, nil
 }
-
