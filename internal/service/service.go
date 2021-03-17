@@ -22,6 +22,7 @@ type User interface {
 
 type Restaurant interface {
 	GetAll(userId int, clientType string) ([]*domain.Restaurant, error)
+	GetById(userId int, clientType string, restaurantId int) (*domain.Restaurant, error)
 }
 
 type Courier interface {

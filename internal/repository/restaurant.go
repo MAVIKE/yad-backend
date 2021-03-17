@@ -68,3 +68,24 @@ func (r *RestaurantPg) GetAll(userId int) ([]*domain.Restaurant, error) {
 
 	return restaurants, err
 }
+
+func (r *RestaurantPg) GetById(restaurantId int) (*domain.Restaurant, error) {
+	restaurant := new(domain.Restaurant)
+
+	query := fmt.Sprintf(
+		`SELECT r.id, r.name, r.phone, r.working_status, 
+			l.latitude, l.longitude, r.image 
+		FROM %s AS r
+			INNER JOIN %s AS l ON r.address_id = l.id
+		WHERE r.id = $1`,
+		restaurantsTable, locationsTable)
+
+	row := r.db.QueryRow(query, restaurantId)
+	location := &domain.Location{}
+
+	err := row.Scan(&restaurant.Id, &restaurant.Name, &restaurant.Phone, &restaurant.WorkingStatus,
+		&location.Latitude, &location.Longitude, &restaurant.Image)
+	restaurant.Address = location
+
+	return restaurant, err
+}
