@@ -10,7 +10,31 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 	couriers := api.Group("/couriers")
 	{
 		couriers.POST("/sign-in", h.couriersSignIn)
+		couriers.POST("/sign-up", h.couriersSignUp)
 	}
+}
+
+type courierSignUpInput struct {
+	Name          string `json:"name"`
+	Phone         string `json:"phone"`
+	Password      string `json:"password"`
+	Email         string `json:"email"`
+	Address       string `json:"address"`
+	WorkingStatus int    `json:"working_status"`
+}
+
+func (h *Handler) couriersSignUp(ctx echo.Context) error {
+	var input courierSignUpInput
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]int{"id": 0})
 }
 
 type courierSignInInput struct {
