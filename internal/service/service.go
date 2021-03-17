@@ -22,10 +22,15 @@ type Courier interface {
 	SignIn(phone, password string) (*Tokens, error)
 }
 
+type Restaurant interface {
+	SignIn(phone, password string) (*Tokens, error)
+}
+
 type Service struct {
 	Admin
 	User
 	Courier
+	Restaurant
 }
 
 type Deps struct {
@@ -39,5 +44,6 @@ func NewService(deps Deps) *Service {
 		Admin:   NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
 		User:    NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
 		Courier: NewCourierService(deps.Repos.Courier, deps.TokenManager, deps.AccessTokenTTL),
+		Restaurant: NewRestaurantService(deps.Repos.Restaurant, deps.TokenManager, deps.AccessTokenTTL),
 	}
 }
