@@ -28,6 +28,7 @@ type Restaurant interface {
 
 type Courier interface {
 	SignIn(phone, password string) (*Tokens, error)
+	SignUp(courier *domain.Courier, clientType string) (int, error)
 }
 
 type Service struct {
