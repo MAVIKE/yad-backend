@@ -3,13 +3,14 @@ package v1
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
+  "strconv"
 	"net/http"
 )
 
 func (h *Handler) initRestaurantRoutes(api *echo.Group) {
-	couriers := api.Group("/restaurants")
+	restaurants := api.Group("/restaurants")
 	{
-		couriers.POST("/sign-in", h.restaurantsSignIn)
+		restaurants.POST("/sign-in", h.restaurantsSignIn)
 	}
 }
 
@@ -42,11 +43,49 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	}
 
 	token, err := h.services.Restaurant.SignIn(input.Phone, input.Password)
+  return ctx.JSON(http.StatusOK, tokenResponse{
+		AccessToken: token.AccessToken,
+	})
+}
+
+func (h *Handler) initRestaurantRoutes(api *echo.Group) {
+	restaurants := api.Group("/restaurants")
+	{
+		restaurants.Use(h.identity)
+		restaurants.GET("", h.getRestaurants)
+		restaurants.GET("/:rid", h.getRestaurant)
+	}
+}
+
+func (h *Handler) getRestaurants(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, tokenResponse{
-		AccessToken: token.AccessToken,
-	})
+	restaurants, err := h.services.Restaurant.GetAll(clientId, clientType)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurants)
+}
+
+func (h *Handler) getRestaurant(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	restaurants, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurants)
 }

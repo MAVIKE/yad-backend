@@ -2,6 +2,7 @@ run:
 	go run cmd/app/main.go
 
 lint:
+	go fmt ./...
 	golangci-lint run
 
 config:

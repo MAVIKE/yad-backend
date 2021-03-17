@@ -1,13 +1,14 @@
 package app
 
 import (
+	"log"
+
 	handler "github.com/MAVIKE/yad-backend/internal/delivery/http"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
-	"log"
 )
 
 const (
@@ -46,7 +47,7 @@ func Run(configPath string) {
 	}
 
 	services := service.NewService(deps)
-	handlers := handler.NewHandler(services)
+	handlers := handler.NewHandler(services, tokenManager)
 
 	app := echo.New()
 	handlers.Init(app)

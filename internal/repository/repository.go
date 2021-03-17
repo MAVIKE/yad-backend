@@ -10,6 +10,7 @@ type Admin interface {
 }
 
 type User interface {
+	Create(user *domain.User) (int, error)
 	GetByCredentials(phone, password string) (*domain.User, error)
 }
 
@@ -19,6 +20,8 @@ type Courier interface {
 
 type Restaurant interface  {
 	GetByCredentials(phone, password string) (*domain.Restaurant, error)
+	GetAll(userId int) ([]*domain.Restaurant, error)
+	GetById(restarauntId int) (*domain.Restaurant, error)
 }
 
 type Repository struct {
@@ -30,9 +33,9 @@ type Repository struct {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Admin:   NewAdminPg(db),
-		User:    NewUserPg(db),
-		Courier: NewCourierPg(db),
+		Admin:      NewAdminPg(db),
+		User:       NewUserPg(db),
+		Courier:    NewCourierPg(db),
 		Restaurant: NewRestaurantPg(db),
 	}
 }

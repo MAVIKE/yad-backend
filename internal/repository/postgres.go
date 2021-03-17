@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	adminsTable    = "admins"
-	usersTable     = "users"
-	couriersTable  = "couriers"
-	locationsTable = "locations"
+	adminsTable      = "admins"
+	usersTable       = "users"
+	couriersTable    = "couriers"
+	locationsTable   = "locations"
 	restaurantsTable = "restaurants"
 )
 
