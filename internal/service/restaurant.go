@@ -15,12 +15,12 @@ func NewRestaurantService(repo repository.Restaurant) *RestaurantService {
 	return &RestaurantService{repo: repo}
 }
 
-func (s *RestaurantService) GetAll(userId int, clientType string) ([]*domain.Restaurant, error) {
+func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.Restaurant, error) {
 	if clientType != USER_TYPE {
 		return nil, errors.New("Forbidden")
 	}
 
-	restaurants, err := s.repo.GetAll(userId)
+	restaurants, err := s.repo.GetAll(clientId)
 	if err != nil {
 		return nil, err
 	}

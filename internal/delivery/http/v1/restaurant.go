@@ -17,12 +17,12 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 }
 
 func (h *Handler) getRestaurants(ctx echo.Context) error {
-	userId, clientType, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	restaurants, err := h.services.Restaurant.GetAll(userId, clientType)
+	restaurants, err := h.services.Restaurant.GetAll(clientId, clientType)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -31,7 +31,7 @@ func (h *Handler) getRestaurants(ctx echo.Context) error {
 }
 
 func (h *Handler) getRestaurant(ctx echo.Context) error {
-	userId, clientType, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -41,7 +41,7 @@ func (h *Handler) getRestaurant(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	restaurants, err := h.services.Restaurant.GetById(userId, clientType, restaurantId)
+	restaurants, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
