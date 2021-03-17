@@ -1,11 +1,11 @@
 package service
 
 import (
+	"errors"
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
-  "github.com/MAVIKE/yad-backend/internal/domain"
 	"time"
-  "errors"
 )
 
 type RestaurantService struct {
@@ -24,16 +24,16 @@ func NewRestaurantService(repo repository.Restaurant, tokenManager auth.TokenMan
 
 func (s *RestaurantService) SignIn(phone, password string) (*Tokens, error) {
 	restaurant, err := s.repo.GetByCredentials(phone, password)
-  if err != nil {
+	if err != nil {
 		return nil, err
 	}
-  token, err := s.tokenManager.NewJWT(restaurant.Id, RESTAURANT_TYPE, s.accessTokenTTL)
-  
-  if err != nil {
+	token, err := s.tokenManager.NewJWT(restaurant.Id, RESTAURANT_TYPE, s.accessTokenTTL)
+
+	if err != nil {
 		return nil, err
 	}
-  
-  return &Tokens{AccessToken: token}, nil
+
+	return &Tokens{AccessToken: token}, nil
 }
 
 func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.Restaurant, error) {
@@ -45,7 +45,7 @@ func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.R
 	if err != nil {
 		return nil, err
 	}
-  
+
 	return restaurants, nil
 }
 

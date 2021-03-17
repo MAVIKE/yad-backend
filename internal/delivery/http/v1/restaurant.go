@@ -3,15 +3,15 @@ package v1
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
-  "strconv"
 	"net/http"
+	"strconv"
 )
 
 func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 	restaurants := api.Group("/restaurants")
 	{
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
-    restaurants.Use(h.identity)
+		restaurants.Use(h.identity)
 		restaurants.GET("", h.getRestaurants)
 		restaurants.GET("/:rid", h.getRestaurant)
 	}
@@ -45,8 +45,11 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	token, _ := h.services.Restaurant.SignIn(input.Phone, input.Password)
-  return ctx.JSON(http.StatusOK, tokenResponse{
+	token, err := h.services.Restaurant.SignIn(input.Phone, input.Password)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
 }

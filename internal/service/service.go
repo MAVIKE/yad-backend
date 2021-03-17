@@ -1,10 +1,10 @@
 package service
 
 import (
-	"time"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
+	"time"
 )
 
 type Tokens struct {
@@ -23,7 +23,7 @@ type User interface {
 type Restaurant interface {
 	GetAll(clientId int, clientType string) ([]*domain.Restaurant, error)
 	GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error)
-  SignIn(phone, password string) (*Tokens, error)
+	SignIn(phone, password string) (*Tokens, error)
 }
 
 type Courier interface {

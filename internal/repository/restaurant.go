@@ -27,8 +27,8 @@ func (r *RestaurantPg) GetByCredentials(phone, password string) (*domain.Restaur
 	row := r.db.QueryRow(query, phone, password)
 	err := row.Scan(&restaurant.Id, &restaurant.Name, &restaurant.Phone, &restaurant.Password, &address.Latitude, &address.Longitude, &restaurant.WorkingStatus, &restaurant.Image)
 	restaurant.Address = address
-  
-  return restaurant, err
+
+	return restaurant, err
 }
 
 func (r *RestaurantPg) GetAll(userId int) ([]*domain.Restaurant, error) {
