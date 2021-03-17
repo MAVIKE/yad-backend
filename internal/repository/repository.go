@@ -19,6 +19,7 @@ type Courier interface {
 
 type Restaurant interface {
 	GetAll(userId int) ([]*domain.Restaurant, error)
+	GetById(restarauntId int) (*domain.Restaurant, error)
 }
 
 type Repository struct {
