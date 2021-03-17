@@ -41,6 +41,21 @@ definitions:
       token:
         type: string
     type: object
+  v1.userSignUpInput:
+    properties:
+      email:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
 host: localhost:9000
 info:
   contact: {}
@@ -123,12 +138,12 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Courier SignIn
       tags:
-      - couriers-auth
+      - couriers
   /restaurants:
     get:
       consumes:
       - application/json
-      description: restaurant get all
+      description: get all restaurant for user
       produces:
       - application/json
       responses:
@@ -158,7 +173,183 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/v1.response'
-      summary: Restaurant GetAll
+      security:
+      - UserAuth: []
+      summary: Get All Restaurant
       tags:
-      - restaurant
+      - restaurants
+  /restaurants/{rid}:
+    get:
+      consumes:
+      - application/json
+      description: get restaurant by id for user
+      parameters:
+      - description: Restaurant id
+        in: path
+        name: rid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Restaurant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "403":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - UserAuth: []
+      summary: Get Restaurant By Id
+      tags:
+      - restaurants
+  /restaurants/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: restaurant sign in
+      parameters:
+      - description: sign up info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Restaurants SignIn
+      tags:
+      - restaurants
+  /users/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: user sign in
+      parameters:
+      - description: sign up info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: User SignIn
+      tags:
+      - users-auth
+  /users/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: user sign up
+      parameters:
+      - description: sign up info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.userSignUpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: User SignUp
+      tags:
+      - users-auth
+securityDefinitions:
+  AdminAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  CourierAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  RestaurantAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  UserAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

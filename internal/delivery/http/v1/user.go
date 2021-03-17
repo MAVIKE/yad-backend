@@ -2,9 +2,10 @@ package v1
 
 import (
 	"errors"
-	"github.com/MAVIKE/yad-backend/internal/domain"
 	"net/http"
 	"strings"
+
+	"github.com/MAVIKE/yad-backend/internal/domain"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
@@ -33,6 +34,18 @@ type userSignUpInput struct {
 	Longitude float64 `json:"longitude" valid:"required,longitude"`
 }
 
+// @Summary User SignUp
+// @Tags users-auth
+// @Description user sign up
+// @ModuleID userSignUp
+// @Accept  json
+// @Produce  json
+// @Param input body userSignUpInput true "sign up info"
+// @Success 200 {object} tokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/sign-up [post]
 func (h *Handler) usersSignUp(ctx echo.Context) error {
 	var input userSignUpInput
 
@@ -70,6 +83,18 @@ type userSignInInput struct {
 	Password string `json:"password" valid:"length(4|32)"`
 }
 
+// @Summary User SignIn
+// @Tags users-auth
+// @Description user sign in
+// @ModuleID userSignIn
+// @Accept  json
+// @Produce  json
+// @Param input body signInInput true "sign up info"
+// @Success 200 {object} tokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/sign-in [post]
 func (h *Handler) usersSignIn(ctx echo.Context) error {
 	var input userSignInInput
 

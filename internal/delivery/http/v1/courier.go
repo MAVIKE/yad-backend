@@ -1,9 +1,10 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 func (h *Handler) initCourierRoutes(api *echo.Group) {
@@ -19,7 +20,7 @@ type courierSignInInput struct {
 }
 
 // @Summary Courier SignIn
-// @Tags couriers-auth
+// @Tags couriers
 // @Description courier sign in
 // @ModuleID courierSignIn
 // @Accept  json
