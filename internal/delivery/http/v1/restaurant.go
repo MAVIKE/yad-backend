@@ -41,10 +41,10 @@ func (h *Handler) getRestaurant(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	restaurants, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
+	restaurant, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, restaurants)
+	return ctx.JSON(http.StatusOK, restaurant)
 }
