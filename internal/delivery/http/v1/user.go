@@ -16,10 +16,33 @@ const (
 )
 
 func (h *Handler) initUserRoutes(api *echo.Group) {
-	admins := api.Group("/users")
+	users := api.Group("/users")
 	{
-		admins.POST("/sign-in", h.usersSignIn)
+		users.POST("/sign-up", h.usersSignUp)
+		users.POST("/sign-in", h.usersSignIn)
 	}
+}
+
+type userSignUpInput struct {
+	Name     string `json:"name"`
+	Phone    string `json:"phone"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	Address  string `json:"address"`
+}
+
+func (h *Handler) usersSignUp(ctx echo.Context) error {
+	var input userSignUpInput
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]int{"id": 0})
 }
 
 type userSignInInput struct {
