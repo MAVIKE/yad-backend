@@ -1,11 +1,12 @@
 package v1
 
 import (
+	"net/http"
+	"strconv"
+
 	_ "github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"strconv"
 )
 
 func (h *Handler) initRestaurantRoutes(api *echo.Group) {
@@ -14,7 +15,7 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
 		restaurants.Use(h.identity)
 		restaurants.GET("", h.getRestaurants)
-		restaurants.GET("/:rid", h.getRestaurant)
+		restaurants.GET("/:rid", h.getRestaurantById)
 	}
 }
 
@@ -80,7 +81,7 @@ func (h *Handler) getRestaurants(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurants)
 }
 
-func (h *Handler) getRestaurant(ctx echo.Context) error {
+func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
