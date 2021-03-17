@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"time"
@@ -18,6 +20,13 @@ func NewCourierService(repo repository.Courier, tokenManager auth.TokenManager, 
 		tokenManager:   tokenManager,
 		accessTokenTTL: accessTokenTTL,
 	}
+}
+
+func (s *CourierService) SignUp(courier *domain.Courier, clientType string) (int, error) {
+	if clientType != ADMIN_TYPE {
+		return 0, errors.New("forbidden")
+	}
+	return s.repo.Create(courier)
 }
 
 func (s *CourierService) SignIn(phone, password string) (*Tokens, error) {

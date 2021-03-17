@@ -16,6 +16,37 @@ func NewCourierPg(db *sqlx.DB) *CourierPg {
 	}
 }
 
+func (r *CourierPg) Create(courier *domain.Courier) (int, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	var addressId int
+	createLocationQuery := fmt.Sprintf(
+		`INSERT INTO %s (latitude, longitude)
+ 				VALUES ($1, $2) RETURNING id`, locationsTable)
+
+	locationRow := tx.QueryRow(createLocationQuery, courier.Address.Latitude, courier.Address.Longitude)
+	if err = locationRow.Scan(&addressId); err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	createCourierQuery := fmt.Sprintf(
+		`INSERT INTO %s (name, phone, password_hash, email, address_id, working_status)
+ 				VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, couriersTable)
+
+	var courierId int
+	userRow := tx.QueryRow(createCourierQuery, courier.Name, courier.Phone, courier.Password, courier.Email, addressId, courier.WorkingStatus)
+	if err = userRow.Scan(&courierId); err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	return courierId, tx.Commit()
+}
+
 func (r *CourierPg) GetByCredentials(phone, password string) (*domain.Courier, error) {
 	courier := new(domain.Courier)
 	address := new(domain.Location)

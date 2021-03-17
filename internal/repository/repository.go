@@ -15,6 +15,7 @@ type User interface {
 }
 
 type Courier interface {
+	Create(courier *domain.Courier) (int, error)
 	GetByCredentials(phone, password string) (*domain.Courier, error)
 }
 
