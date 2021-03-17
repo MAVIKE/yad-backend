@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"net/http"
 	"strings"
 
@@ -16,10 +17,52 @@ const (
 )
 
 func (h *Handler) initUserRoutes(api *echo.Group) {
-	admins := api.Group("/users")
+	users := api.Group("/users")
 	{
-		admins.POST("/sign-in", h.usersSignIn)
+		users.POST("/sign-up", h.usersSignUp)
+		users.POST("/sign-in", h.usersSignIn)
 	}
+}
+
+type userSignUpInput struct {
+	Name      string  `json:"name"`
+	Phone     string  `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password  string  `json:"password" valid:"required,length(8|50)"`
+	Email     string  `json:"email" valid:"email"`
+	Latitude  float64 `json:"latitude" valid:"required,latitude"`
+	Longitude float64 `json:"longitude" valid:"required,longitude"`
+}
+
+func (h *Handler) usersSignUp(ctx echo.Context) error {
+	var input userSignUpInput
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	user := &domain.User{
+		Name:     input.Name,
+		Phone:    input.Phone,
+		Password: input.Password,
+		Email:    input.Email,
+		Address: &domain.Location{
+			Latitude:  input.Latitude,
+			Longitude: input.Longitude,
+		},
+	}
+
+	id, err := h.services.User.SignUp(user)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"id": id,
+	})
 }
 
 type userSignInInput struct {

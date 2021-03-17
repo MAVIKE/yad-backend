@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"time"
 
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -19,6 +20,10 @@ func NewUserService(repo repository.User, tokenManager auth.TokenManager, access
 		tokenManager:   tokenManager,
 		accessTokenTTL: accessTokenTTL,
 	}
+}
+
+func (s *UserService) SignUp(user *domain.User) (int, error) {
+	return s.repo.Create(user)
 }
 
 func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
