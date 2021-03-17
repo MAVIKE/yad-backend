@@ -1,6 +1,7 @@
 package v1
 
 import (
+	_ "github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -28,7 +29,7 @@ type restaurantsSignInInput struct {
 // @ModuleID courierSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInputPhone true "sign up info"
+// @Param input body signInInput true "sign up info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
@@ -54,6 +55,17 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	})
 }
 
+// @Summary Get All Restaurant
+// @Tags restaurant
+// @Description restaurant get all
+// @ModuleID restaurantGetAll
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.Restaurant
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants [get]
 func (h *Handler) getRestaurants(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
