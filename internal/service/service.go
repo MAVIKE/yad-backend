@@ -18,6 +18,7 @@ type Admin interface {
 
 type User interface {
 	SignIn(phone, password string) (*Tokens, error)
+	SignUp(user *domain.User) (int, error)
 }
 
 type Restaurant interface {
