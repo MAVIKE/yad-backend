@@ -2,9 +2,9 @@ package v1
 
 import (
 	"github.com/MAVIKE/yad-backend/internal/domain"
+	"net/http"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 func (h *Handler) initCourierRoutes(api *echo.Group) {
@@ -69,12 +69,12 @@ type courierSignInInput struct {
 }
 
 // @Summary Courier SignIn
-// @Tags couriers-auth
+// @Tags couriers
 // @Description courier sign in
 // @ModuleID courierSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInputPhone true "sign up info"
+// @Param input body signInInput true "sign up info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response

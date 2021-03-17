@@ -32,6 +32,22 @@ func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler 
 // @host localhost:9000
 // @BasePath /api/v1/
 
+// @securityDefinitions.apikey AdminAuth
+// @in header
+// @name Authorization
+
+// @securityDefinitions.apikey UserAuth
+// @in header
+// @name Authorization
+
+// @securityDefinitions.apikey CourierAuth
+// @in header
+// @name Authorization
+
+// @securityDefinitions.apikey RestaurantAuth
+// @in header
+// @name Authorization
+
 func (h *Handler) Init(router *echo.Echo) {
 	router.Use(middleware.Logger())
 	router.GET("/swagger/*", echoSwagger.WrapHandler)

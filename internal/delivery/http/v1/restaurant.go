@@ -1,10 +1,12 @@
 package v1
 
 import (
-	"github.com/asaskevich/govalidator"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+
+	_ "github.com/MAVIKE/yad-backend/internal/domain"
+	"github.com/asaskevich/govalidator"
+	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) initRestaurantRoutes(api *echo.Group) {
@@ -13,7 +15,7 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
 		restaurants.Use(h.identity)
 		restaurants.GET("", h.getRestaurants)
-		restaurants.GET("/:rid", h.getRestaurant)
+		restaurants.GET("/:rid", h.getRestaurantById)
 	}
 }
 
@@ -22,18 +24,18 @@ type restaurantsSignInInput struct {
 	Password string `json:"password" valid:"length(4|32)"`
 }
 
-// @Summary Courier SignIn
-// @Tags couriers-auth
-// @Description courier sign in
-// @ModuleID courierSignIn
+// @Summary Restaurants SignIn
+// @Tags restaurants
+// @Description restaurant sign in
+// @ModuleID restaurantSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInputPhone true "sign up info"
+// @Param input body signInInput true "sign up info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /couriers/sign-in [post]
+// @Router /restaurants/sign-in [post]
 func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	var input restaurantsSignInInput
 
@@ -54,6 +56,18 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	})
 }
 
+// @Summary Get All Restaurant
+// @Security UserAuth
+// @Tags restaurants
+// @Description get all restaurant for user
+// @ModuleID getAllRestaurant
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.Restaurant
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants [get]
 func (h *Handler) getRestaurants(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -68,7 +82,20 @@ func (h *Handler) getRestaurants(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurants)
 }
 
-func (h *Handler) getRestaurant(ctx echo.Context) error {
+// @Summary Get Restaurant By Id
+// @Security UserAuth
+// @Tags restaurants
+// @Description get restaurant by id for user
+// @ModuleID getRestaurantById
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {object} domain.Restaurant
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid} [get]
+func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -79,10 +106,10 @@ func (h *Handler) getRestaurant(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	restaurants, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
+	restaurant, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, restaurants)
+	return ctx.JSON(http.StatusOK, restaurant)
 }
