@@ -12,6 +12,7 @@ const (
 	usersTable     = "users"
 	couriersTable  = "couriers"
 	locationsTable = "locations"
+	restaurantsTable = "restaurants"
 )
 
 type Config struct {
