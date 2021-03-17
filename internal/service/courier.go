@@ -24,7 +24,7 @@ func NewCourierService(repo repository.Courier, tokenManager auth.TokenManager, 
 
 func (s *CourierService) SignUp(courier *domain.Courier, clientType string) (int, error) {
 	if clientType != ADMIN_TYPE {
-		return -1, errors.New("forbidden")
+		return 0, errors.New("forbidden")
 	}
 	return s.repo.Create(courier)
 }
