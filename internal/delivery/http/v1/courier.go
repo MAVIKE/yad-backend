@@ -24,7 +24,7 @@ type courierSignInInput struct {
 // @ModuleID courierSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInputPhone true "sign up info"
+// @Param input body signInInput true "sign up info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
