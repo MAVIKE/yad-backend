@@ -11,6 +11,9 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 	restaurants := api.Group("/restaurants")
 	{
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
+    restaurants.Use(h.identity)
+		restaurants.GET("", h.getRestaurants)
+		restaurants.GET("/:rid", h.getRestaurant)
 	}
 }
 
@@ -42,19 +45,10 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	token, err := h.services.Restaurant.SignIn(input.Phone, input.Password)
+	token, _ := h.services.Restaurant.SignIn(input.Phone, input.Password)
   return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
-}
-
-func (h *Handler) initRestaurantRoutes(api *echo.Group) {
-	restaurants := api.Group("/restaurants")
-	{
-		restaurants.Use(h.identity)
-		restaurants.GET("", h.getRestaurants)
-		restaurants.GET("/:rid", h.getRestaurant)
-	}
 }
 
 func (h *Handler) getRestaurants(ctx echo.Context) error {
