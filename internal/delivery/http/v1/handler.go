@@ -24,5 +24,6 @@ func (h *Handler) Init(api *echo.Group) {
 		h.initAdminRoutes(v1)
 		h.initUserRoutes(v1)
 		h.initCourierRoutes(v1)
+		h.initRestaurantRoutes(v1)
 	}
 }
