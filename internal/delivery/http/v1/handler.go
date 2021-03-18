@@ -2,11 +2,12 @@ package v1
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"strconv"
 )
 
 type Handler struct {
@@ -32,6 +33,7 @@ func (h *Handler) Init(api *echo.Group) {
 		h.initUserRoutes(v1)
 		h.initCourierRoutes(v1)
 		h.initRestaurantRoutes(v1)
+		h.initCategoryRoutes(v1)
 	}
 }
 
