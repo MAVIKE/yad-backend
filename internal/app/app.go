@@ -2,6 +2,8 @@ package app
 
 import (
 	"log"
+	"strconv"
+	"time"
 
 	handler "github.com/MAVIKE/yad-backend/internal/delivery/http"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -11,22 +13,20 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	DB_PREFIX = "local-db."
-)
-
 func Run(configPath string) {
 	if err := initConfig(configPath); err != nil {
 		log.Fatalf("error initializing configs: %s", err.Error())
 	}
 
+	dbPrefix := viper.GetString("db.name") + "."
+
 	db, err := repository.NewPostgresDB(repository.Config{
-		Host:     viper.GetString(DB_PREFIX + "host"),
-		Port:     viper.GetString(DB_PREFIX + "port"),
-		Username: viper.GetString(DB_PREFIX + "username"),
-		DBName:   viper.GetString(DB_PREFIX + "dbname"),
-		SSLMode:  viper.GetString(DB_PREFIX + "sslmode"),
-		Password: viper.GetString(DB_PREFIX + "password"),
+		Host:     viper.GetString(dbPrefix + "host"),
+		Port:     viper.GetString(dbPrefix + "port"),
+		Username: viper.GetString(dbPrefix + "username"),
+		DBName:   viper.GetString(dbPrefix + "dbname"),
+		SSLMode:  viper.GetString(dbPrefix + "sslmode"),
+		Password: viper.GetString(dbPrefix + "password"),
 	})
 
 	if err != nil {
@@ -35,15 +35,25 @@ func Run(configPath string) {
 
 	repos := repository.NewRepository(db)
 
-	// TODO signing key from configs
-	tokenManager, err := auth.NewManager(service.SIGNING_KEY)
+	signingKey := viper.GetString("token.signing_key")
+	if signingKey == "" {
+		log.Fatalf("failed to get token signing key")
+	}
+
+	accessTokenTTL, err := strconv.Atoi(viper.GetString("token.access_token_ttl"))
+	if err != nil || accessTokenTTL == 0 {
+		log.Fatalf("failed to get access token TTL: %s", err.Error())
+	}
+
+	tokenManager, err := auth.NewManager(signingKey)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
+
 	deps := service.Deps{
 		Repos:          repos,
 		TokenManager:   tokenManager,
-		AccessTokenTTL: service.ACCESS_TOKEN_TTL,
+		AccessTokenTTL: time.Duration(accessTokenTTL) * time.Hour,
 	}
 
 	services := service.NewService(deps)
