@@ -25,3 +25,4 @@ configs/config.yml
 
 # Swagger files
 docs/swagger/
+!docs/swagger/swagger.go
