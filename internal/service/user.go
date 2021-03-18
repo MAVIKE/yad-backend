@@ -32,7 +32,7 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 		return nil, err
 	}
 
-	token, err := s.tokenManager.NewJWT(user.Id, USER_TYPE, s.accessTokenTTL)
+	token, err := s.tokenManager.NewJWT(user.Id, userType, s.accessTokenTTL)
 	if err != nil {
 		return nil, err
 	}

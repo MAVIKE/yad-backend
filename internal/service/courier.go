@@ -23,7 +23,7 @@ func NewCourierService(repo repository.Courier, tokenManager auth.TokenManager, 
 }
 
 func (s *CourierService) SignUp(courier *domain.Courier, clientType string) (int, error) {
-	if clientType != ADMIN_TYPE {
+	if clientType != adminType {
 		return 0, errors.New("forbidden")
 	}
 	return s.repo.Create(courier)
@@ -35,7 +35,7 @@ func (s *CourierService) SignIn(phone, password string) (*Tokens, error) {
 		return nil, err
 	}
 
-	token, err := s.tokenManager.NewJWT(courier.Id, COURIER_TYPE, s.accessTokenTTL)
+	token, err := s.tokenManager.NewJWT(courier.Id, courierType, s.accessTokenTTL)
 	if err != nil {
 		return nil, err
 	}

@@ -28,7 +28,7 @@ func (s *RestaurantService) SignIn(phone, password string) (*Tokens, error) {
 	if err != nil {
 		return nil, err
 	}
-	token, err := s.tokenManager.NewJWT(restaurant.Id, RESTAURANT_TYPE, s.accessTokenTTL)
+	token, err := s.tokenManager.NewJWT(restaurant.Id, restaurantType, s.accessTokenTTL)
 
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (s *RestaurantService) SignIn(phone, password string) (*Tokens, error) {
 }
 
 func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.Restaurant, error) {
-	if clientType != USER_TYPE {
+	if clientType != userType {
 		return nil, errors.New("Forbidden")
 	}
 
@@ -46,7 +46,7 @@ func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.R
 }
 
 func (s *RestaurantService) GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error) {
-	if !(clientType == USER_TYPE || clientType == RESTAURANT_TYPE && restaurantId == clientId) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
 		return nil, errors.New("Forbidden")
 	}
 
@@ -54,7 +54,7 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 }
 
 func (s *RestaurantService) GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error) {
-	if !(clientType == USER_TYPE || clientType == RESTAURANT_TYPE && restaurantId == clientId) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
 		return nil, errors.New("Forbidden")
 	}
 

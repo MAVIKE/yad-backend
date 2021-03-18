@@ -26,7 +26,7 @@ func (s *AdminService) SignIn(name, password string) (*Tokens, error) {
 		return nil, err
 	}
 
-	token, err := s.tokenManager.NewJWT(admin.Id, ADMIN_TYPE, s.accessTokenTTL)
+	token, err := s.tokenManager.NewJWT(admin.Id, adminType, s.accessTokenTTL)
 	if err != nil {
 		return nil, err
 	}

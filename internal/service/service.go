@@ -8,6 +8,13 @@ import (
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 )
 
+const (
+	adminType      = "admin"
+	userType       = "user"
+	courierType    = "courier"
+	restaurantType = "restaurant"
+)
+
 type Tokens struct {
 	AccessToken string `json:"token"`
 }
