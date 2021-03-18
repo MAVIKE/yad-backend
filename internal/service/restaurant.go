@@ -52,3 +52,11 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 
 	return s.repo.GetById(restaurantId)
 }
+
+func (s *RestaurantService) GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error) {
+	if !(clientType == USER_TYPE || clientType == RESTAURANT_TYPE && restaurantId == clientId) {
+		return nil, errors.New("Forbidden")
+	}
+
+	return s.repo.GetMenu(restaurantId)
+}

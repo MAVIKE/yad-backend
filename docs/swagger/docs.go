@@ -528,6 +528,79 @@ var doc = `{
                 }
             }
         },
+        "/restaurants/{rid}/menu": {
+            "get": {
+                "security": [
+                    {
+                        "UserAuth": []
+                    },
+                    {
+                        "RestaurantAuth": []
+                    }
+                ],
+                "description": "get restaurant menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Get Restaurant Menu",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Restaurant id",
+                        "name": "rid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.MenuItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "403": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/users/sign-in": {
             "post": {
                 "description": "user sign in",
@@ -668,6 +741,26 @@ var doc = `{
                 },
                 "longitude": {
                     "type": "number"
+                }
+            }
+        },
+        "domain.MenuItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "restaurant_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
