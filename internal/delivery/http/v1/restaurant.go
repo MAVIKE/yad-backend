@@ -20,8 +20,8 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 }
 
 type restaurantsSignInInput struct {
-	Phone    string `json:"phone" valid:"numeric"`
-	Password string `json:"password" valid:"length(4|32)"`
+	Phone    string `json:"phone" valid:"numeric,length(11|11)"`
+	Password string `json:"password" valid:"length(8|50)"`
 }
 
 // @Summary Restaurants SignIn

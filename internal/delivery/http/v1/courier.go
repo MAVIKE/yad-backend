@@ -19,9 +19,9 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 
 type courierSignUpInput struct {
 	Name          string  `json:"name"`
-	Phone         string  `json:"phone"`
-	Password      string  `json:"password"`
-	Email         string  `json:"email"`
+	Phone         string  `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password      string  `json:"password" valid:"required,length(8|50)"`
+	Email         string  `json:"email" valid:"email"`
 	Latitude      float64 `json:"latitude" valid:"required,latitude"`
 	Longitude     float64 `json:"longitude" valid:"required,longitude"`
 	WorkingStatus int     `json:"working_status"`
@@ -77,8 +77,8 @@ func (h *Handler) couriersSignUp(ctx echo.Context) error {
 }
 
 type courierSignInInput struct {
-	Phone    string `json:"phone" valid:"numeric"`
-	Password string `json:"password" valid:"length(4|32)"`
+	Phone    string `json:"phone" valid:"numeric,length(11|11)"`
+	Password string `json:"password" valid:"length(8|50)"`
 }
 
 // @Summary Courier SignIn

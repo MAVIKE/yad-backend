@@ -16,7 +16,7 @@ func (h *Handler) initAdminRoutes(api *echo.Group) {
 
 type signInInput struct {
 	Name     string `json:"name" valid:"length(4|32)"`
-	Password string `json:"password" valid:"length(4|32)"`
+	Password string `json:"password" valid:"length(8|50)"`
 }
 
 // @Summary Admin SignIn
