@@ -16,6 +16,20 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 	}
 }
 
+// @Summary Get All Categories
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags categories
+// @Description get all categories for user
+// @ModuleID getAllCategories
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {array} domain.Category
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/categories [get]
 func (h *Handler) getCategories(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
