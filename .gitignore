@@ -15,14 +15,14 @@
 # vendor/
 
 # Goland dir
-.idea/
+.idea/*
 
 # Config file
 configs/config.yml
 
 # Mac files
-.DS_Store/
+.DS_Store/*
 
 # Swagger files
-docs/swagger/
+docs/swagger/*
 !docs/swagger/swagger.go
