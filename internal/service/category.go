@@ -30,10 +30,5 @@ func (s *CategoryService) GetAll(clientId int, clientType string, restaurantId i
 		return nil, errors.New("Forbidden")
 	}
 
-	categories, err := s.repo.GetAll(restaurantId)
-	if err != nil {
-		return nil, err
-	}
-
-	return categories, nil
+	return s.repo.GetAll(restaurantId)
 }

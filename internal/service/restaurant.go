@@ -42,12 +42,7 @@ func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.R
 		return nil, errors.New("Forbidden")
 	}
 
-	restaurants, err := s.repo.GetAll(clientId)
-	if err != nil {
-		return nil, err
-	}
-
-	return restaurants, nil
+	return s.repo.GetAll(clientId)
 }
 
 func (s *RestaurantService) GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error) {
@@ -55,10 +50,5 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 		return nil, errors.New("Forbidden")
 	}
 
-	restaurant, err := s.repo.GetById(restaurantId)
-	if err != nil {
-		return nil, err
-	}
-
-	return restaurant, nil
+	return s.repo.GetById(restaurantId)
 }
