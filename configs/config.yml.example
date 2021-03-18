@@ -1,13 +1,13 @@
 port: ":9000"
 
 db:
-  name: "local-db"
+  name: "local_db"
 
 token:
   signing_key: "qrkjk#4#%35FSFJlja#4353KSFjH"
   access_token_ttl: 168
 
-local-db:
+local_db:
   username: "postgres"
   password: "1234"
   host: "localhost"
