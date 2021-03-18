@@ -18,7 +18,7 @@ func NewCategoryService(repo repository.Category) *CategoryService {
 }
 
 func (s *CategoryService) GetAll(clientId int, clientType string, restaurantId int) ([]*domain.Category, error) {
-	if clientType != USER_TYPE || clientType == RESTAURANT_TYPE && restaurantId != clientId {
+	if !(clientType == USER_TYPE || clientType == RESTAURANT_TYPE && restaurantId == clientId) {
 		return nil, errors.New("Forbidden")
 	}
 
