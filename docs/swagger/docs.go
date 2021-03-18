@@ -203,9 +203,12 @@ var doc = `{
                 "security": [
                     {
                         "UserAuth": []
+                    },
+                    {
+                        "RestaurantAuth": []
                     }
                 ],
-                "description": "get all restaurant for user",
+                "description": "get all restaurants for user",
                 "consumes": [
                     "application/json"
                 ],
@@ -215,7 +218,7 @@ var doc = `{
                 "tags": [
                     "restaurants"
                 ],
-                "summary": "Get All Restaurant",
+                "summary": "Get All Restaurants",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -271,7 +274,7 @@ var doc = `{
                 "tags": [
                     "restaurants"
                 ],
-                "summary": "Restaurants SignIn",
+                "summary": "Restaurant SignIn",
                 "parameters": [
                     {
                         "description": "sign up info",
@@ -322,6 +325,9 @@ var doc = `{
                 "security": [
                     {
                         "UserAuth": []
+                    },
+                    {
+                        "RestaurantAuth": []
                     }
                 ],
                 "description": "get restaurant by id for user",

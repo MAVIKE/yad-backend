@@ -188,9 +188,12 @@
                 "security": [
                     {
                         "UserAuth": []
+                    },
+                    {
+                        "RestaurantAuth": []
                     }
                 ],
-                "description": "get all restaurant for user",
+                "description": "get all restaurants for user",
                 "consumes": [
                     "application/json"
                 ],
@@ -200,7 +203,7 @@
                 "tags": [
                     "restaurants"
                 ],
-                "summary": "Get All Restaurant",
+                "summary": "Get All Restaurants",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -256,7 +259,7 @@
                 "tags": [
                     "restaurants"
                 ],
-                "summary": "Restaurants SignIn",
+                "summary": "Restaurant SignIn",
                 "parameters": [
                     {
                         "description": "sign up info",
@@ -307,6 +310,9 @@
                 "security": [
                     {
                         "UserAuth": []
+                    },
+                    {
+                        "RestaurantAuth": []
                     }
                 ],
                 "description": "get restaurant by id for user",

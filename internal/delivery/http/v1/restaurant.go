@@ -24,7 +24,7 @@ type restaurantsSignInInput struct {
 	Password string `json:"password" valid:"length(8|50)"`
 }
 
-// @Summary Restaurants SignIn
+// @Summary Restaurant SignIn
 // @Tags restaurants
 // @Description restaurant sign in
 // @ModuleID restaurantSignIn
@@ -56,11 +56,12 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	})
 }
 
-// @Summary Get All Restaurant
+// @Summary Get All Restaurants
 // @Security UserAuth
+// @Security RestaurantAuth
 // @Tags restaurants
-// @Description get all restaurant for user
-// @ModuleID getAllRestaurant
+// @Description get all restaurants for user
+// @ModuleID getAllRestaurants
 // @Accept  json
 // @Produce  json
 // @Success 200 {array} domain.Restaurant
@@ -84,6 +85,7 @@ func (h *Handler) getRestaurants(ctx echo.Context) error {
 
 // @Summary Get Restaurant By Id
 // @Security UserAuth
+// @Security RestaurantAuth
 // @Tags restaurants
 // @Description get restaurant by id for user
 // @ModuleID getRestaurantById

@@ -207,7 +207,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: get all restaurant for user
+      description: get all restaurants for user
       produces:
       - application/json
       responses:
@@ -239,7 +239,8 @@ paths:
             $ref: '#/definitions/v1.response'
       security:
       - UserAuth: []
-      summary: Get All Restaurant
+      - RestaurantAuth: []
+      summary: Get All Restaurants
       tags:
       - restaurants
   /restaurants/{rid}:
@@ -282,6 +283,7 @@ paths:
             $ref: '#/definitions/v1.response'
       security:
       - UserAuth: []
+      - RestaurantAuth: []
       summary: Get Restaurant By Id
       tags:
       - restaurants
@@ -366,7 +368,7 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/v1.response'
-      summary: Restaurants SignIn
+      summary: Restaurant SignIn
       tags:
       - restaurants
   /users/sign-in:
