@@ -21,4 +21,7 @@
 configs/config.yml
 
 # Mac files
-.DS_Store
+.DS_Store/
+
+# Swagger files
+docs/swagger/
