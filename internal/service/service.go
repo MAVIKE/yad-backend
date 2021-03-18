@@ -25,6 +25,7 @@ type Restaurant interface {
 	GetAll(clientId int, clientType string) ([]*domain.Restaurant, error)
 	GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error)
 	SignIn(phone, password string) (*Tokens, error)
+	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
 }
 
 type Courier interface {

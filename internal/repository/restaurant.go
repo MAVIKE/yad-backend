@@ -103,3 +103,14 @@ func (r *RestaurantPg) GetById(restaurantId int) (*domain.Restaurant, error) {
 
 	return restaurant, err
 }
+
+func (r *RestaurantPg) GetMenu(restarauntId int) ([]*domain.MenuItem, error) {
+	var items []*domain.MenuItem
+
+	query := fmt.Sprintf(`SELECT * FROM %s AS m WHERE m.restaurant_id = $1`, menuItemsTable)
+	if err := r.db.Select(&items, query, restarauntId); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}

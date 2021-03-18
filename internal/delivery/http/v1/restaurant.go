@@ -132,7 +132,7 @@ func (h *Handler) getRestaurantById(ctx echo.Context) error {
 // @Failure default {object} response
 // @Router /restaurants/{rid}/menu [get]
 func (h *Handler) getRestaurantMenu(ctx echo.Context) error {
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -142,5 +142,10 @@ func (h *Handler) getRestaurantMenu(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{"id": 0})
+	menu, err := h.services.Restaurant.GetMenu(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, menu)
 }

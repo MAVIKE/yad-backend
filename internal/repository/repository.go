@@ -23,6 +23,7 @@ type Restaurant interface {
 	GetByCredentials(phone, password string) (*domain.Restaurant, error)
 	GetAll(userId int) ([]*domain.Restaurant, error)
 	GetById(restarauntId int) (*domain.Restaurant, error)
+	GetMenu(restarauntId int) ([]*domain.MenuItem, error)
 }
 
 type Category interface {
