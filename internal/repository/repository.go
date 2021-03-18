@@ -27,6 +27,7 @@ type Restaurant interface {
 
 type Category interface {
 	GetAll(restaurantId int) ([]*domain.Category, error)
+	Create(category *domain.Category) (int, error)
 }
 
 type Repository struct {

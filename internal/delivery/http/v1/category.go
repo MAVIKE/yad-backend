@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	_ "github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
@@ -16,6 +17,45 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 		restaurants.POST("", h.createCategory)
 		restaurants.GET("", h.getCategories)
 	}
+}
+
+type categoryInput struct {
+	Title string `json:"title" valid:"length(1|50)"`
+}
+
+func (h *Handler) createCategory(ctx echo.Context) error {
+	var input categoryInput
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	category := &domain.Category{
+		RestaurantId: restaurantId,
+		Title:        input.Title,
+	}
+
+	categoryId, err := h.services.Category.Create(clientId, clientType, category)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"category_id": categoryId,
+	})
 }
 
 // @Summary Get All Categories
@@ -49,33 +89,4 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, categories)
-}
-
-type categoryInput struct {
-	Title string `json:"name" valid:"length(1,50)"`
-}
-
-func (h *Handler) createCategory(ctx echo.Context) error {
-	var input categoryInput
-	_, _, err := h.getClientParams(ctx)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
-	if err != nil || restaurantId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
-	}
-
-	if err := ctx.Bind(&input); err != nil {
-		return newResponse(ctx, http.StatusBadRequest, err.Error())
-	}
-
-	if _, err := govalidator.ValidateStruct(input); err != nil {
-		return newResponse(ctx, http.StatusBadRequest, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"category_id": 1,
-	})
 }
