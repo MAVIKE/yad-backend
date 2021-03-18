@@ -35,7 +35,7 @@ type userSignUpInput struct {
 }
 
 // @Summary User SignUp
-// @Tags users-auth
+// @Tags users
 // @Description user sign up
 // @ModuleID userSignUp
 // @Accept  json
@@ -84,12 +84,12 @@ type userSignInInput struct {
 }
 
 // @Summary User SignIn
-// @Tags users-auth
+// @Tags users
 // @Description user sign in
 // @ModuleID userSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign up info"
+// @Param input body signInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response

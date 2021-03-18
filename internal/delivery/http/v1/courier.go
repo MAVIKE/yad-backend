@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"github.com/MAVIKE/yad-backend/internal/domain"
 	"net/http"
+
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 )
@@ -26,6 +27,18 @@ type courierSignUpInput struct {
 	WorkingStatus int     `json:"working_status"`
 }
 
+// @Summary Courier SignUp
+// @Tags couriers
+// @Description courier sign up
+// @ModuleID courierSignUp
+// @Accept  json
+// @Produce  json
+// @Param input body courierSignUpInput true "sign up info"
+// @Success 200 {object} tokenResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/sign-up [post]
 func (h *Handler) couriersSignUp(ctx echo.Context) error {
 	var input courierSignUpInput
 	_, clientType, err := h.getClientParams(ctx)
@@ -74,7 +87,7 @@ type courierSignInInput struct {
 // @ModuleID courierSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign up info"
+// @Param input body signInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response

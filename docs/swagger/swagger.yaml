@@ -24,6 +24,23 @@ definitions:
       working_status:
         type: string
     type: object
+  v1.courierSignUpInput:
+    properties:
+      email:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      working_status:
+        type: integer
+    type: object
   v1.response:
     properties:
       message:
@@ -69,7 +86,7 @@ paths:
       - application/json
       description: admin sign in
       parameters:
-      - description: sign up info
+      - description: sign in info
         in: body
         name: input
         required: true
@@ -100,14 +117,14 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Admin SignIn
       tags:
-      - admins-auth
+      - admins
   /couriers/sign-in:
     post:
       consumes:
       - application/json
       description: courier sign in
       parameters:
-      - description: sign up info
+      - description: sign in info
         in: body
         name: input
         required: true
@@ -137,6 +154,44 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Courier SignIn
+      tags:
+      - couriers
+  /couriers/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: courier sign up
+      parameters:
+      - description: sign up info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.courierSignUpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Courier SignUp
       tags:
       - couriers
   /restaurants:
@@ -265,7 +320,7 @@ paths:
       - application/json
       description: user sign in
       parameters:
-      - description: sign up info
+      - description: sign in info
         in: body
         name: input
         required: true
@@ -296,7 +351,7 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: User SignIn
       tags:
-      - users-auth
+      - users
   /users/sign-up:
     post:
       consumes:
@@ -334,7 +389,7 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: User SignUp
       tags:
-      - users-auth
+      - users
 securityDefinitions:
   AdminAuth:
     in: header

@@ -34,12 +34,12 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admins-auth"
+                    "admins"
                 ],
                 "summary": "Admin SignIn",
                 "parameters": [
                     {
-                        "description": "sign up info",
+                        "description": "sign in info",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -97,12 +97,70 @@ var doc = `{
                 "summary": "Courier SignIn",
                 "parameters": [
                     {
-                        "description": "sign up info",
+                        "description": "sign in info",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/v1.signInInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.tokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/couriers/sign-up": {
+            "post": {
+                "description": "courier sign up",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "couriers"
+                ],
+                "summary": "Courier SignUp",
+                "parameters": [
+                    {
+                        "description": "sign up info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.courierSignUpInput"
                         }
                     }
                 ],
@@ -336,12 +394,12 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users-auth"
+                    "users"
                 ],
                 "summary": "User SignIn",
                 "parameters": [
                     {
-                        "description": "sign up info",
+                        "description": "sign in info",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -394,7 +452,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users-auth"
+                    "users"
                 ],
                 "summary": "User SignUp",
                 "parameters": [
@@ -478,6 +536,32 @@ var doc = `{
                 },
                 "working_status": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.courierSignUpInput": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "working_status": {
+                    "type": "integer"
                 }
             }
         },

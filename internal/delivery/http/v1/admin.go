@@ -1,9 +1,10 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 func (h *Handler) initAdminRoutes(api *echo.Group) {
@@ -19,12 +20,12 @@ type signInInput struct {
 }
 
 // @Summary Admin SignIn
-// @Tags admins-auth
+// @Tags admins
 // @Description admin sign in
 // @ModuleID adminSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign up info"
+// @Param input body signInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
