@@ -13,6 +13,7 @@ const (
 	couriersTable    = "couriers"
 	locationsTable   = "locations"
 	restaurantsTable = "restaurants"
+	categoriesTable  = "categories"
 )
 
 type Config struct {

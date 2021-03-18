@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/MAVIKE/yad-backend/internal/domain"
 	_ "github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +17,7 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 }
 
 func (h *Handler) getCategories(ctx echo.Context) error {
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -28,10 +27,10 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	// categories, err := h.services.Category.GetAll(clientId, clientType, restaurantId)
-	// if err != nil {
-	// 	return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	// }
+	categories, err := h.services.Category.GetAll(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
 
-	return ctx.JSON(http.StatusOK, []*domain.Category{})
+	return ctx.JSON(http.StatusOK, categories)
 }

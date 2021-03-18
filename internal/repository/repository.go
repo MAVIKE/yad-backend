@@ -25,11 +25,16 @@ type Restaurant interface {
 	GetById(restarauntId int) (*domain.Restaurant, error)
 }
 
+type Category interface {
+	GetAll(restaurantId int) ([]*domain.Category, error)
+}
+
 type Repository struct {
 	Admin
 	User
 	Courier
 	Restaurant
+	Category
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -38,5 +43,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		User:       NewUserPg(db),
 		Courier:    NewCourierPg(db),
 		Restaurant: NewRestaurantPg(db),
+		Category:   NewCategoryPg(db),
 	}
 }
