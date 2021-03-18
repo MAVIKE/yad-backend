@@ -23,6 +23,19 @@ type categoryInput struct {
 	Title string `json:"title" valid:"length(1|50)"`
 }
 
+// @Summary Create Category
+// @Security RestaurantAuth
+// @Tags categories
+// @Description create category
+// @ModuleID createCategory
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {object} tokenResponse
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/categories [post]
 func (h *Handler) createCategory(ctx echo.Context) error {
 	var input categoryInput
 	clientId, clientType, err := h.getClientParams(ctx)
