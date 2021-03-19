@@ -60,3 +60,10 @@ func (s *RestaurantService) GetMenu(clientId int, clientType string, restaurantI
 
 	return s.repo.GetMenu(restaurantId)
 }
+
+func (s *RestaurantService) SignUp(restaurant *domain.Restaurant, clientType string) (int, error) {
+	if clientType != adminType {
+		return 0, errors.New("forbidden")
+	}
+	return s.repo.Create(restaurant)
+}

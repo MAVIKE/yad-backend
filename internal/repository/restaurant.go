@@ -114,3 +114,34 @@ func (r *RestaurantPg) GetMenu(restarauntId int) ([]*domain.MenuItem, error) {
 
 	return items, nil
 }
+
+func (r *RestaurantPg) Create(restaurant *domain.Restaurant) (int, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	var addressId int
+	createLocationQuery := fmt.Sprintf(
+		`INSERT INTO %s (latitude, longitude)
+ 				VALUES ($1, $2) RETURNING id`, locationsTable)
+
+	locationRow := tx.QueryRow(createLocationQuery, restaurant.Address.Latitude, restaurant.Address.Longitude)
+	if err = locationRow.Scan(&addressId); err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	createRestaurantQuery := fmt.Sprintf(
+		`INSERT INTO %s (name, phone, password_hash, address_id, working_status, image)
+ 				VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, restaurantsTable)
+
+	var restaurantId int
+	restaurantRow := tx.QueryRow(createRestaurantQuery, restaurant.Name, restaurant.Phone, restaurant.Password, addressId, restaurant.WorkingStatus, restaurant.Image)
+	if err = restaurantRow.Scan(&restaurantId); err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	return restaurantId, tx.Commit()
+}
