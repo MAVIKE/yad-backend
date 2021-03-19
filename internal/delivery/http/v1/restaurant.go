@@ -158,7 +158,7 @@ type restaurantSignUpInput struct {
 	Latitude      float64 `json:"latitude" valid:"required,latitude"`
 	Longitude     float64 `json:"longitude" valid:"required,longitude"`
 	WorkingStatus int     `json:"working_status"`
-	Image         string  `json:"image" valid:"required,length(200)"`
+	Image         string  `json:"image" valid:"required,length(1|200)"`
 }
 
 // @Summary Restaurant SignUp
