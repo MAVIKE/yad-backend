@@ -24,6 +24,7 @@ type Restaurant interface {
 	GetAll(userId int) ([]*domain.Restaurant, error)
 	GetById(restarauntId int) (*domain.Restaurant, error)
 	GetMenu(restarauntId int) ([]*domain.MenuItem, error)
+	Create(restaurant *domain.Restaurant) (int, error)
 }
 
 type Category interface {

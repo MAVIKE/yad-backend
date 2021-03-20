@@ -33,6 +33,7 @@ type Restaurant interface {
 	GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error)
 	SignIn(phone, password string) (*Tokens, error)
 	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
+	SignUp(restaurant *domain.Restaurant, clientType string) (int, error)
 }
 
 type Courier interface {
