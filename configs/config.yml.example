@@ -14,3 +14,4 @@ local_db:
   port: "5432"
   dbname: "postgres"
   sslmode: "disable"
+  path: "C://Program Files/PostgreSQL/12/bin/psql.exe"

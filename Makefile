@@ -13,3 +13,9 @@ swag:
 
 fmt:
 	go fmt ./...
+
+init_db:
+	. ./schema/bash/init.sh
+
+down_db:
+	. ./schema/bash/down.sh
