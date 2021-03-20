@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
     restaurant_id INT REFERENCES restaurants (id) ON DELETE CASCADE NOT NULL,
-    courier_id INT REFERENCES couriers (id) ON DELETE CASCADE NOT NULL,
+    courier_id INT REFERENCES couriers (id) ON DELETE CASCADE,
     delivery_price INT NOT NULL DEFAULT 0 CHECK (delivery_price >= 0),
     total_price INT NOT NULL DEFAULT 0 CHECK (total_price >= 0),
     status INT NOT NULL,
-    created TIMESTAMP NOT NULL
+    paid TIMESTAMP
 
 );
 
