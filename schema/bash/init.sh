@@ -14,3 +14,4 @@ PGPASSWORD=$password "$path" -h localhost -U postgres -d $dbname \
     -f "./schema/test/courier.sql" \
     -f "./schema/test/restaurant.sql" \
     -f "./schema/test/category.sql" \
+    -f "./schema/test/order.sql" \

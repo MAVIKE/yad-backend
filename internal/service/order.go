@@ -40,3 +40,8 @@ func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *do
 
 	return s.repo.CreateItem(orderItem)
 }
+
+func (s *OrderService) GetItemById(clientId int, clientType string, orderId int) (*domain.OrderItem, error) {
+	// TODO: проверка прав
+	return s.repo.GetItemById(orderId)
+}

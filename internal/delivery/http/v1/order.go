@@ -18,6 +18,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 		orderItems := orders.Group("/:oid/items")
 		{
 			orderItems.POST("/", h.createOrderItem)
+			orderItems.GET("/:id", h.getOrderItemById)
 		}
 	}
 }
@@ -120,4 +121,39 @@ func (h *Handler) createOrderItem(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: orderItemId,
 	})
+}
+
+// @Summary Get Order Item By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description get order item by id
+// @ModuleID getOrderItemById
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Param id path string true "Order item id"
+// @Success 200 {object} domain.OrderItem
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/ [get]
+func (h *Handler) getOrderItemById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	orderItem, err := h.services.Order.GetItemById(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orderItem)
 }

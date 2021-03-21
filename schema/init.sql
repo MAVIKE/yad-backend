@@ -68,7 +68,6 @@ CREATE TABLE IF NOT EXISTS orders (
     total_price INT NOT NULL DEFAULT 0 CHECK (total_price >= 0),
     status INT NOT NULL,
     paid TIMESTAMP
-
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
