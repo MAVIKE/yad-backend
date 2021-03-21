@@ -72,6 +72,18 @@ type orderItemInput struct {
 	Count      int `json:"count"`
 }
 
+// @Summary Add menu item to order
+// @Security UserAuth
+// @Tags orders
+// @Description create order item
+// @ModuleID createOrderItem
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} idResponse
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/items/ [post]
 func (h *Handler) createOrderItem(ctx echo.Context) error {
 	var input orderItemInput
 	clientId, clientType, err := h.getClientParams(ctx)
