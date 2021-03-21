@@ -20,6 +20,18 @@ type orderInput struct {
 	RestaurantId int `json:"restaurant_id"`
 }
 
+// @Summary Create Order
+// @Security UserAuth
+// @Tags orders
+// @Description create order
+// @ModuleID createOrder
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} idResponse
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders [post]
 func (h *Handler) createOrder(ctx echo.Context) error {
 	var input orderInput
 	clientId, clientType, err := h.getClientParams(ctx)
@@ -44,7 +56,7 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": orderId,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: orderId,
 	})
 }
