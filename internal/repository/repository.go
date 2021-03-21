@@ -32,12 +32,17 @@ type Category interface {
 	Create(category *domain.Category) (int, error)
 }
 
+type Order interface {
+	Create(order *domain.Order) (int, error)
+}
+
 type Repository struct {
 	Admin
 	User
 	Courier
 	Restaurant
 	Category
+	Order
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -47,5 +52,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Courier:    NewCourierPg(db),
 		Restaurant: NewRestaurantPg(db),
 		Category:   NewCategoryPg(db),
+		Order:      NewOrderPg(db),
 	}
 }

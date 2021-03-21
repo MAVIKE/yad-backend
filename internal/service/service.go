@@ -46,12 +46,17 @@ type Category interface {
 	Create(clientId int, clientType string, category *domain.Category) (int, error)
 }
 
+type Order interface {
+	Create(clientId int, clientType string, order *domain.Order) (int, error)
+}
+
 type Service struct {
 	Admin
 	User
 	Courier
 	Restaurant
 	Category
+	Order
 }
 
 type Deps struct {
@@ -67,5 +72,6 @@ func NewService(deps Deps) *Service {
 		Courier:    NewCourierService(deps.Repos.Courier, deps.TokenManager, deps.AccessTokenTTL),
 		Restaurant: NewRestaurantService(deps.Repos.Restaurant, deps.TokenManager, deps.AccessTokenTTL),
 		Category:   NewCategoryService(deps.Repos.Category),
+		Order:      NewOrderService(deps.Repos.Order),
 	}
 }
