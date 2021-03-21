@@ -239,7 +239,7 @@ func (h *Handler) getMenuItemById(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid menuItemId")
 	}
 
-	menuItem, err := h.services.MenuItem.GetById(clientId, clientType, menuItemId)
+	menuItem, err := h.services.MenuItem.GetById(clientId, clientType, menuItemId, restaurantId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}

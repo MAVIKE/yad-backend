@@ -53,7 +53,7 @@ type Order interface {
 }
 
 type MenuItem interface {
-	GetById(clientId int, clientType string, menuItemId int) (*domain.MenuItem, error)
+	GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error)
 }
 
 type Service struct {

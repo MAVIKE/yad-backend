@@ -17,10 +17,20 @@ func NewMenuItemService(repo repository.MenuItem) *MenuItemService {
 	}
 }
 
-func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId int) (*domain.MenuItem, error) {
+func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error) {
 	if !(clientType == userType || clientType == restaurantType) {
 		return nil, errors.New("Forbidden")
 	}
 
-	return s.repo.GetById(menuItemId)
+	menuItem, err := s.repo.GetById(menuItemId)
+
+	if err != nil {
+		return  nil, err
+	}
+
+	if menuItem.RestaurantId != restaurantId {
+		return nil, errors.New("No such menu item for this restaurant")
+	}
+
+	return menuItem, nil
 }
