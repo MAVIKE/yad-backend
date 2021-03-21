@@ -43,3 +43,12 @@ func (r *OrderPg) CreateItem(orderItem *domain.OrderItem) (int, error) {
 
 	return orderItemId, err
 }
+
+func (r *OrderPg) GetItemById(orderItemId int) (*domain.OrderItem, error) {
+	item := new(domain.OrderItem)
+
+	query := fmt.Sprintf(`SELECT * FROM %s AS i WHERE i.id = $1`, orderItemsTable)
+	err := r.db.Get(item, query, orderItemId)
+
+	return item, err
+}

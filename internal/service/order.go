@@ -42,5 +42,6 @@ func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *do
 }
 
 func (s *OrderService) GetItemById(clientId int, clientType string, orderId int) (*domain.OrderItem, error) {
-	return &domain.OrderItem{}, nil
+	// TODO: проверка прав
+	return s.repo.GetItemById(orderId)
 }

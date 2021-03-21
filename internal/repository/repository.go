@@ -35,6 +35,7 @@ type Category interface {
 type Order interface {
 	Create(order *domain.Order) (int, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
+	GetItemById(orderItemId int) (*domain.OrderItem, error)
 }
 
 type Repository struct {
