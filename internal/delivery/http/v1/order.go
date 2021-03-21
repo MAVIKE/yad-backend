@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
@@ -13,6 +14,11 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 	{
 		orders.Use(h.identity)
 		orders.POST("/", h.createOrder)
+
+		orderItems := orders.Group("/:oid/items")
+		{
+			orderItems.POST("/", h.createOrderItem)
+		}
 	}
 }
 
@@ -58,5 +64,35 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: orderId,
+	})
+}
+
+type orderItemInput struct {
+	MenuItemId int `json:"menu_item_id"`
+	Count      int `json:"count"`
+}
+
+func (h *Handler) createOrderItem(ctx echo.Context) error {
+	var input orderItemInput
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: 1,
 	})
 }
