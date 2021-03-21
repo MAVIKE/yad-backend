@@ -14,9 +14,9 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 	{
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
 		restaurants.Use(h.identity)
-		restaurants.GET("", h.getRestaurants)
+		restaurants.GET("/", h.getRestaurants)
 		restaurants.GET("/:rid", h.getRestaurantById)
-		restaurants.GET("/:rid/menu", h.getRestaurantMenu)
+		restaurants.GET("/:rid/menu/", h.getRestaurantMenu)
 		restaurants.POST("/sign-up", h.restaurantsSignUp)
 	}
 }
@@ -70,7 +70,7 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants [get]
+// @Router /restaurants/ [get]
 func (h *Handler) getRestaurants(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -131,7 +131,7 @@ func (h *Handler) getRestaurantById(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/menu [get]
+// @Router /restaurants/{rid}/menu/ [get]
 func (h *Handler) getRestaurantMenu(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {

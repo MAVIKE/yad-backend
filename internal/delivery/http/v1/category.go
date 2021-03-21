@@ -14,8 +14,8 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 	restaurants := api.Group("/restaurants/:rid/categories")
 	{
 		restaurants.Use(h.identity)
-		restaurants.POST("", h.createCategory)
-		restaurants.GET("", h.getCategories)
+		restaurants.POST("/", h.createCategory)
+		restaurants.GET("/", h.getCategories)
 	}
 }
 
@@ -35,7 +35,7 @@ type categoryInput struct {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/categories [post]
+// @Router /restaurants/{rid}/categories/ [post]
 func (h *Handler) createCategory(ctx echo.Context) error {
 	var input categoryInput
 	clientId, clientType, err := h.getClientParams(ctx)
@@ -84,7 +84,7 @@ func (h *Handler) createCategory(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/categories [get]
+// @Router /restaurants/{rid}/categories/ [get]
 func (h *Handler) getCategories(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {

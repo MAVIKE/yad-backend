@@ -12,7 +12,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 	orders := api.Group("/orders")
 	{
 		orders.Use(h.identity)
-		orders.POST("", h.createOrder)
+		orders.POST("/", h.createOrder)
 	}
 }
 
@@ -31,7 +31,7 @@ type orderInput struct {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /orders [post]
+// @Router /orders/ [post]
 func (h *Handler) createOrder(ctx echo.Context) error {
 	var input orderInput
 	clientId, clientType, err := h.getClientParams(ctx)
