@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 )
@@ -21,7 +22,7 @@ type orderInput struct {
 
 func (h *Handler) createOrder(ctx echo.Context) error {
 	var input orderInput
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -34,7 +35,16 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
+	order := &domain.Order{
+		RestaurantId: input.RestaurantId,
+	}
+
+	orderId, err := h.services.Order.Create(clientId, clientType, order)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": 1,
+		"id": orderId,
 	})
 }
