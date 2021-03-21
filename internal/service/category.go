@@ -27,8 +27,24 @@ func (s *CategoryService) Create(clientId int, clientType string, category *doma
 
 func (s *CategoryService) GetAll(clientId int, clientType string, restaurantId int) ([]*domain.Category, error) {
 	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
-		return nil, errors.New("Forbidden")
+		return nil, errors.New("forbidden")
 	}
 
 	return s.repo.GetAll(restaurantId)
+}
+
+func (s *CategoryService) GetById(clientId int, clientType string, restaurantId int, categoryId int) (*domain.Category, error) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
+		return nil, errors.New("forbidden")
+	}
+
+	category, err := s.repo.GetById(categoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	if category.RestaurantId != restaurantId {
+		return nil, errors.New("no such category for this restaurant")
+	}
+	return category, nil
 }
