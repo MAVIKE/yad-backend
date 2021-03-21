@@ -25,7 +25,7 @@ func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId in
 	menuItem, err := s.repo.GetById(menuItemId)
 
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	if menuItem.RestaurantId != restaurantId {

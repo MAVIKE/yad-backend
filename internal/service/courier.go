@@ -42,3 +42,11 @@ func (s *CourierService) SignIn(phone, password string) (*Tokens, error) {
 
 	return &Tokens{AccessToken: token}, nil
 }
+
+func (s *CourierService) GetById(clientId int, clientType string, courierId int) (*domain.Courier, error) {
+	if !(clientType == userType || clientType == restaurantType || clientId == courierId) {
+		return nil, errors.New("Forbidden")
+	}
+
+	return s.repo.GetById(courierId)
+}

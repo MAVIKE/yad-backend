@@ -17,13 +17,14 @@ type User interface {
 type Courier interface {
 	Create(courier *domain.Courier) (int, error)
 	GetByCredentials(phone, password string) (*domain.Courier, error)
+	GetById(courierId int) (*domain.Courier, error)
 }
 
 type Restaurant interface {
 	GetByCredentials(phone, password string) (*domain.Restaurant, error)
 	GetAll(userId int) ([]*domain.Restaurant, error)
-	GetById(restarauntId int) (*domain.Restaurant, error)
-	GetMenu(restarauntId int) ([]*domain.MenuItem, error)
+	GetById(restaurantId int) (*domain.Restaurant, error)
+	GetMenu(restaurantId int) ([]*domain.MenuItem, error)
 	Create(restaurant *domain.Restaurant) (int, error)
 }
 
