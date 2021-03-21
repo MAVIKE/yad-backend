@@ -105,6 +105,20 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, categories)
 }
 
+// @Summary Get Category By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags categories
+// @Description get category by id for restaurant
+// @ModuleID getCategoryById
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Category id"
+// @Success 200 {object} domain.Category
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/categories/{id} [get]
 func (h *Handler) getCategoryById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
