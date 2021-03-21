@@ -74,7 +74,7 @@ type orderItemInput struct {
 
 func (h *Handler) createOrderItem(ctx echo.Context) error {
 	var input orderItemInput
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -92,7 +92,18 @@ func (h *Handler) createOrderItem(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
+	orderItem := &domain.OrderItem{
+		OrderId:    orderId,
+		MenuItemId: input.MenuItemId,
+		Count:      input.Count,
+	}
+
+	orderItemId, err := h.services.Order.CreateItem(clientId, clientType, orderItem)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
 	return ctx.JSON(http.StatusOK, idResponse{
-		Id: 1,
+		Id: orderItemId,
 	})
 }

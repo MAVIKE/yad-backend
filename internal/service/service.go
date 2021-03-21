@@ -48,6 +48,7 @@ type Category interface {
 
 type Order interface {
 	Create(clientId int, clientType string, order *domain.Order) (int, error)
+	CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error)
 }
 
 type Service struct {
