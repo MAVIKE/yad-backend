@@ -79,6 +79,8 @@ type orderItemInput struct {
 // @ModuleID createOrderItem
 // @Accept  json
 // @Produce  json
+// @Param oid path string true "Order id"
+// @Param input body orderItemInput true "order item create info"
 // @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
