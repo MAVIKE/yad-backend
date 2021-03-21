@@ -18,7 +18,7 @@ func NewMenuItemService(repo repository.MenuItem) *MenuItemService {
 }
 
 func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error) {
-	if !(clientType == userType || clientType == restaurantType) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
 		return nil, errors.New("Forbidden")
 	}
 
