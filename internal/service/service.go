@@ -52,6 +52,10 @@ type Order interface {
 	GetItemById(clientId int, clientType string, orderId int) (*domain.OrderItem, error)
 }
 
+type MenuItem interface {
+	GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error)
+}
+
 type Service struct {
 	Admin
 	User
@@ -59,6 +63,7 @@ type Service struct {
 	Restaurant
 	Category
 	Order
+	MenuItem
 }
 
 type Deps struct {
@@ -75,5 +80,6 @@ func NewService(deps Deps) *Service {
 		Restaurant: NewRestaurantService(deps.Repos.Restaurant, deps.TokenManager, deps.AccessTokenTTL),
 		Category:   NewCategoryService(deps.Repos.Category),
 		Order:      NewOrderService(deps.Repos.Order),
+		MenuItem:   NewMenuItemService(deps.Repos.MenuItem),
 	}
 }

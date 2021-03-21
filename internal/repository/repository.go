@@ -38,6 +38,10 @@ type Order interface {
 	GetItemById(orderItemId int) (*domain.OrderItem, error)
 }
 
+type MenuItem interface {
+	GetById(menuItemId int) (*domain.MenuItem, error)
+}
+
 type Repository struct {
 	Admin
 	User
@@ -45,6 +49,7 @@ type Repository struct {
 	Restaurant
 	Category
 	Order
+	MenuItem
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -55,5 +60,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Restaurant: NewRestaurantPg(db),
 		Category:   NewCategoryPg(db),
 		Order:      NewOrderPg(db),
+		MenuItem:   NewMenuItem(db),
 	}
 }
