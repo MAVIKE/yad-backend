@@ -42,3 +42,19 @@ func (r *CategoryPg) GetAll(restaurantId int) ([]*domain.Category, error) {
 
 	return categories, err
 }
+
+func (r *CategoryPg) GetById(categoryId int) (*domain.Category, error) {
+	category := new(domain.Category)
+
+	query := fmt.Sprintf(
+		`SELECT id, restaurant_id, title
+		FROM %s
+		WHERE id = $1`,
+		categoriesTable)
+
+	row := r.db.QueryRow(query, categoryId)
+
+	err := row.Scan(&category.Id, &category.RestaurantId, &category.Title)
+
+	return category, err
+}

@@ -11,11 +11,12 @@ import (
 )
 
 func (h *Handler) initCategoryRoutes(api *echo.Group) {
-	restaurants := api.Group("/restaurants/:rid/categories")
+	categories := api.Group("/restaurants/:rid/categories")
 	{
-		restaurants.Use(h.identity)
-		restaurants.POST("/", h.createCategory)
-		restaurants.GET("/", h.getCategories)
+		categories.Use(h.identity)
+		categories.POST("/", h.createCategory)
+		categories.GET("/", h.getCategories)
+		categories.GET("/:id", h.getCategoryById)
 	}
 }
 
@@ -102,4 +103,28 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, categories)
+}
+
+func (h *Handler) getCategoryById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurant")
+	}
+
+	categoryId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || categoryId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid category")
+	}
+
+	restaurant, err := h.services.Category.GetById(clientId, clientType, restaurantId, categoryId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurant)
 }
