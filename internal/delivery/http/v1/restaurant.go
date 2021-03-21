@@ -217,7 +217,8 @@ func (h *Handler) restaurantsSignUp(ctx echo.Context) error {
 // @ModuleID getMenuItemById
 // @Accept  json
 // @Produce  json
-// @Param rid path string true "MenuItem id"
+// @Param rid path string true "Restaurant id"
+// @Param id path string true "MenuItem id"
 // @Success 200 {object} domain.MenuItem
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response

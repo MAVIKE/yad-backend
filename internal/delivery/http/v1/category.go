@@ -113,7 +113,8 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 // @ModuleID getCategoryById
 // @Accept  json
 // @Produce  json
-// @Param rid path string true "Category id"
+// @Param rid path string true "Restaurant id"
+// @Param id path string true "Category id"
 // @Success 200 {object} domain.Category
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
