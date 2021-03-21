@@ -16,6 +16,7 @@ const (
 	categoriesTable  = "categories"
 	menuItemsTable   = "menu_items"
 	ordersTable      = "orders"
+	orderItemsTable  = "order_items"
 )
 
 type Config struct {

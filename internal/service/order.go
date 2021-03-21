@@ -28,3 +28,15 @@ func (s *OrderService) Create(clientId int, clientType string, order *domain.Ord
 
 	return s.repo.Create(order)
 }
+
+func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error) {
+	if clientType != userType {
+		return 0, errors.New("Forbidden")
+	}
+
+	if orderItem.Count < 1 || orderItem.Count > 99 {
+		return 0, errors.New("Menu items count must be greater than 0")
+	}
+
+	return s.repo.CreateItem(orderItem)
+}

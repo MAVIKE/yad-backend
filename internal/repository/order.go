@@ -30,3 +30,16 @@ func (r *OrderPg) Create(order *domain.Order) (int, error) {
 
 	return orderId, err
 }
+
+func (r *OrderPg) CreateItem(orderItem *domain.OrderItem) (int, error) {
+	var orderItemId int
+
+	query := fmt.Sprintf(
+		`INSERT INTO %s (order_id, menu_item_id, count)
+		VALUES ($1, $2, $3) RETURNING id`, orderItemsTable)
+
+	row := r.db.QueryRow(query, orderItem.OrderId, orderItem.MenuItemId, orderItem.Count)
+	err := row.Scan(&orderItemId)
+
+	return orderItemId, err
+}

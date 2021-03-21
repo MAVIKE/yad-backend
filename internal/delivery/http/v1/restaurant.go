@@ -162,7 +162,7 @@ type restaurantSignUpInput struct {
 }
 
 // @Summary Restaurant SignUp
-// @Tags restaurant
+// @Tags restaurants
 // @Description restaurant sign up
 // @ModuleID restaurantSignUp
 // @Accept  json
@@ -172,7 +172,7 @@ type restaurantSignUpInput struct {
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurant/sign-up [post]
+// @Router /restaurants/sign-up [post]
 func (h *Handler) restaurantsSignUp(ctx echo.Context) error {
 	var input restaurantSignUpInput
 	_, clientType, err := h.getClientParams(ctx)

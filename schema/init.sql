@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders (id) ON DELETE CASCADE NOT NULL,
     menu_item_id INT REFERENCES menu_items (id) ON DELETE CASCADE NOT NULL,
-    count INT NULL DEFAULT 1 CHECK (count > 0)
+    count INT NULL DEFAULT 1 CHECK (count > 0 AND count < 100)
 );
 
 CREATE OR REPLACE FUNCTION get_distance(lat1 float, lon1 float, lat2 float, lon2 float)
