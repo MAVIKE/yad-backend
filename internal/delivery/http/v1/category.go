@@ -31,7 +31,7 @@ type categoryInput struct {
 // @Accept  json
 // @Produce  json
 // @Param rid path string true "Restaurant id"
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -66,8 +66,8 @@ func (h *Handler) createCategory(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"category_id": categoryId,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: categoryId,
 	})
 }
 
