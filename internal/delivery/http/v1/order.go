@@ -69,7 +69,7 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 
 type orderItemInput struct {
 	MenuItemId int `json:"menu_item_id"`
-	Count      int `json:"count" valid:"range(1|100)"`
+	Count      int `json:"count" valid:"range(1|99)"`
 }
 
 // @Summary Add menu item to order

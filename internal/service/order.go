@@ -34,7 +34,7 @@ func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *do
 		return 0, errors.New("Forbidden")
 	}
 
-	if orderItem.Count < 1 {
+	if orderItem.Count < 1 || orderItem.Count > 99 {
 		return 0, errors.New("Menu items count must be greater than 0")
 	}
 
