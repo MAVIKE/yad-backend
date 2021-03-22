@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
@@ -14,6 +15,7 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 		couriers.POST("/sign-in", h.couriersSignIn)
 		couriers.Use(h.identity)
 		couriers.POST("/sign-up", h.couriersSignUp)
+		couriers.GET("/:id", h.getCourierById)
 	}
 }
 
@@ -112,4 +114,37 @@ func (h *Handler) couriersSignIn(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
+}
+
+// @Summary Get Courier By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags couriers
+// @Description get courier by id
+// @ModuleID getCourierById
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Courier id"
+// @Success 200 {object} domain.Courier
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/{id} [get]
+func (h *Handler) getCourierById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	courierId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || courierId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid courier")
+	}
+
+	courier, err := h.services.Courier.GetById(clientId, clientType, courierId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, courier)
 }

@@ -61,3 +61,24 @@ func (r *CourierPg) GetByCredentials(phone, password string) (*domain.Courier, e
 
 	return courier, err
 }
+
+func (r *CourierPg) GetById(courierId int) (*domain.Courier, error) {
+	courier := new(domain.Courier)
+	location := new(domain.Location)
+
+	query := fmt.Sprintf(
+		`SELECT c.id, c.name, c.phone, c.email, c.working_status, 
+			l.latitude, l.longitude 
+		FROM %s AS c
+			INNER JOIN %s AS l ON c.address_id = l.id
+		WHERE c.id = $1`,
+		couriersTable, locationsTable)
+
+	row := r.db.QueryRow(query, courierId)
+
+	err := row.Scan(&courier.Id, &courier.Name, &courier.Phone, &courier.Email, &courier.WorkingStatus,
+		&location.Latitude, &location.Longitude)
+	courier.Address = location
+
+	return courier, err
+}
