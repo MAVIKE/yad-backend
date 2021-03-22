@@ -119,13 +119,13 @@ func (h *Handler) couriersSignIn(ctx echo.Context) error {
 // @Summary Get Courier By Id
 // @Security UserAuth
 // @Security RestaurantAuth
-// @Tags categories
+// @Tags couriers
 // @Description get courier by id
 // @ModuleID getCourierById
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Courier id"
-// @Success 200 {object} domain.Category
+// @Success 200 {object} domain.Courier
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
