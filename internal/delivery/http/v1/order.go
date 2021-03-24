@@ -19,6 +19,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 		{
 			orderItems.POST("/", h.createOrderItem)
 			orderItems.GET("/:id", h.getOrderItemById)
+			orderItems.DELETE("/:id", h.deleteOrderItem)
 		}
 	}
 }
@@ -156,4 +157,44 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, orderItem)
+}
+
+// @Summary Delete Order Item
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description delete order item
+// @ModuleID deleteOrderItem
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Param id path string true "Order item id"
+// @Success 200
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/items/{id} [delete]
+func (h *Handler) deleteOrderItem(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || orderItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
+	}
+
+	err = h.services.Order.DeleteItem(clientId, clientType, orderId, orderItemId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }

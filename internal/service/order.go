@@ -45,3 +45,7 @@ func (s *OrderService) GetItemById(clientId int, clientType string, orderId int)
 	// TODO: проверка прав
 	return s.repo.GetItemById(orderId)
 }
+
+func (s *OrderService) DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error {
+	return s.repo.DeleteItem(orderId, orderItemId)
+}

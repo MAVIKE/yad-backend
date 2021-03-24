@@ -52,6 +52,7 @@ type Order interface {
 	Create(clientId int, clientType string, order *domain.Order) (int, error)
 	CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error)
 	GetItemById(clientId int, clientType string, orderId int) (*domain.OrderItem, error)
+	DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error
 }
 
 type MenuItem interface {
