@@ -185,7 +185,12 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	orderItem, err := h.services.Order.GetItemById(clientId, clientType, orderId)
+	orderItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
+	}
+
+	orderItem, err := h.services.Order.GetItemById(clientId, clientType, orderId, orderItemId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
