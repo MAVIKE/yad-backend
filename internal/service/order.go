@@ -40,7 +40,7 @@ func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*d
 	if !(clientType == userType && order.UserId == clientId ||
 		clientType == restaurantType && order.RestaurantId == clientId ||
 		clientType == courierType && order.CourierId == clientId) {
-		errMessage := fmt.Sprintf("Forbidden: %s is no connection with order", clientType)
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
 		return nil, errors.New(errMessage)
 	}
 
