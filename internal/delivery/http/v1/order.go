@@ -14,6 +14,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 	{
 		orders.Use(h.identity)
 		orders.POST("/", h.createOrder)
+		orders.GET("/:oid", h.getOrderById)
 
 		orderItems := orders.Group("/:oid/items")
 		{
@@ -66,6 +67,40 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: orderId,
 	})
+}
+
+// @Summary Get Order By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description get order by id
+// @ModuleID getOrderById
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Success 200 {object} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/ [get]
+func (h *Handler) getOrderById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItem, err := h.services.Order.GetById(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orderItem)
 }
 
 type orderItemInput struct {
@@ -138,7 +173,7 @@ func (h *Handler) createOrderItem(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /orders/{oid}/ [get]
+// @Router /orders/{oid}/items/{id} [get]
 func (h *Handler) getOrderItemById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {

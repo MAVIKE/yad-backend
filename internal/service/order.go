@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -27,6 +28,23 @@ func (s *OrderService) Create(clientId int, clientType string, order *domain.Ord
 	// TODO: вычислить и установить стоимость доставки
 
 	return s.repo.Create(order)
+}
+
+func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*domain.Order, error) {
+	order, err := s.repo.GetById(orderId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !(clientType == userType && order.UserId == clientId ||
+		clientType == restaurantType && order.RestaurantId == clientId ||
+		clientType == courierType && order.CourierId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return nil, errors.New(errMessage)
+	}
+
+	return order, nil
 }
 
 func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error) {
