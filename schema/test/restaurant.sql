@@ -10,3 +10,9 @@ VALUES ('Restaurant2', '77777777777', 'password', 2, 1, 'image2');
 
 INSERT INTO menu_items (restaurant_id, title, image, description)
 VALUES (1, 'Big Tasty', 'Taratatata', 'Mmmmmmm');
+
+INSERT INTO menu_items (restaurant_id, title, image, description)
+VALUES (1, 'Hamburger', 'image2', 'description2');
+
+INSERT INTO menu_items (restaurant_id, title, image, description)
+VALUES (2, 'Margarita pizza', 'image3', 'description3');

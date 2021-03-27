@@ -59,7 +59,27 @@ func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *do
 	return s.repo.CreateItem(orderItem)
 }
 
-func (s *OrderService) GetItemById(clientId int, clientType string, orderId int) (*domain.OrderItem, error) {
-	// TODO: проверка прав
-	return s.repo.GetItemById(orderId)
+func (s *OrderService) GetItemById(clientId int, clientType string, orderId, orderItemId int) (*domain.OrderItem, error) {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !(clientType == userType && order.UserId == clientId ||
+		clientType == restaurantType && order.RestaurantId == clientId ||
+		clientType == courierType && order.CourierId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return nil, errors.New(errMessage)
+	}
+
+	orderItem, err := s.repo.GetItemById(orderItemId)
+	if err != nil {
+		return nil, err
+	}
+
+	if orderItem.OrderId != orderId {
+		return nil, errors.New("no such orderItem for this order")
+	}
+
+	return orderItem, err
 }
