@@ -173,7 +173,7 @@ func (h *Handler) createOrderItem(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /orders/{oid}/items{id} [get]
+// @Router /orders/{oid}/items/{id} [get]
 func (h *Handler) getOrderItemById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
