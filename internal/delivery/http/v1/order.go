@@ -21,6 +21,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 			orderItems.POST("/", h.createOrderItem)
 			orderItems.GET("/", h.getOrderItems)
 			orderItems.GET("/:id", h.getOrderItemById)
+			orderItems.PUT("/:id", h.updateOrderItem)
 		}
 	}
 }
@@ -83,7 +84,7 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /order/{oid}/items/ [get]
+// @Router /orders/{oid}/items/ [get]
 func (h *Handler) getOrderItems(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -216,11 +217,11 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 
 	orderId, err := strconv.Atoi(ctx.Param("oid"))
 	if err != nil || orderId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
 	}
 
 	orderItemId, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil || orderId == 0 {
+	if err != nil || orderItemId == 0 {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
 	}
 
@@ -230,4 +231,51 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, orderItem)
+}
+
+type orderItemUpdate struct {
+	Count int `json:"count" valid:"range(1|99)"`
+}
+
+// @Summary Update Order Item
+// @Security UserAuth
+// @Tags orders
+// @Description update order item
+// @ModuleID updateOrderItem
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Param id path string true "Order item id"
+// @Param input body orderItemUpdate true "order item update info"
+// @Success 200 {object} idResponse
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/items/{id} [put]
+func (h *Handler) updateOrderItem(ctx echo.Context) error {
+	var input orderItemUpdate
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || orderItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }
