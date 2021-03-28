@@ -38,6 +38,7 @@ type orderInput struct {
 // @ModuleID createOrder
 // @Accept  json
 // @Produce  json
+// @Param input body orderInput true "order input info"
 // @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
@@ -81,6 +82,7 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 // @ModuleID getOrderItems
 // @Accept  json
 // @Produce  json
+// @Param oid path string true "Order id"
 // @Success 200 {array} domain.OrderItem
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
@@ -144,7 +146,7 @@ type orderItemInput struct {
 	Count      int `json:"count" valid:"range(1|99)"`
 }
 
-// @Summary Add menu item to order
+// @Summary Create Order Item
 // @Security UserAuth
 // @Tags orders
 // @Description create order item
@@ -236,8 +238,6 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 
 // @Summary Delete Order Item
 // @Security UserAuth
-// @Security RestaurantAuth
-// @Security CourierAuth
 // @Tags orders
 // @Description delete order item
 // @ModuleID deleteOrderItem
@@ -245,13 +245,13 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 // @Produce  json
 // @Param oid path string true "Order id"
 // @Param id path string true "Order item id"
-// @Success 200
+// @Success 200 {object} response
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /orders/{oid}/items/{id} [delete]
 func (h *Handler) deleteOrderItem(ctx echo.Context) error {
-  clientId, clientType, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -265,9 +265,9 @@ func (h *Handler) deleteOrderItem(ctx echo.Context) error {
 	if err != nil || orderItemId == 0 {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
 	}
-  
-  err = h.services.Order.DeleteItem(clientId, clientType, orderId, orderItemId)
-  if err != nil {
+
+	err = h.services.Order.DeleteItem(clientId, clientType, orderId, orderItemId)
+	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
