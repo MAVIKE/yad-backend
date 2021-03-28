@@ -15,6 +15,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate swagger
-        run:
+        run: |
           go get -u github.com/swaggo/swag/cmd/swag
           make swag
