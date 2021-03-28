@@ -1,0 +1,20 @@
+name: Swag
+
+on: [push, pull_request]
+
+jobs:
+  swag:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.15'
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate swagger
+        run:
+          go get -u github.com/swaggo/swag/cmd/swag
+          make swag
