@@ -31,6 +31,18 @@ func (r *OrderPg) Create(order *domain.Order) (int, error) {
 	return orderId, err
 }
 
+func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
+	order := new(domain.Order)
+
+	query := fmt.Sprintf(
+		`SELECT o.id, user_id, restaurant_id, COALESCE(courier_id, 0) AS courier_id,
+			delivery_price, total_price, status, paid 
+		FROM %s AS o WHERE o.id = $1`, ordersTable)
+	err := r.db.Get(order, query, orderId)
+
+	return order, err
+}
+
 func (r *OrderPg) CreateItem(orderItem *domain.OrderItem) (int, error) {
 	var orderItemId int
 

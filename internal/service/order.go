@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -47,5 +48,15 @@ func (s *OrderService) GetItemById(clientId int, clientType string, orderId int)
 }
 
 func (s *OrderService) DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return err
+	}
+
+	if !(clientType == userType && order.UserId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return errors.New(errMessage)
+	}
+
 	return s.repo.DeleteItem(orderId, orderItemId)
 }
