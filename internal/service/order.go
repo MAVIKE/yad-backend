@@ -101,3 +101,29 @@ func (s *OrderService) GetItemById(clientId int, clientType string, orderId, ord
 
 	return orderItem, err
 }
+
+func (s *OrderService) UpdateItem(clientId int, clientType string, orderId, orderItemId, menuItemsCount int) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return err
+	}
+
+	if !(clientType == userType && order.UserId == clientId) {
+		return errors.New("Forbidden")
+	}
+
+	orderItem, err := s.repo.GetItemById(orderItemId)
+	if err != nil {
+		return err
+	}
+
+	if orderItem.OrderId != orderId {
+		return errors.New("No such orderItem for this order")
+	}
+
+	if menuItemsCount < 1 || menuItemsCount > 99 {
+		return errors.New("Menu items count must be greater than 0")
+	}
+
+	return s.repo.UpdateItem(orderItemId, menuItemsCount)
+}
