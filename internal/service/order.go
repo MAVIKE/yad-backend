@@ -30,6 +30,11 @@ func (s *OrderService) Create(clientId int, clientType string, order *domain.Ord
 	return s.repo.Create(order)
 }
 
+func (s *OrderService) GetAllItems(clientId int, clientType string) ([]*domain.OrderItem, error) {
+	var items []*domain.OrderItem
+	return items, nil
+}
+
 func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*domain.Order, error) {
 	order, err := s.repo.GetById(orderId)
 
