@@ -40,6 +40,7 @@ type Order interface {
 	GetById(orderId int) (*domain.Order, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
 	GetItemById(orderItemId int) (*domain.OrderItem, error)
+	UpdateItem(orderItemId, menuItemsCount int) error
 }
 
 type MenuItem interface {

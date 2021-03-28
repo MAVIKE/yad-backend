@@ -247,14 +247,14 @@ type orderItemUpdate struct {
 // @Param oid path string true "Order id"
 // @Param id path string true "Order item id"
 // @Param input body orderItemUpdate true "order item update info"
-// @Success 200 {object} idResponse
+// @Success 200 {object} response
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /orders/{oid}/items/{id} [put]
 func (h *Handler) updateOrderItem(ctx echo.Context) error {
 	var input orderItemUpdate
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -275,6 +275,11 @@ func (h *Handler) updateOrderItem(ctx echo.Context) error {
 
 	if _, err := govalidator.ValidateStruct(input); err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	err = h.services.Order.UpdateItem(clientId, clientType, orderId, orderItemId, input.Count)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, nil)

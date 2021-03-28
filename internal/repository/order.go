@@ -73,3 +73,9 @@ func (r *OrderPg) GetItemById(orderItemId int) (*domain.OrderItem, error) {
 
 	return item, err
 }
+
+func (r *OrderPg) UpdateItem(orderItemId, menuItemsCount int) error {
+	query := fmt.Sprintf(`UPDATE %s SET count = $1 WHERE id = $2`, orderItemsTable)
+	_, err := r.db.Exec(query, menuItemsCount, orderItemId)
+	return err
+}
