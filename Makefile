@@ -19,6 +19,9 @@ swag:
 fmt:
 	go fmt ./...
 
+tidy:
+	go mod tidy
+
 init_db:
 	. ./schema/bash/init.sh
 
