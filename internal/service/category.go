@@ -48,3 +48,25 @@ func (s *CategoryService) GetById(clientId int, clientType string, restaurantId 
 	}
 	return category, nil
 }
+
+func (s *CategoryService) GetAllItems(clientId int, clientType string, restaurantId int, categoryId int) ([]*domain.MenuItem, error) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
+		return nil, errors.New("forbidden")
+	}
+
+	category, err := s.repo.GetById(categoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	if category.RestaurantId != restaurantId {
+		return nil, errors.New("no such category for this restaurant")
+	}
+
+	menu, err := s.repo.GetAllItems(categoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	return menu, err
+}
