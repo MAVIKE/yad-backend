@@ -1,5 +1,10 @@
+APP=cmd/app/main.go
+
+build:
+	go build -o bin/app.out $(APP)
+
 run:
-	go run cmd/app/main.go
+	go run $(APP)
 
 lint:
 	go fmt ./...
