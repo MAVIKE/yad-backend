@@ -14,11 +14,9 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 	{
 		restaurants.POST("/sign-in", h.restaurantsSignIn)
 		restaurants.Use(h.identity)
+		restaurants.POST("/sign-up", h.restaurantsSignUp)
 		restaurants.GET("/", h.getRestaurants)
 		restaurants.GET("/:rid", h.getRestaurantById)
-		restaurants.GET("/:rid/menu/", h.getRestaurantMenu)
-		restaurants.POST("/sign-up", h.restaurantsSignUp)
-		restaurants.GET("/:rid/menu/:id", h.getMenuItemById)
 	}
 }
 
@@ -57,99 +55,6 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
-}
-
-// @Summary Get All Restaurants
-// @Security UserAuth
-// @Security RestaurantAuth
-// @Tags restaurants
-// @Description get all restaurants for user
-// @ModuleID getAllRestaurants
-// @Accept  json
-// @Produce  json
-// @Success 200 {array} domain.Restaurant
-// @Failure 400,403,404 {object} response
-// @Failure 500 {object} response
-// @Failure default {object} response
-// @Router /restaurants/ [get]
-func (h *Handler) getRestaurants(ctx echo.Context) error {
-	clientId, clientType, err := h.getClientParams(ctx)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	restaurants, err := h.services.Restaurant.GetAll(clientId, clientType)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, restaurants)
-}
-
-// @Summary Get Restaurant By Id
-// @Security UserAuth
-// @Security RestaurantAuth
-// @Tags restaurants
-// @Description get restaurant by id for user
-// @ModuleID getRestaurantById
-// @Accept  json
-// @Produce  json
-// @Param rid path string true "Restaurant id"
-// @Success 200 {object} domain.Restaurant
-// @Failure 400,403,404 {object} response
-// @Failure 500 {object} response
-// @Failure default {object} response
-// @Router /restaurants/{rid} [get]
-func (h *Handler) getRestaurantById(ctx echo.Context) error {
-	clientId, clientType, err := h.getClientParams(ctx)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
-	if err != nil || restaurantId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
-	}
-
-	restaurant, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, restaurant)
-}
-
-// @Summary Get Restaurant Menu
-// @Security UserAuth
-// @Security RestaurantAuth
-// @Tags restaurants
-// @Description get restaurant menu
-// @ModuleID getRestaurantMenu
-// @Accept  json
-// @Produce  json
-// @Param rid path string true "Restaurant id"
-// @Success 200 {array} domain.MenuItem
-// @Failure 400,403,404 {object} response
-// @Failure 500 {object} response
-// @Failure default {object} response
-// @Router /restaurants/{rid}/menu/ [get]
-func (h *Handler) getRestaurantMenu(ctx echo.Context) error {
-	clientId, clientType, err := h.getClientParams(ctx)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
-	if err != nil || restaurantId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
-	}
-
-	menu, err := h.services.Restaurant.GetMenu(clientId, clientType, restaurantId)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, menu)
 }
 
 type restaurantSignUpInput struct {
@@ -211,20 +116,48 @@ func (h *Handler) restaurantsSignUp(ctx echo.Context) error {
 	})
 }
 
-// @Summary Get Menu Item By Id
+// @Summary Get All Restaurants
+// @Security UserAuth
+// @Security RestaurantAuth
 // @Tags restaurants
-// @Description get menu item by id
-// @ModuleID getMenuItemById
+// @Description get all restaurants for user
+// @ModuleID getAllRestaurants
 // @Accept  json
 // @Produce  json
-// @Param rid path string true "Restaurant id"
-// @Param id path string true "MenuItem id"
-// @Success 200 {object} domain.MenuItem
+// @Success 200 {array} domain.Restaurant
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/menu/{id} [get]
-func (h *Handler) getMenuItemById(ctx echo.Context) error {
+// @Router /restaurants/ [get]
+func (h *Handler) getRestaurants(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurants, err := h.services.Restaurant.GetAll(clientId, clientType)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurants)
+}
+
+// @Summary Get Restaurant By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description get restaurant by id for user
+// @ModuleID getRestaurantById
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {object} domain.Restaurant
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid} [get]
+func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -235,15 +168,10 @@ func (h *Handler) getMenuItemById(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	menuItemId, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil || menuItemId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid menuItemId")
-	}
-
-	menuItem, err := h.services.MenuItem.GetById(clientId, clientType, menuItemId, restaurantId)
+	restaurant, err := h.services.Restaurant.GetById(clientId, clientType, restaurantId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, menuItem)
+	return ctx.JSON(http.StatusOK, restaurant)
 }

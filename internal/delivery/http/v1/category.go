@@ -33,6 +33,7 @@ type categoryInput struct {
 // @Accept  json
 // @Produce  json
 // @Param rid path string true "Restaurant id"
+// @Param input body categoryInput true "category input info"
 // @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response

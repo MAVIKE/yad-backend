@@ -37,6 +37,13 @@ func (s *RestaurantService) SignIn(phone, password string) (*Tokens, error) {
 	return &Tokens{AccessToken: token}, nil
 }
 
+func (s *RestaurantService) SignUp(restaurant *domain.Restaurant, clientType string) (int, error) {
+	if clientType != adminType {
+		return 0, errors.New("forbidden")
+	}
+	return s.repo.Create(restaurant)
+}
+
 func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.Restaurant, error) {
 	if clientType != userType {
 		return nil, errors.New("Forbidden")
@@ -51,19 +58,4 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 	}
 
 	return s.repo.GetById(restaurantId)
-}
-
-func (s *RestaurantService) GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error) {
-	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
-		return nil, errors.New("Forbidden")
-	}
-
-	return s.repo.GetMenu(restaurantId)
-}
-
-func (s *RestaurantService) SignUp(restaurant *domain.Restaurant, clientType string) (int, error) {
-	if clientType != adminType {
-		return 0, errors.New("forbidden")
-	}
-	return s.repo.Create(restaurant)
 }
