@@ -17,6 +17,7 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 		categories.POST("/", h.createCategory)
 		categories.GET("/", h.getCategories)
 		categories.GET("/:id", h.getCategoryById)
+		categories.GET("/:cid/menu", h.getMenuByCategoryId)
 	}
 }
 
@@ -142,4 +143,43 @@ func (h *Handler) getCategoryById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, restaurant)
+}
+
+// @Summary Get Menu By Category Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags categories
+// @Description get menu items by catgory id
+// @ModuleID getMenuByCategoryId
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "restaurant id"
+// @Param cid path string true "category id"
+// @Success 200 {array} domain.MenuItem
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/categories/{cid}/menu/ [get]
+func (h *Handler) getMenuByCategoryId(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	categoryId, err := strconv.Atoi(ctx.Param("cid"))
+	if err != nil || categoryId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid categoryId")
+	}
+
+	MenuItems, err := h.services.Category.GetAllItems(clientId, clientType, restaurantId, categoryId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, MenuItems)
 }

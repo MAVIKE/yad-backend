@@ -58,3 +58,19 @@ func (r *CategoryPg) GetById(categoryId int) (*domain.Category, error) {
 
 	return category, err
 }
+
+func (r *CategoryPg) GetAllItems(categoryId int) ([]*domain.MenuItem, error) {
+	var items []*domain.MenuItem
+
+	query := fmt.Sprintf(
+		`SELECT mi.id, mi.restaurant_id, mi.title, mi.image, mi.description, mi.price
+		FROM
+		%s as mi
+		join
+		%s as ci 
+		on mi.id = ci.menu_item_id
+		WHERE ci.category_id = $1`, menuItemsTable, categoryItemsTable)
+	err := r.db.Select(&items, query, categoryId)
+
+	return items, err
+}

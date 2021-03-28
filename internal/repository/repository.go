@@ -32,6 +32,7 @@ type Category interface {
 	GetAll(restaurantId int) ([]*domain.Category, error)
 	Create(category *domain.Category) (int, error)
 	GetById(categoryId int) (*domain.Category, error)
+	GetAllItems(categoryId int) ([]*domain.MenuItem, error)
 }
 
 type Order interface {

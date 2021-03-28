@@ -8,15 +8,16 @@ import (
 )
 
 const (
-	adminsTable      = "admins"
-	usersTable       = "users"
-	couriersTable    = "couriers"
-	locationsTable   = "locations"
-	restaurantsTable = "restaurants"
-	categoriesTable  = "categories"
-	menuItemsTable   = "menu_items"
-	ordersTable      = "orders"
-	orderItemsTable  = "order_items"
+	adminsTable        = "admins"
+	usersTable         = "users"
+	couriersTable      = "couriers"
+	locationsTable     = "locations"
+	restaurantsTable   = "restaurants"
+	categoriesTable    = "categories"
+	menuItemsTable     = "menu_items"
+	ordersTable        = "orders"
+	orderItemsTable    = "order_items"
+	categoryItemsTable = "category_items"
 )
 
 type Config struct {

@@ -6,4 +6,5 @@ type MenuItem struct {
 	Title        string `json:"title" db:"title"`
 	Image        string `json:"image" db:"image"`
 	Description  string `json:"description" db:"description"`
+	Price        int    `json:"price" db:"price"`
 }
