@@ -19,6 +19,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 		orderItems := orders.Group("/:oid/items")
 		{
 			orderItems.POST("/", h.createOrderItem)
+			orderItems.GET("/", h.getOrderItems)
 			orderItems.GET("/:id", h.getOrderItemById)
 		}
 	}
@@ -67,6 +68,39 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: orderId,
 	})
+}
+
+// @Summary Get All Order Items By Order Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description get all order items by order id
+// @ModuleID getOrderItems
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.OrderItem
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /order/{oid}/items/ [get]
+func (h *Handler) getOrderItems(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItems, err := h.services.Order.GetAllItems(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orderItems)
 }
 
 // @Summary Get Order By Id
