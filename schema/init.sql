@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS menu_items (
     restaurant_id INT REFERENCES restaurants (id) ON DELETE CASCADE NOT NULL,
     title VARCHAR(50) NOT NULL,
     image VARCHAR(100) NOT NULL DEFAULT '',
-    description TEXT   
+    description TEXT,
+    price INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS categories (

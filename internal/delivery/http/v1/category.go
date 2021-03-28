@@ -159,7 +159,7 @@ func (h *Handler) getCategoryById(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/categories/{cid}/menu/ [get]
+// @Router /restaurants/{rid}/categories/{cid}/menu [get]
 func (h *Handler) getMenuByCategoryId(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -176,10 +176,10 @@ func (h *Handler) getMenuByCategoryId(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid categoryId")
 	}
 
-	MenuItems, err := h.services.Category.GetAllItems(clientId, clientType, restaurantId, categoryId)
+	menuItems, err := h.services.Category.GetAllItems(clientId, clientType, restaurantId, categoryId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, MenuItems)
+	return ctx.JSON(http.StatusOK, menuItems)
 }
