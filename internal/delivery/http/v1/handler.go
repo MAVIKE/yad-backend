@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
@@ -40,7 +41,7 @@ func (h *Handler) Init(api *echo.Group) {
 
 func (h *Handler) identity(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		token, err := getToken(ctx)
+		token, err := h.getToken(ctx)
 		if err != nil {
 			return newResponse(ctx, http.StatusUnauthorized, err.Error())
 		}
@@ -73,4 +74,22 @@ func (h *Handler) getClientParams(ctx echo.Context) (int, string, error) {
 	}
 
 	return intId, clientType, nil
+}
+
+func (h *Handler) getToken(ctx echo.Context) (string, error) {
+	header := ctx.Request().Header.Get(authorizationHeader)
+	if header == "" {
+		return "", errors.New("Empty auth header")
+	}
+
+	headerParts := strings.Split(header, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		return "", errors.New("Invalid token")
+	}
+
+	if len(headerParts[1]) == 0 {
+		return "", errors.New("Empty token")
+	}
+
+	return headerParts[1], nil
 }

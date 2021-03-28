@@ -1,9 +1,7 @@
 package v1
 
 import (
-	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 
@@ -114,22 +112,4 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
-}
-
-func getToken(ctx echo.Context) (string, error) {
-	header := ctx.Request().Header.Get(authorizationHeader)
-	if header == "" {
-		return "", errors.New("Empty auth header")
-	}
-
-	headerParts := strings.Split(header, " ")
-	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return "", errors.New("Invalid token")
-	}
-
-	if len(headerParts[1]) == 0 {
-		return "", errors.New("Empty token")
-	}
-
-	return headerParts[1], nil
 }
