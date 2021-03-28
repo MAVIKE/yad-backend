@@ -13,3 +13,19 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Goland dir
+.idea/*
+
+# Config file
+configs/config.yml
+
+# Mac files
+.DS_Store/*
+
+# Swagger files
+docs/swagger/*
+!docs/swagger/swagger.go
+
+# Build
+bin/*

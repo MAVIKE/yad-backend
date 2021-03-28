@@ -1,0 +1,17 @@
+port: ":9000"
+
+db:
+  name: "local_db"
+
+token:
+  signing_key: "qrkjk#4#%35FSFJlja#4353KSFjH"
+  access_token_ttl: 168
+
+local_db:
+  username: "postgres"
+  password: "1234"
+  host: "localhost"
+  port: "5432"
+  dbname: "postgres"
+  sslmode: "disable"
+  path: "C://Program Files/PostgreSQL/12/bin/psql.exe"
