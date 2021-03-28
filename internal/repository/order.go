@@ -31,6 +31,15 @@ func (r *OrderPg) Create(order *domain.Order) (int, error) {
 	return orderId, err
 }
 
+func (r *OrderPg) GetAllItems(orderId int) ([]*domain.OrderItem, error) {
+	var items []*domain.OrderItem
+
+	query := fmt.Sprintf(`SELECT * FROM %s AS oi WHERE oi.order_id = $1`, orderItemsTable)
+	err := r.db.Select(&items, query, orderId)
+
+	return items, err
+}
+
 func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
 	order := new(domain.Order)
 

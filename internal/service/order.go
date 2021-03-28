@@ -30,9 +30,22 @@ func (s *OrderService) Create(clientId int, clientType string, order *domain.Ord
 	return s.repo.Create(order)
 }
 
-func (s *OrderService) GetAllItems(clientId int, clientType string) ([]*domain.OrderItem, error) {
-	var items []*domain.OrderItem
-	return items, nil
+func (s *OrderService) GetAllItems(clientId int, clientType string, orderId int) ([]*domain.OrderItem, error) {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !(clientType == userType && order.UserId == clientId ||
+		clientType == restaurantType && order.RestaurantId == clientId ||
+		clientType == courierType && order.CourierId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return nil, errors.New(errMessage)
+	}
+
+	items, err := s.repo.GetAllItems(orderId)
+
+	return items, err
 }
 
 func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*domain.Order, error) {

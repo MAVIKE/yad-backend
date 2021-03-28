@@ -90,7 +90,12 @@ func (h *Handler) getOrderItems(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	orderItems, err := h.services.Order.GetAllItems(clientId, clientType)
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItems, err := h.services.Order.GetAllItems(clientId, clientType, orderId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
