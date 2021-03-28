@@ -127,3 +127,17 @@ func (s *OrderService) UpdateItem(clientId int, clientType string, orderId, orde
 
 	return s.repo.UpdateItem(orderItemId, menuItemsCount)
 }
+
+func (s *OrderService) DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return err
+	}
+
+	if !(clientType == userType && order.UserId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return errors.New(errMessage)
+	}
+
+	return s.repo.DeleteItem(orderId, orderItemId)
+}

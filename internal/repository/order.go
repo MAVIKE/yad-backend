@@ -31,6 +31,7 @@ func (r *OrderPg) Create(order *domain.Order) (int, error) {
 	return orderId, err
 }
 
+
 func (r *OrderPg) GetAllItems(orderId int) ([]*domain.OrderItem, error) {
 	var items []*domain.OrderItem
 
@@ -74,8 +75,16 @@ func (r *OrderPg) GetItemById(orderItemId int) (*domain.OrderItem, error) {
 	return item, err
 }
 
+func (r *OrderPg) DeleteItem(orderId int, orderItemId int) error {
+	query := fmt.Sprintf(`DELETE FROM %s AS i WHERE i.order_id = $1 AND i.id = $2`, orderItemsTable)
+	_, err := r.db.Exec(query, orderId, orderItemId)
+  
+  	return err
+}
+
 func (r *OrderPg) UpdateItem(orderItemId, menuItemsCount int) error {
 	query := fmt.Sprintf(`UPDATE %s SET count = $1 WHERE id = $2`, orderItemsTable)
 	_, err := r.db.Exec(query, menuItemsCount, orderItemId)
+  
 	return err
 }
