@@ -103,7 +103,12 @@ func (s *OrderService) GetItemById(clientId int, clientType string, orderId, ord
 }
 
 func (s *OrderService) UpdateItem(clientId int, clientType string, orderId, orderItemId, menuItemsCount int) error {
-	if clientType != userType {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		return err
+	}
+
+	if !(clientType == userType && order.UserId == clientId) {
 		return errors.New("Forbidden")
 	}
 
