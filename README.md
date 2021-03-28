@@ -12,7 +12,7 @@
 
 ## Ссылки
 
-:bookmark_tabs: [Kanban](https://github.com/orgs/MAVIKE/projects/2)
+:bookmark_tabs: [Доска задач](https://github.com/orgs/MAVIKE/projects/2)
 
 :notebook: [Документация](https://github.com/MAVIKE/yad-docs)
 

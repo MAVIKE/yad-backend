@@ -14,12 +14,15 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 	{
 		orders.Use(h.identity)
 		orders.POST("/", h.createOrder)
+		orders.GET("/:oid", h.getOrderById)
 
 		orderItems := orders.Group("/:oid/items")
 		{
 			orderItems.POST("/", h.createOrderItem)
+			orderItems.GET("/", h.getOrderItems)
 			orderItems.GET("/:id", h.getOrderItemById)
 			orderItems.DELETE("/:id", h.deleteOrderItem)
+			orderItems.PUT("/:id", h.updateOrderItem)
 		}
 	}
 }
@@ -67,6 +70,73 @@ func (h *Handler) createOrder(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: orderId,
 	})
+}
+
+// @Summary Get All Order Items By Order Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description get all order items by order id
+// @ModuleID getOrderItems
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.OrderItem
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/items/ [get]
+func (h *Handler) getOrderItems(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItems, err := h.services.Order.GetAllItems(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orderItems)
+}
+
+// @Summary Get Order By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description get order by id
+// @ModuleID getOrderById
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Success 200 {object} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/ [get]
+func (h *Handler) getOrderById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItem, err := h.services.Order.GetById(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orderItem)
 }
 
 type orderItemInput struct {
@@ -139,7 +209,7 @@ func (h *Handler) createOrderItem(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /orders/{oid}/ [get]
+// @Router /orders/{oid}/items/{id} [get]
 func (h *Handler) getOrderItemById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -148,10 +218,15 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 
 	orderId, err := strconv.Atoi(ctx.Param("oid"))
 	if err != nil || orderId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
 	}
 
-	orderItem, err := h.services.Order.GetItemById(clientId, clientType, orderId)
+	orderItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || orderItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
+	}
+
+	orderItem, err := h.services.Order.GetItemById(clientId, clientType, orderId, orderItemId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -176,6 +251,50 @@ func (h *Handler) getOrderItemById(ctx echo.Context) error {
 // @Failure default {object} response
 // @Router /orders/{oid}/items/{id} [delete]
 func (h *Handler) deleteOrderItem(ctx echo.Context) error {
+  clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	orderItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || orderItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
+	}
+  
+  err = h.services.Order.DeleteItem(clientId, clientType, orderId, orderItemId)
+  if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+type orderItemUpdate struct {
+	Count int `json:"count" valid:"range(1|99)"`
+}
+
+// @Summary Update Order Item
+// @Security UserAuth
+// @Tags orders
+// @Description update order item
+// @ModuleID updateOrderItem
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Param id path string true "Order item id"
+// @Param input body orderItemUpdate true "order item update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid}/items/{id} [put]
+func (h *Handler) updateOrderItem(ctx echo.Context) error {
+	var input orderItemUpdate
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -191,7 +310,16 @@ func (h *Handler) deleteOrderItem(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid orderItemId")
 	}
 
-	err = h.services.Order.DeleteItem(clientId, clientType, orderId, orderItemId)
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	err = h.services.Order.UpdateItem(clientId, clientType, orderId, orderItemId, input.Count)
+
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}

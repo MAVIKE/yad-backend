@@ -36,10 +36,12 @@ type Category interface {
 
 type Order interface {
 	Create(order *domain.Order) (int, error)
+	GetAllItems(orderId int) ([]*domain.OrderItem, error)
 	GetById(orderId int) (*domain.Order, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
 	GetItemById(orderItemId int) (*domain.OrderItem, error)
-	DeleteItem(orderItemId int, orderId int) error
+	UpdateItem(orderItemId, menuItemsCount int) error
+  DeleteItem(orderItemId int, orderId int) error
 }
 
 type MenuItem interface {
