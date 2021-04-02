@@ -346,7 +346,7 @@ func (h *Handler) updateOrderItem(ctx echo.Context) error {
 // @Failure default {object} response
 // @Router /restaurants/{rid}/orders/ [get]
 func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -356,5 +356,10 @@ func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	return ctx.JSON(http.StatusOK, nil)
+	orders, err := h.services.Order.GetActiveRestaurantOrders(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orders)
 }

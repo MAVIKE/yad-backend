@@ -52,6 +52,17 @@ func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
 	return order, err
 }
 
+func (r *OrderPg) GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, error) {
+	var orders []*domain.Order
+
+	query := fmt.Sprintf(
+		`SELECT * FROM %s 
+		WHERE restaurant_id = $1 AND status = %d`, ordersTable, OrderPaid)
+	err := r.db.Select(&orders, query, restaurantId)
+
+	return orders, err
+}
+
 func (r *OrderPg) CreateItem(orderItem *domain.OrderItem) (int, error) {
 	var orderItemId int
 
