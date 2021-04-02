@@ -18,6 +18,8 @@ const (
 	ordersTable        = "orders"
 	orderItemsTable    = "order_items"
 	categoryItemsTable = "category_items"
+	// TODO: вынести константы для статусов в отельный пакет
+	OrderPaid = 1
 )
 
 type Config struct {

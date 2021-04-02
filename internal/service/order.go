@@ -65,6 +65,16 @@ func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*d
 	return order, nil
 }
 
+func (s *OrderService) GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error) {
+	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
+		return nil, errors.New("Forbidden")
+	}
+
+	orders, err := s.repo.GetActiveRestaurantOrders(restaurantId)
+
+	return orders, err
+}
+
 func (s *OrderService) CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error) {
 	if clientType != userType {
 		return 0, errors.New("Forbidden")
