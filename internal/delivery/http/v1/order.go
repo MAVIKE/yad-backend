@@ -25,6 +25,11 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 			orderItems.PUT("/:id", h.updateOrderItem)
 		}
 	}
+	restaurants := api.Group("/restaurants")
+	{
+		restaurants.Use(h.identity)
+		restaurants.GET("/:rid/orders/", h.getActiveRestaurantOrders)
+	}
 }
 
 type orderInput struct {
@@ -322,6 +327,33 @@ func (h *Handler) updateOrderItem(ctx echo.Context) error {
 
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Get All Active Orders For Restaurant
+// @Security RestaurantAuth
+// @Tags orders
+// @Description get all active orders for restaurant
+// @ModuleID getActiveRestaurantOrders
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {array} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/orders/ [get]
+func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
