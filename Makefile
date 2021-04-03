@@ -1,5 +1,11 @@
 APP=cmd/app/main.go
 
+docker_build:
+	docker-compose build app
+
+docker_run:
+	docker-compose up app
+
 build:
 	go build -o bin/app.out $(APP)
 
