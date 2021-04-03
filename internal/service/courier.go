@@ -56,7 +56,7 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 		return errors.New("forbidden")
 	}
 
-	if input.WorkingStatus != working && input.WorkingStatus != waiting && input.WorkingStatus != unable {
+	if !(input.WorkingStatus == unable || input.WorkingStatus == waiting || input.WorkingStatus == working) {
 		return errors.New("working_status input error")
 	}
 
