@@ -52,10 +52,6 @@ func (s *CourierService) GetById(clientId int, clientType string, courierId int)
 }
 
 func (s *CourierService) Update(clientId int, clientType string, courierId int, input *domain.Courier) error {
-	if !(clientType == adminType || (clientType == courierType && courierId == clientId)) {
-		return errors.New("forbidden")
-	}
-
 	if !(input.WorkingStatus == unable || input.WorkingStatus == waiting || input.WorkingStatus == working) {
 		return errors.New("working_status input error")
 	}
@@ -70,6 +66,16 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 		return errors.New("jump over states")
 	}
 
-	return s.repo.Update(courierId, input)
+	// TODO: проверить, что у курьера нет активного заказа
 
+	if clientType == courierType && courierId == clientId {
+		input.Email = ""
+		input.Name = ""
+		input.Phone = ""
+		input.Password = ""
+	} else if clientType != adminType {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.Update(courierId, input)
 }
