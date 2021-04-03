@@ -14,6 +14,7 @@ const (
 	courierType    = "courier"
 	restaurantType = "restaurant"
 
+	// courier status
 	unable  = 0
 	waiting = 1
 	working = 2
