@@ -21,6 +21,7 @@ RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN make swag
 
 # build go app
+RUN make config
 RUN make build
 
 CMD ["./bin/app.out"]

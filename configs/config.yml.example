@@ -13,7 +13,7 @@ local_db:
   password: "1234"
   host: "localhost"
   port: "5432"
-  dbname: "yad"
+  dbname: "postgres"
   sslmode: "disable"
   path: "C://Program Files/PostgreSQL/12/bin/psql.exe"
 
