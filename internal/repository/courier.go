@@ -82,3 +82,31 @@ func (r *CourierPg) GetById(courierId int) (*domain.Courier, error) {
 
 	return courier, err
 }
+
+func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	if input.Name != "" {
+		query := fmt.Sprintf(`UPDATE %s SET name = $1 WHERE id = $2`, couriersTable)
+		_, err := r.db.Exec(query, input.Name, courierId)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if input.Email != "" {
+		query := fmt.Sprintf(`UPDATE %s SET email = $1 WHERE id = $2`, couriersTable)
+		_, err := r.db.Exec(query, input.Email, courierId)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	return tx.Commit()
+
+}

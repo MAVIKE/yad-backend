@@ -13,6 +13,10 @@ const (
 	userType       = "user"
 	courierType    = "courier"
 	restaurantType = "restaurant"
+
+	unable = 0
+	waiting = 1
+	working = 2
 )
 
 type Tokens struct {
@@ -42,6 +46,7 @@ type Courier interface {
 	SignIn(phone, password string) (*Tokens, error)
 	SignUp(courier *domain.Courier, clientType string) (int, error)
 	GetById(clientId int, clientType string, courierId int) (*domain.Courier, error)
+	Update(clientId int, clientType string, courierId int, input *domain.Courier) error
 }
 
 type Category interface {

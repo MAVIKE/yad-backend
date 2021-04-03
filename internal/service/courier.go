@@ -50,3 +50,27 @@ func (s *CourierService) GetById(clientId int, clientType string, courierId int)
 
 	return s.repo.GetById(courierId)
 }
+
+func (s *CourierService) Update(clientId int, clientType string, courierId int, input *domain.Courier) error {
+	if !(clientType == adminType || (clientType == courierType && courierId == clientId)) {
+		return errors.New("forbidden")
+	}
+
+	if input.WorkingStatus > 2 || input.WorkingStatus < 0 {
+		return errors.New("working_status input error")
+	}
+
+	courier, err := s.repo.GetById(courierId)
+	if err != nil {
+		return err
+	}
+
+	diff := courier.WorkingStatus - input.WorkingStatus
+	if diff == 2 || diff == -2 {
+		return errors.New("jump over states")
+	}
+
+	return s.repo.Update(courierId, input)
+
+
+}

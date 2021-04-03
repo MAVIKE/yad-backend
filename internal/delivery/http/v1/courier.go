@@ -150,15 +150,7 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, courier)
 }
 
-type courierUpdate struct {
-	Name          string  `json:"name"`
-	Phone         string  `json:"phone" valid:"required,numeric,length(11|11)"`
-	Password      string  `json:"password" valid:"required,length(8|50)"`
-	Email         string  `json:"email" valid:"email"`
-	Latitude      float64 `json:"latitude" valid:"required,latitude"`
-	Longitude     float64 `json:"longitude" valid:"required,longitude"`
-	WorkingStatus int     `json:"working_status"`
-}
+type courierUpdate courierSignUpInput
 
 // @Summary Update Courier
 // @Security CourierAuth
@@ -177,7 +169,7 @@ type courierUpdate struct {
 // @Router /couriers/{cid} [put]
 func (h *Handler) updateCourier(ctx echo.Context) error {
 	var input courierUpdate
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -195,11 +187,23 @@ func (h *Handler) updateCourier(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	/*err = h.services.Courier.UpdateCourier(clientId, clientType, courierId, input)
+	update := &domain.Courier{
+		Name:     input.Name,
+		Phone:    input.Phone,
+		Password: input.Password,
+		Email:    input.Email,
+		Address: &domain.Location{
+			Latitude:  input.Latitude,
+			Longitude: input.Longitude,
+		},
+		WorkingStatus: input.WorkingStatus,
+	}
+
+	err = h.services.Courier.Update(clientId, clientType, courierId, update)
 
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}*/
+	}
 
 	return ctx.JSON(http.StatusOK, nil)
 }
