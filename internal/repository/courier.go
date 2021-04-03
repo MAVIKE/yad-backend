@@ -93,7 +93,7 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 		query := fmt.Sprintf(`UPDATE %s SET name = $1 WHERE id = $2`, couriersTable)
 		_, err := r.db.Exec(query, input.Name, courierId)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return err
 		}
 	}
@@ -102,7 +102,7 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 		query := fmt.Sprintf(`UPDATE %s SET email = $1 WHERE id = $2`, couriersTable)
 		_, err := r.db.Exec(query, input.Email, courierId)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return err
 		}
 	}

@@ -14,7 +14,7 @@ const (
 	courierType    = "courier"
 	restaurantType = "restaurant"
 
-	unable = 0
+	unable  = 0
 	waiting = 1
 	working = 2
 )
