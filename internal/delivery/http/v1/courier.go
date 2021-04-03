@@ -16,6 +16,7 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 		couriers.Use(h.identity)
 		couriers.POST("/sign-up", h.couriersSignUp)
 		couriers.GET("/:id", h.getCourierById)
+		couriers.PUT("/:id", h.updateCourier)
 	}
 }
 
@@ -147,4 +148,58 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, courier)
+}
+
+type courierUpdate struct {
+	Name          string  `json:"name"`
+	Phone         string  `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password      string  `json:"password" valid:"required,length(8|50)"`
+	Email         string  `json:"email" valid:"email"`
+	Latitude      float64 `json:"latitude" valid:"required,latitude"`
+	Longitude     float64 `json:"longitude" valid:"required,longitude"`
+	WorkingStatus int     `json:"working_status"`
+}
+
+// @Summary Update Courier
+// @Security CourierAuth
+// @Security AdminAuth
+// @Tags couriers
+// @Description update courier
+// @ModuleID updateCourier
+// @Accept  json
+// @Produce  json
+// @Param cid path string true "Courier id"
+// @Param input body courierUpdate true "courier update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/{cid} [put]
+func (h *Handler) updateCourier(ctx echo.Context) error {
+	var input courierUpdate
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	courierId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || courierId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid courierId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	/*err = h.services.Courier.UpdateCourier(clientId, clientType, courierId, input)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}*/
+
+	return ctx.JSON(http.StatusOK, nil)
 }
