@@ -56,7 +56,7 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 		return errors.New("forbidden")
 	}
 
-	if input.WorkingStatus > 2 || input.WorkingStatus < 0 {
+	if input.WorkingStatus != working && input.WorkingStatus != waiting && input.WorkingStatus != unable {
 		return errors.New("working_status input error")
 	}
 
@@ -71,6 +71,5 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 	}
 
 	return s.repo.Update(courierId, input)
-
 
 }
