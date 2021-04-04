@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
 )
@@ -57,7 +58,7 @@ func (r *OrderPg) GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, 
 
 	query := fmt.Sprintf(
 		`SELECT * FROM %s 
-		WHERE restaurant_id = $1 AND status = %d`, ordersTable, OrderPaid)
+		WHERE restaurant_id = $1 AND status = %d`, ordersTable, consts.OrderPaid)
 	err := r.db.Select(&orders, query, restaurantId)
 
 	return orders, err
