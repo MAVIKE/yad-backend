@@ -30,6 +30,12 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 		restaurants.Use(h.identity)
 		restaurants.GET("/:rid/orders/", h.getActiveRestaurantOrders)
 	}
+
+	users := api.Group("/users")
+	{
+		users.Use(h.identity)
+		users.GET("/:id/orders", h.usersGetAllOrders)
+	}
 }
 
 type orderInput struct {
@@ -357,6 +363,38 @@ func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
 	}
 
 	orders, err := h.services.Order.GetActiveRestaurantOrders(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orders)
+}
+
+// @Summary Get All Orders
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags users
+// @Description get all orders for user
+// @ModuleID getAllOrders
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/:id/orders [get]
+func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	userId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid userId")
+	}
+
+	orders, err := h.services.User.GetAllOrders(clientId, clientType, userId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}

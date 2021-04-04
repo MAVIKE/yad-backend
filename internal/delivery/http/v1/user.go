@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
-
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 )

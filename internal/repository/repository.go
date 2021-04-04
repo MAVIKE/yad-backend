@@ -12,6 +12,7 @@ type Admin interface {
 type User interface {
 	Create(user *domain.User) (int, error)
 	GetByCredentials(phone, password string) (*domain.User, error)
+	GetAllOrders(userId int) ([]*domain.Order, error)
 }
 
 type Courier interface {
