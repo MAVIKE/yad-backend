@@ -389,7 +389,12 @@ func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	orders, err := h.services.User.GetAllOrders(clientId, clientType)
+	userId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid userId")
+	}
+
+	orders, err := h.services.User.GetAllOrders(clientId, clientType, userId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}

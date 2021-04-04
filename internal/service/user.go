@@ -41,8 +41,8 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 	return &Tokens{AccessToken: token}, nil
 }
 
-func (s UserService) GetAllOrders(clientId int, clientType string) ([]*domain.Order, error) {
-	if !(clientType == userType || clientType == restaurantType) {
+func (s UserService) GetAllOrders(clientId int, clientType string, userId int) ([]*domain.Order, error) {
+	if clientType != userType || clientId != userId {
 		return nil, errors.New("Forbidden")
 	}
 
