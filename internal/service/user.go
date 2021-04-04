@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"time"
 
@@ -38,4 +39,12 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 	}
 
 	return &Tokens{AccessToken: token}, nil
+}
+
+func (s UserService) GetAllOrders(clientId int, clientType string) ([]*domain.Order, error) {
+	if !(clientType == userType || clientType == restaurantType) {
+		return nil, errors.New("Forbidden")
+	}
+
+	return s.repo.GetAllOrders(clientId)
 }

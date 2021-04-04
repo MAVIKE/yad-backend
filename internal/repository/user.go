@@ -61,3 +61,35 @@ func (r *UserPg) GetByCredentials(phone, password string) (*domain.User, error) 
 
 	return user, err
 }
+
+func (r *UserPg) GetAllOrders(userId int) ([]*domain.Order, error) {
+	var orders []*domain.Order
+
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, ordersTable)
+
+	rows, err := r.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		order := &domain.Order{}
+
+		err := rows.Scan(&order.Id, &order.UserId, &order.RestaurantId,
+			&order.CourierId, &order.DeliveryPrice,
+			&order.TotalPrice, &order.Status, &order.Paid)
+
+		if err != nil {
+			return nil, err
+		}
+
+		orders = append(orders, order)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return orders, err
+}
