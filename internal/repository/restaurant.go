@@ -135,3 +135,9 @@ func (r *RestaurantPg) Create(restaurant *domain.Restaurant) (int, error) {
 
 	return restaurantId, tx.Commit()
 }
+
+func (r *RestaurantPg) UpdateImage(restaurantId int, image string) error {
+	query := fmt.Sprintf(`UPDATE %s AS r SET image = $1 WHERE r.id = $2`, restaurantsTable)
+	_, err := r.db.Exec(query, image, restaurantId)
+	return err
+}
