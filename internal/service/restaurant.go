@@ -61,7 +61,7 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 }
 
 func (s *RestaurantService) UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error) {
-	if clientType != restaurantType && restaurantId != clientId {
+	if clientType != restaurantType || restaurantId != clientId {
 		return nil, errors.New("Forbidden")
 	}
 
