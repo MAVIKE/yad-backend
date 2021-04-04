@@ -59,3 +59,15 @@ func (s *RestaurantService) GetById(clientId int, clientType string, restaurantI
 
 	return s.repo.GetById(restaurantId)
 }
+
+func (s *RestaurantService) UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error) {
+	if clientType != restaurantType && restaurantId != clientId {
+		return nil, errors.New("Forbidden")
+	}
+
+	if err := s.repo.UpdateImage(restaurantId, image); err != nil {
+		return nil, err
+	}
+
+	return s.repo.GetById(restaurantId)
+}
