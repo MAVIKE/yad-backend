@@ -100,7 +100,7 @@ func (r *OrderPg) UpdateItem(orderItemId, menuItemsCount int) error {
 	return err
 }
 
-func (r *OrderPg) GetActiveOrder(courierId int) (*domain.Order, error) {
+func (r *OrderPg) GetActiveCourierOrder(courierId int) (*domain.Order, error) {
 	order := new(domain.Order)
 
 	query := fmt.Sprintf(`SELECT * FROM %s AS o 

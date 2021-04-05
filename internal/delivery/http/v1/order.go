@@ -432,7 +432,7 @@ func (h *Handler) getActiveCourierOrder(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
 	}
 
-	order, err := h.services.Order.GetActiveOrder(clientId, clientType, courierId)
+	order, err := h.services.Order.GetActiveCourierOrder(clientId, clientType, courierId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
