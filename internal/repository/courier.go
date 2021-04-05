@@ -94,6 +94,10 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 	args := make([]interface{}, 0)
 	argId := 1
 
+	setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
+	args = append(args, input.WorkingStatus)
+	argId++
+
 	if input.Name != "" {
 		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
 		args = append(args, input.Name)
@@ -118,30 +122,16 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 		argId++
 	}
 
-	if input.WorkingStatus >= 0 && input.WorkingStatus <= 2 {
-		setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
-		args = append(args, input.WorkingStatus)
-		argId++
-	}
-
 	if input.Address.Latitude != 0 && input.Address.Longitude != 0 {
-		var addressId int
-		createLocationQuery := fmt.Sprintf(
-			`INSERT INTO %s (latitude, longitude)
- 				VALUES ($1, $2) RETURNING id`, locationsTable)
-
-		locationRow := tx.QueryRow(createLocationQuery, input.Address.Latitude, input.Address.Longitude)
-		if err = locationRow.Scan(&addressId); err != nil {
+		query := fmt.Sprintf(`UPDATE %s as l
+								SET latitude = $1, longitude = $2
+								FROM %s as c
+								WHERE c.id = $3 AND c.address_id = l.id`, locationsTable, couriersTable)
+		_, err := r.db.Exec(query, input.Address.Latitude, input.Address.Longitude, courierId)
+		if err != nil {
 			_ = tx.Rollback()
 			return err
 		}
-		setValues = append(setValues, fmt.Sprintf("address_id=$%d", argId))
-		args = append(args, addressId)
-		argId++
-	}
-
-	if len(setValues) == 0 {
-		return nil
 	}
 
 	setQuery := strings.Join(setValues, ", ")
