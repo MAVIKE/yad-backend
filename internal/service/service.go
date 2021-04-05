@@ -43,7 +43,6 @@ type Courier interface {
 	SignUp(courier *domain.Courier, clientType string) (int, error)
 	GetById(clientId int, clientType string, courierId int) (*domain.Courier, error)
 	Update(clientId int, clientType string, courierId int, input *domain.Courier) error
-	GetActiveOrder(clientId int, clientType string, courierId int) (*domain.Order, error)
 }
 
 type Category interface {
@@ -62,6 +61,7 @@ type Order interface {
 	GetItemById(clientId int, clientType string, orderId, orderItemId int) (*domain.OrderItem, error)
 	UpdateItem(clientId int, clientType string, orderId, orderItemId, menuItemsCount int) error
 	DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error
+	GetActiveOrder(clientId int, clientType string, courierId int) (*domain.Order, error)
 }
 
 type MenuItem interface {

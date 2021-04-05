@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -83,13 +82,4 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 	}
 
 	return s.repo.Update(courierId, input)
-}
-
-func (s *CourierService) GetActiveOrder(clientId int, clientType string, courierId int) (*domain.Order, error) {
-	if clientType != courierType || (clientType == courierType && courierId != clientId) {
-		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
-		return nil, errors.New(errMessage)
-	}
-
-	return s.repo.GetActiveOrder(courierId)
 }
