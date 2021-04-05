@@ -11,13 +11,15 @@ import (
 
 type CourierService struct {
 	repo           repository.Courier
+	repoOrder      repository.Order
 	tokenManager   auth.TokenManager
 	accessTokenTTL time.Duration
 }
 
-func NewCourierService(repo repository.Courier, tokenManager auth.TokenManager, accessTokenTTL time.Duration) *CourierService {
+func NewCourierService(repo repository.Courier, repoOrder repository.Order, tokenManager auth.TokenManager, accessTokenTTL time.Duration) *CourierService {
 	return &CourierService{
 		repo:           repo,
+		repoOrder:      repoOrder,
 		tokenManager:   tokenManager,
 		accessTokenTTL: accessTokenTTL,
 	}
@@ -70,7 +72,12 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 		return errors.New("jump over states")
 	}
 
-	// TODO: проверить, что у курьера нет активного заказа
+	_, err = s.repoOrder.GetActiveCourierOrder(courierId)
+	if err == nil && input.WorkingStatus != consts.CourierWorking {
+		return errors.New("courier still have a order")
+	} else if err != nil && input.WorkingStatus == consts.CourierWorking {
+		return errors.New("can't found order for this courier")
+	}
 
 	if clientType == courierType && courierId == clientId {
 		input.Email = ""
