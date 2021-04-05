@@ -86,7 +86,7 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 }
 
 func (s *CourierService) GetActiveOrder(clientId int, clientType string, courierId int) (*domain.Order, error) {
-	if (clientType != restaurantType && clientType != courierType) || (clientType == courierType && courierId != clientId) {
+	if clientType != courierType || (clientType == courierType && courierId != clientId) {
 		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
 		return nil, errors.New(errMessage)
 	}
