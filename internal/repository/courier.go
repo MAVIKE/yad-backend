@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
 	"strings"
@@ -145,4 +146,15 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 	}
 
 	return tx.Commit()
+}
+
+func (r *CourierPg) GetActiveOrder(courierId int) (*domain.Order, error) {
+	order := new(domain.Order)
+
+	query := fmt.Sprintf(`SELECT * FROM %s AS o 
+						WHERE o.status = $1 OR o.status = $2 OR o.status = $3 OR o.status = $4 AND o.courier_id = $5`, ordersTable)
+	row := r.db.QueryRow(query, consts.OrderPaid, consts.OrderPreparing, consts.OrderWaitingForCourier, consts.OrderEnRoute, courierId)
+	err := row.Scan(&order.Id, &order.UserId, &order.RestaurantId, &order.CourierId, &order.DeliveryPrice, &order.TotalPrice, &order.Status, &order.Paid)
+
+	return order, err
 }

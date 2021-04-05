@@ -43,6 +43,7 @@ type Courier interface {
 	SignUp(courier *domain.Courier, clientType string) (int, error)
 	GetById(clientId int, clientType string, courierId int) (*domain.Courier, error)
 	Update(clientId int, clientType string, courierId int, input *domain.Courier) error
+	GetActiveOrder(clientId int, clientType string, courierId int) (*domain.Order, error)
 }
 
 type Category interface {

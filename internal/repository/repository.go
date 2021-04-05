@@ -20,6 +20,7 @@ type Courier interface {
 	GetByCredentials(phone, password string) (*domain.Courier, error)
 	GetById(courierId int) (*domain.Courier, error)
 	Update(courierId int, input *domain.Courier) error
+	GetActiveOrder(courierId int) (*domain.Order, error)
 }
 
 type Restaurant interface {

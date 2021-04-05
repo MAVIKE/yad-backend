@@ -17,6 +17,7 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 		couriers.POST("/sign-up", h.couriersSignUp)
 		couriers.GET("/:id", h.getCourierById)
 		couriers.PUT("/:id", h.updateCourier)
+		couriers.GET("/:cid/orders", h.getActiveCourierOrder)
 	}
 }
 
@@ -206,4 +207,37 @@ func (h *Handler) updateCourier(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Get Active Order
+// @Security CourierAuth
+// @Security RestaurantAuth
+// @Tags couriers
+// @Description get active order for courier
+// @ModuleID getActiveCourierOrder
+// @Accept  json
+// @Produce  json
+// @Param cid path string true "Courier id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/{cid}/orders [get]
+func (h *Handler) getActiveCourierOrder(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	courierId, err := strconv.Atoi(ctx.Param("cid"))
+	if err != nil || courierId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	order, err := h.services.Courier.GetActiveOrder(clientId, clientType, courierId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, order)
 }
