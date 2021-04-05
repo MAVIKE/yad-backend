@@ -47,6 +47,7 @@ type Order interface {
 	GetItemById(orderItemId int) (*domain.OrderItem, error)
 	UpdateItem(orderItemId, menuItemsCount int) error
 	DeleteItem(orderItemId int, orderId int) error
+	GetActiveCourierOrder(courierId int) (*domain.Order, error)
 }
 
 type MenuItem interface {

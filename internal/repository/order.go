@@ -99,3 +99,14 @@ func (r *OrderPg) UpdateItem(orderItemId, menuItemsCount int) error {
 
 	return err
 }
+
+func (r *OrderPg) GetActiveCourierOrder(courierId int) (*domain.Order, error) {
+	order := new(domain.Order)
+
+	query := fmt.Sprintf(`SELECT * FROM %s AS o 
+						WHERE o.status = $1 OR o.status = $2 OR o.status = $3 OR o.status = $4 AND o.courier_id = $5`, ordersTable)
+	row := r.db.QueryRow(query, consts.OrderPaid, consts.OrderPreparing, consts.OrderWaitingForCourier, consts.OrderEnRoute, courierId)
+	err := row.Scan(&order.Id, &order.UserId, &order.RestaurantId, &order.CourierId, &order.DeliveryPrice, &order.TotalPrice, &order.Status, &order.Paid)
+
+	return order, err
+}

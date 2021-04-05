@@ -151,3 +151,12 @@ func (s *OrderService) DeleteItem(clientId int, clientType string, orderId int, 
 
 	return s.repo.DeleteItem(orderId, orderItemId)
 }
+
+func (s *OrderService) GetActiveCourierOrder(clientId int, clientType string, courierId int) (*domain.Order, error) {
+	if !(clientType == courierType && courierId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return nil, errors.New(errMessage)
+	}
+
+	return s.repo.GetActiveCourierOrder(courierId)
+}
