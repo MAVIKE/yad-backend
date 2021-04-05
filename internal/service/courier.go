@@ -11,15 +11,15 @@ import (
 
 type CourierService struct {
 	repo           repository.Courier
-	repoOrder      repository.Order
+	orderRepo     repository.Order
 	tokenManager   auth.TokenManager
 	accessTokenTTL time.Duration
 }
 
-func NewCourierService(repo repository.Courier, repoOrder repository.Order, tokenManager auth.TokenManager, accessTokenTTL time.Duration) *CourierService {
+func NewCourierService(repo repository.Courier, orderRepo repository.Order, tokenManager auth.TokenManager, accessTokenTTL time.Duration) *CourierService {
 	return &CourierService{
 		repo:           repo,
-		repoOrder:      repoOrder,
+		orderRepo:      orderRepo,
 		tokenManager:   tokenManager,
 		accessTokenTTL: accessTokenTTL,
 	}
@@ -72,7 +72,7 @@ func (s *CourierService) Update(clientId int, clientType string, courierId int, 
 		return errors.New("jump over states")
 	}
 
-	_, err = s.repoOrder.GetActiveCourierOrder(courierId)
+	_, err = s.orderRepo.GetActiveCourierOrder(courierId)
 	if err == nil && input.WorkingStatus != consts.CourierWorking {
 		return errors.New("courier still have a order")
 	} else if err != nil && input.WorkingStatus == consts.CourierWorking {
