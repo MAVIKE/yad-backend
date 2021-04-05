@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"time"
-	"github.com/MAVIKE/yad-backend/internal/consts"
 )
 
 type CourierService struct {
