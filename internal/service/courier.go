@@ -6,6 +6,7 @@ import (
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
 	"time"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 )
 
 type CourierService struct {
@@ -53,7 +54,7 @@ func (s *CourierService) GetById(clientId int, clientType string, courierId int)
 
 func (s *CourierService) Update(clientId int, clientType string, courierId int, input *domain.Courier) error {
 	switch input.WorkingStatus {
-	case unable, waiting, working:
+	case consts.CourierUnable, consts.CourierWaiting, consts.CourierWorking:
 		break
 	default:
 		return errors.New("working_status input error")
