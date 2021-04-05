@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
@@ -49,4 +50,36 @@ func (s *CourierService) GetById(clientId int, clientType string, courierId int)
 	}
 
 	return s.repo.GetById(courierId)
+}
+
+func (s *CourierService) Update(clientId int, clientType string, courierId int, input *domain.Courier) error {
+	switch input.WorkingStatus {
+	case consts.CourierUnable, consts.CourierWaiting, consts.CourierWorking:
+		break
+	default:
+		return errors.New("working_status input error")
+	}
+
+	courier, err := s.repo.GetById(courierId)
+	if err != nil {
+		return err
+	}
+
+	diff := courier.WorkingStatus - input.WorkingStatus
+	if diff == 2 || diff == -2 {
+		return errors.New("jump over states")
+	}
+
+	// TODO: проверить, что у курьера нет активного заказа
+
+	if clientType == courierType && courierId == clientId {
+		input.Email = ""
+		input.Name = ""
+		input.Phone = ""
+		input.Password = ""
+	} else if clientType != adminType {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.Update(courierId, input)
 }
