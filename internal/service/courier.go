@@ -52,7 +52,10 @@ func (s *CourierService) GetById(clientId int, clientType string, courierId int)
 }
 
 func (s *CourierService) Update(clientId int, clientType string, courierId int, input *domain.Courier) error {
-	if !(input.WorkingStatus == unable || input.WorkingStatus == waiting || input.WorkingStatus == working) {
+	switch input.WorkingStatus {
+	case unable, waiting, working:
+		break
+	default:
 		return errors.New("working_status input error")
 	}
 

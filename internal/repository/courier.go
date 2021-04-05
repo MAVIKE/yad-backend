@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
@@ -86,6 +85,11 @@ func (r *CourierPg) GetById(courierId int) (*domain.Courier, error) {
 }
 
 func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
@@ -114,7 +118,27 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 		argId++
 	}
 
-	// TODO : добавить поле со статусом и локацией
+	if input.WorkingStatus >= 0 && input.WorkingStatus <= 2 {
+		setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
+		args = append(args, input.WorkingStatus)
+		argId++
+	}
+
+	if input.Address.Latitude != 0 && input.Address.Longitude != 0 {
+		var addressId int
+		createLocationQuery := fmt.Sprintf(
+			`INSERT INTO %s (latitude, longitude)
+ 				VALUES ($1, $2) RETURNING id`, locationsTable)
+
+		locationRow := tx.QueryRow(createLocationQuery, input.Address.Latitude, input.Address.Longitude)
+		if err = locationRow.Scan(&addressId); err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+		setValues = append(setValues, fmt.Sprintf("address_id=$%d", argId))
+		args = append(args, addressId)
+		argId++
+	}
 
 	if len(setValues) == 0 {
 		return nil
@@ -125,8 +149,10 @@ func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
 		couriersTable, setQuery, argId)
 	args = append(args, courierId)
 
-	_, err := r.db.Exec(query, args...)
-	print(err)
+	if _, err = tx.Exec(query, args...); err != nil {
+		_ = tx.Rollback()
+		return err
+	}
 
-	return errors.New(query)
+	return tx.Commit()
 }
