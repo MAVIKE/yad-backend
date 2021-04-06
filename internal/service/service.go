@@ -88,7 +88,7 @@ func NewService(deps Deps) *Service {
 	return &Service{
 		Admin:      NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
 		User:       NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
-		Courier:    NewCourierService(deps.Repos.Courier, deps.TokenManager, deps.AccessTokenTTL),
+		Courier:    NewCourierService(deps.Repos.Courier, deps.Repos.Order, deps.TokenManager, deps.AccessTokenTTL),
 		Restaurant: NewRestaurantService(deps.Repos.Restaurant, deps.TokenManager, deps.AccessTokenTTL),
 		Category:   NewCategoryService(deps.Repos.Category),
 		Order:      NewOrderService(deps.Repos.Order),
