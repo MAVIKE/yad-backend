@@ -132,8 +132,7 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 // @Failure default {object} response
 // @Router /users/{id} [get]
 func (h *Handler) getUserById(ctx echo.Context) error {
-	//clientId, clientType, err := h.getClientParams(ctx)
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -143,12 +142,10 @@ func (h *Handler) getUserById(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid courier")
 	}
 
-	/*
 	user, err := h.services.User.GetById(clientId, clientType, userId)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}*/
+	}
 
 	return ctx.JSON(http.StatusOK, user)
 }
-

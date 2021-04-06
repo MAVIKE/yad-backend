@@ -11,7 +11,7 @@ import (
 
 type CourierService struct {
 	repo           repository.Courier
-	orderRepo     repository.Order
+	orderRepo      repository.Order
 	tokenManager   auth.TokenManager
 	accessTokenTTL time.Duration
 }

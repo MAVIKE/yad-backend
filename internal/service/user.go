@@ -48,3 +48,13 @@ func (s UserService) GetAllOrders(clientId int, clientType string, userId int) (
 
 	return s.repo.GetAllOrders(clientId)
 }
+
+func (s *UserService) GetById(clientId int, clientType string, userId int) (*domain.User, error) {
+	if !(clientId == userId || clientType == restaurantType || clientType == courierType) {
+		return nil, errors.New("Forbidden")
+	}
+
+	// TODO: добавить проверку на то, что у ресторана и курьера есть активный заках с юзером
+
+	return s.repo.GetById(userId)
+}
