@@ -212,4 +212,3 @@ func (h *Handler) getUserById(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, user)
 }
-
