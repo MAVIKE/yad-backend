@@ -28,6 +28,7 @@ type User interface {
 	SignUp(user *domain.User) (int, error)
 	GetAllOrders(clientId int, clientType string, userId int) ([]*domain.Order, error)
 	Update(clientId int, clientType string, userId int, input *domain.User) error
+	GetById(clientId int, clientType string, userId int) (*domain.User, error)
 }
 
 type Restaurant interface {

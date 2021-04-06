@@ -147,3 +147,24 @@ func (r *UserPg) Update(userId int, input *domain.User) error {
 
 	return tx.Commit()
 }
+
+func (r *UserPg) GetById(userId int) (*domain.User, error) {
+	user := new(domain.User)
+	location := new(domain.Location)
+
+	query := fmt.Sprintf(
+		`SELECT u.id, u.name, u.phone, u.email, 
+			l.latitude, l.longitude 
+		FROM %s AS u
+			INNER JOIN %s AS l ON u.address_id = l.id
+		WHERE u.id = $1`,
+		usersTable, locationsTable)
+
+	row := r.db.QueryRow(query, userId)
+
+	err := row.Scan(&user.Id, &user.Name, &user.Phone, &user.Email,
+		&location.Latitude, &location.Longitude)
+	user.Address = location
+
+	return user, err
+}

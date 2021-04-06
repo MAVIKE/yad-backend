@@ -14,6 +14,7 @@ type User interface {
 	GetByCredentials(phone, password string) (*domain.User, error)
 	GetAllOrders(userId int) ([]*domain.Order, error)
 	Update(userId int, input *domain.User) error
+	GetById(userId int) (*domain.User, error)
 }
 
 type Courier interface {
