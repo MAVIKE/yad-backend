@@ -1,9 +1,9 @@
-FROM golang:latest
+FROM golang:latest AS build
 
 RUN go version
-ENV GOPATH=/
 
-COPY ./ ./
+COPY ./ /github.com/MAVIKE/yad-backend
+WORKDIR /github.com/MAVIKE/yad-backend
 
 # install psql
 RUN apt-get update
@@ -22,6 +22,18 @@ RUN make swag
 
 # build go app
 RUN make config
-RUN make build
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/app.out ./cmd/app/main.go
 
-CMD ["./bin/app.out"]
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+
+RUN apk add postgresql
+
+COPY --from=0 /github.com/MAVIKE/yad-backend/bin/app.out .
+COPY --from=0 /github.com/MAVIKE/yad-backend/wait-for-postgres.sh .
+COPY --from=0 /github.com/MAVIKE/yad-backend/configs/ ./configs/
+COPY --from=0 /github.com/MAVIKE/yad-backend/docs/ ./docs/
+
+CMD ["./app.out"]

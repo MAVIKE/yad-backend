@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: ./
-    command: ./wait-for-postgres.sh db ./bin/app.out
+    command: ./wait-for-postgres.sh db ./app.out
     ports:
       - 9000:9000
     depends_on:
@@ -13,7 +13,7 @@ services:
 
   db:
     restart: always
-    image: postgres:latest
+    image: postgres:12.0-alpine
     volumes:
       - ./.database/postgres/data:/var/lib/postgresql/data
     environment:
