@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
 	"strings"
@@ -67,11 +68,11 @@ func (r *UserPg) GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Orde
 	var orders []*domain.Order
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
-	leftBorderStatus := 0
-	rightBorderStatus := 5
+	leftBorderStatus := consts.OrderCreated
+	rightBorderStatus := consts.OrderDelivered
 	if activeOrdersFlag {
-		leftBorderStatus = 1
-		rightBorderStatus = 4
+		leftBorderStatus = consts.OrderPaid
+		rightBorderStatus = consts.OrderEnRoute
 	}
 	rows, err := r.db.Query(query, userId, leftBorderStatus, rightBorderStatus)
 
