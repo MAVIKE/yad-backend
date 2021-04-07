@@ -63,12 +63,18 @@ func (r *UserPg) GetByCredentials(phone, password string) (*domain.User, error) 
 	return user, err
 }
 
-func (r *UserPg) GetAllOrders(userId int) ([]*domain.Order, error) {
+func (r *UserPg) GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Order, error) {
 	var orders []*domain.Order
 
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, ordersTable)
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
+	leftBorderStatus := 0
+	rightBorderStatus := 5
+	if activeOrdersFlag {
+		leftBorderStatus = 1
+		rightBorderStatus = 4
+	}
+	rows, err := r.db.Query(query, userId, leftBorderStatus, rightBorderStatus)
 
-	rows, err := r.db.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}

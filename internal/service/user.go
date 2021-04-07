@@ -41,12 +41,12 @@ func (s *UserService) SignIn(phone, password string) (*Tokens, error) {
 	return &Tokens{AccessToken: token}, nil
 }
 
-func (s UserService) GetAllOrders(clientId int, clientType string, userId int) ([]*domain.Order, error) {
+func (s UserService) GetAllOrders(clientId int, clientType string, userId int, activeOrdersFlag bool) ([]*domain.Order, error) {
 	if clientType != userType || clientId != userId {
 		return nil, errors.New("Forbidden")
 	}
 
-	return s.repo.GetAllOrders(clientId)
+	return s.repo.GetAllOrders(clientId, activeOrdersFlag)
 }
 
 func (s *UserService) Update(clientId int, clientType string, userId int, input *domain.User) error {

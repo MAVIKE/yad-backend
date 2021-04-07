@@ -12,7 +12,7 @@ type Admin interface {
 type User interface {
 	Create(user *domain.User) (int, error)
 	GetByCredentials(phone, password string) (*domain.User, error)
-	GetAllOrders(userId int) ([]*domain.Order, error)
+	GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Order, error)
 	Update(userId int, input *domain.User) error
 }
 

@@ -400,7 +400,13 @@ func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid userId")
 	}
 
-	orders, err := h.services.User.GetAllOrders(clientId, clientType, userId)
+	orderStatus := ctx.QueryParam("status")
+	activeOrdersFlag := false
+	if orderStatus == "active" {
+		activeOrdersFlag = true
+	}
+
+	orders, err := h.services.User.GetAllOrders(clientId, clientType, userId, activeOrdersFlag)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
