@@ -113,9 +113,4 @@ jobs:
             docker rm $(echo $CONTAINER_NAME)
 
             # Run a new container from a new image
-            docker run \
-            --restart always \
-            --publish 9000:9000 \
-            --name $(echo $CONTAINER_NAME) \
-            --link=yad-backend-db:db \
-            $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            docker-compose up app
