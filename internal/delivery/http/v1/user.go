@@ -178,7 +178,6 @@ func (h *Handler) updateUser(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, nil)
 }
 
-
 // @Summary Get User By Id
 // @Security UserAuth
 // @Security RestaurantAuth
