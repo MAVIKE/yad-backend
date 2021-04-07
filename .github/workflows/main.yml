@@ -12,8 +12,6 @@ env:
   REGISTRY: "registry.digitalocean.com/yad-backend"
   IMAGE_NAME: "yad-backend"
   CONTAINER_NAME: "yad-backend"
-  ENV_FILE_PATH: "./yad-backend/.env.prod"
-  LOGS_PATH: "/root/yad-backend/api/logs/prod"
 
 jobs:
   lint:
@@ -34,7 +32,6 @@ jobs:
           golangci-lint run
   swag:
     runs-on: ubuntu-latest
-    needs: lint
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
@@ -50,7 +47,6 @@ jobs:
           make swag
   test:
     runs-on: ubuntu-latest
-    needs: swag
     steps:
       - name: Checkout fb-70-ci-cd-configuration
         uses: actions/checkout@v2
@@ -68,7 +64,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    needs: test
+    needs: [lint, swag, test]
 
     steps:
       - name: Checkout fb-70-ci-cd-configuration
@@ -101,7 +97,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           port: ${{ secrets.PORT }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,LOGS_PATH,ENV_FILE_PATH,CONTAINER_NAME
+          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,CONTAINER_NAME
           script: |
             # Login into Digital Ocean Registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} $(echo $REGISTRY)
@@ -118,8 +114,7 @@ jobs:
             docker rm $(echo $CONTAINER_NAME)
 
             # Run a new container from a new image
-            docker run --env-file $(echo $ENV_FILE_PATH) \
-            -v $(echo $LOGS_PATH):/logs -d \
+            docker run \
             --restart always \
             --publish 9000:9000 \
             --name $(echo $CONTAINER_NAME) \
