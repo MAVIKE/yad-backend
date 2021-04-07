@@ -27,6 +27,7 @@ type User interface {
 	SignIn(phone, password string) (*Tokens, error)
 	SignUp(user *domain.User) (int, error)
 	GetAllOrders(clientId int, clientType string, userId int) ([]*domain.Order, error)
+	Update(clientId int, clientType string, userId int, input *domain.User) error
 }
 
 type Restaurant interface {
