@@ -22,7 +22,7 @@ func (h *Handler) initUserRoutes(api *echo.Group) {
 		users.POST("/sign-in", h.usersSignIn)
 		users.Use(h.identity)
 		users.PUT("/:uid", h.updateUser)
-		users.GET("/:id", h.getUserById)
+		users.GET("/:uid", h.getUserById)
 	}
 }
 
@@ -199,9 +199,9 @@ func (h *Handler) getUserById(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	userId, err := strconv.Atoi(ctx.Param("id"))
+	userId, err := strconv.Atoi(ctx.Param("uid"))
 	if err != nil || userId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid courier")
+		return newResponse(ctx, http.StatusBadRequest, "Invalid user")
 	}
 
 	user, err := h.services.User.GetById(clientId, clientType, userId)

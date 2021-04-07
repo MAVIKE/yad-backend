@@ -59,11 +59,35 @@ func (s *UserService) Update(clientId int, clientType string, userId int, input 
 }
 
 func (s *UserService) GetById(clientId int, clientType string, userId int) (*domain.User, error) {
-	if !(clientId == userId || clientType == restaurantType || clientType == courierType) {
-		return nil, errors.New("Forbidden")
+switchCheck:
+	switch clientType {
+	case userType:
+		break
+	case restaurantType:
+		userOrders, err := s.repo.GetAllOrders(userId, true)
+		if err != nil {
+			return nil, errors.New("forbidden")
+		}
+		for _, order := range userOrders {
+			if order.RestaurantId == clientId {
+				break switchCheck
+			}
+		}
+		return nil, errors.New("forbidden")
+	case courierType:
+		userOrders, err := s.repo.GetAllOrders(userId, true)
+		if err != nil {
+			return nil, errors.New("forbidden")
+		}
+		for _, order := range userOrders {
+			if order.CourierId == clientId {
+				break switchCheck
+			}
+		}
+		return nil, errors.New("forbidden")
+	default:
+		return nil, errors.New("forbidden")
 	}
-
-	// TODO: добавить проверку на то, что у ресторана и курьера есть активный заках с юзером
 
 	return s.repo.GetById(userId)
 }
