@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -67,14 +68,17 @@ func (r *UserPg) GetByCredentials(phone, password string) (*domain.User, error) 
 func (r *UserPg) GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Order, error) {
 	var orders []*domain.Order
 
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
-	leftBorderStatus := consts.OrderCreated
-	rightBorderStatus := consts.OrderDelivered
+	var query string
+	var rows *sql.Rows
+	var err error
+
 	if activeOrdersFlag {
-		leftBorderStatus = consts.OrderPaid
-		rightBorderStatus = consts.OrderEnRoute
+		query = fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
+		rows, err = r.db.Query(query, userId, consts.OrderPaid, consts.OrderEnRoute)
+	} else {
+		query = fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, ordersTable)
+		rows, err = r.db.Query(query, userId)
 	}
-	rows, err := r.db.Query(query, userId, leftBorderStatus, rightBorderStatus)
 
 	if err != nil {
 		return nil, err
