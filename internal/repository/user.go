@@ -117,12 +117,6 @@ func (r *UserPg) Update(userId int, input *domain.User) error {
 		argId++
 	}
 
-	if input.Phone != "" {
-		setValues = append(setValues, fmt.Sprintf("phone=$%d", argId))
-		args = append(args, input.Phone)
-		argId++
-	}
-
 	if input.Email != "" {
 		setValues = append(setValues, fmt.Sprintf("email=$%d", argId))
 		args = append(args, input.Email)

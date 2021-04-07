@@ -116,7 +116,13 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 	})
 }
 
-type userUpdate userSignUpInput
+type userUpdate struct {
+	Name      string  `json:"name"`
+	Password  string  `json:"password" valid:"required,length(8|50)"`
+	Email     string  `json:"email" valid:"email"`
+	Latitude  float64 `json:"latitude" valid:"required,latitude"`
+	Longitude float64 `json:"longitude" valid:"required,longitude"`
+}
 
 // @Summary Update User
 // @Security UserAuth
@@ -131,7 +137,7 @@ type userUpdate userSignUpInput
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /couriers/{uid} [put]
+// @Router /users/{uid} [put]
 func (h *Handler) updateUser(ctx echo.Context) error {
 	var input userUpdate
 	clientId, clientType, err := h.getClientParams(ctx)
@@ -154,7 +160,6 @@ func (h *Handler) updateUser(ctx echo.Context) error {
 
 	update := &domain.User{
 		Name:     input.Name,
-		Phone:    input.Phone,
 		Password: input.Password,
 		Email:    input.Email,
 		Address: &domain.Location{
