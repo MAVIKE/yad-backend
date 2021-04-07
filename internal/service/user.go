@@ -48,3 +48,12 @@ func (s UserService) GetAllOrders(clientId int, clientType string, userId int) (
 
 	return s.repo.GetAllOrders(clientId)
 }
+
+func (s *UserService) Update(clientId int, clientType string, userId int, input *domain.User) error {
+
+	if !(clientType == userType && userId == clientId) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.Update(userId, input)
+}

@@ -13,6 +13,7 @@ type User interface {
 	Create(user *domain.User) (int, error)
 	GetByCredentials(phone, password string) (*domain.User, error)
 	GetAllOrders(userId int) ([]*domain.Order, error)
+	Update(userId int, input *domain.User) error
 }
 
 type Courier interface {
