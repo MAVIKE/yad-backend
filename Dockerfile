@@ -35,5 +35,6 @@ COPY --from=0 /github.com/MAVIKE/yad-backend/bin/app.out .
 COPY --from=0 /github.com/MAVIKE/yad-backend/wait-for-postgres.sh .
 COPY --from=0 /github.com/MAVIKE/yad-backend/configs/ ./configs/
 COPY --from=0 /github.com/MAVIKE/yad-backend/docs/ ./docs/
+COPY --from=0 /github.com/MAVIKE/yad-backend/docker-compose.yml .
 
 CMD ["./app.out"]
