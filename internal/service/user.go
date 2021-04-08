@@ -62,7 +62,10 @@ func (s *UserService) GetById(clientId int, clientType string, userId int) (*dom
 switchCheck:
 	switch clientType {
 	case userType:
-		break
+		if userId == clientId {
+			break switchCheck
+		}
+		return nil, errors.New("forbidden")
 	case restaurantType:
 		userOrders, err := s.repo.GetAllOrders(userId, true)
 		if err != nil {
