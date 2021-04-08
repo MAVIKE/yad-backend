@@ -12,6 +12,7 @@ env:
   REGISTRY: "registry.digitalocean.com/yad-backend"
   IMAGE_NAME: "yad-backend"
   CONTAINER_NAME: "yad-backend"
+  LOGS_PATH: "/root/yad-backend/api/logs/prod"
 
 jobs:
   lint:
@@ -114,6 +115,7 @@ jobs:
 
             # Run a new container from a new image
             docker run \
+            -v $(echo $LOGS_PATH):/logs -d \
             --restart always \
             --publish 9000:9000 \
             --name $(echo $CONTAINER_NAME) \
