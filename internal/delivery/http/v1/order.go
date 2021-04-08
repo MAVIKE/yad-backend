@@ -379,7 +379,7 @@ func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
 // @Summary Get All Orders
 // @Security UserAuth
 // @Security RestaurantAuth
-// @Tags users
+// @Tags orders
 // @Description get all orders for user
 // @ModuleID getAllOrders
 // @Accept  json

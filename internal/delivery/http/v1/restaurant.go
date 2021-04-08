@@ -64,13 +64,12 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 }
 
 type restaurantSignUpInput struct {
-	Name          string  `json:"name"`
-	Phone         string  `json:"phone" valid:"required,numeric,length(11|11)"`
-	Password      string  `json:"password" valid:"required,length(8|50)"`
-	Latitude      float64 `json:"latitude" valid:"required,latitude"`
-	Longitude     float64 `json:"longitude" valid:"required,longitude"`
-	WorkingStatus int     `json:"working_status"`
-	Image         string  `json:"image" valid:"required,length(1|200)"`
+	Name          string        `json:"name"`
+	Phone         string        `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password      string        `json:"password" valid:"required,length(8|50)"`
+	Address       locationInput `json:"address" valid:"required"`
+	WorkingStatus int           `json:"working_status"`
+	Image         string        `json:"image" valid:"required,length(1|200)"`
 }
 
 // @Summary Restaurant SignUp
@@ -105,8 +104,8 @@ func (h *Handler) restaurantsSignUp(ctx echo.Context) error {
 		Phone:    input.Phone,
 		Password: input.Password,
 		Address: &domain.Location{
-			Latitude:  input.Latitude,
-			Longitude: input.Longitude,
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
 		},
 		WorkingStatus: input.WorkingStatus,
 		Image:         input.Image,
@@ -256,6 +255,7 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurant)
 }
 
+// TODO: move to another package (pkg?)
 func RandomString(n int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
