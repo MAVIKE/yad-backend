@@ -42,3 +42,11 @@ func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId in
 
 	return menuItem, nil
 }
+
+func (s *MenuItemService) UpdateMenuItem(clientId int, clientType string, restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error {
+	if !(clientType == restaurantType && restaurantId == clientId) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.UpdateMenuItem(restaurantId, menuItemId, categoryId, input)
+}
