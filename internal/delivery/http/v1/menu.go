@@ -94,7 +94,7 @@ type menuItemUpdate struct {
 	Image       string `json:"image"`
 	Description string `json:"description"`
 	Price       int    `json:"price"`
-	CategoryId  int	   `json:"category_id"`
+	CategoryId  int    `json:"category_id"`
 }
 
 // @Summary Update Menu Item

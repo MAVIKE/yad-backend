@@ -16,6 +16,11 @@ type Handler struct {
 	tokenManager *auth.Manager
 }
 
+type locationInput struct {
+	Latitude  float64 `json:"latitude" valid:"required,latitude"`
+	Longitude float64 `json:"longitude" valid:"required,longitude"`
+}
+
 func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler {
 	return &Handler{
 		services:     services,
