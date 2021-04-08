@@ -90,10 +90,10 @@ func (h *Handler) getMenuItemById(ctx echo.Context) error {
 }
 
 type menuItemUpdate struct {
-	Title       string `json:"title" db:"title"`
-	Image       string `json:"image" db:"image"`
-	Description string `json:"description" db:"description"`
-	Price       int    `json:"price" db:"price"`
+	Title       string `json:"title"`
+	Image       string `json:"image"`
+	Description string `json:"description"`
+	Price       int    `json:"price"`
 	CategoryId  int	   `json:"category_id"`
 }
 
