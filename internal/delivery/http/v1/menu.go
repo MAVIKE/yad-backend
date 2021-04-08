@@ -111,7 +111,7 @@ type menuItemUpdate struct {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/menu/{id}}[put]
+// @Router /restaurants/{rid}/menu/{id} [put]
 func (h *Handler) updateMenuItem(ctx echo.Context) error {
 	var input menuItemUpdate
 	clientId, clientType, err := h.getClientParams(ctx)
