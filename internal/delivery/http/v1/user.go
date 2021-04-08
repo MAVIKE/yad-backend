@@ -22,6 +22,7 @@ func (h *Handler) initUserRoutes(api *echo.Group) {
 		users.POST("/sign-in", h.usersSignIn)
 		users.Use(h.identity)
 		users.PUT("/:uid", h.updateUser)
+		users.GET("/:uid", h.getUserById)
 	}
 }
 
@@ -175,4 +176,38 @@ func (h *Handler) updateUser(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Get User By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags users
+// @Description get user by id
+// @ModuleID getUserById
+// @Accept  json
+// @Produce  json
+// @Param id path string true "user id"
+// @Success 200 {object} domain.User
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/{id} [get]
+func (h *Handler) getUserById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	userId, err := strconv.Atoi(ctx.Param("uid"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid user")
+	}
+
+	user, err := h.services.User.GetById(clientId, clientType, userId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, user)
 }

@@ -57,3 +57,40 @@ func (s *UserService) Update(clientId int, clientType string, userId int, input 
 
 	return s.repo.Update(userId, input)
 }
+
+func (s *UserService) GetById(clientId int, clientType string, userId int) (*domain.User, error) {
+switchCheck:
+	switch clientType {
+	case userType:
+		if userId == clientId {
+			break switchCheck
+		}
+		return nil, errors.New("forbidden")
+	case restaurantType:
+		userOrders, err := s.repo.GetAllOrders(userId, true)
+		if err != nil {
+			return nil, errors.New("forbidden")
+		}
+		for _, order := range userOrders {
+			if order.RestaurantId == clientId {
+				break switchCheck
+			}
+		}
+		return nil, errors.New("forbidden")
+	case courierType:
+		userOrders, err := s.repo.GetAllOrders(userId, true)
+		if err != nil {
+			return nil, errors.New("forbidden")
+		}
+		for _, order := range userOrders {
+			if order.CourierId == clientId {
+				break switchCheck
+			}
+		}
+		return nil, errors.New("forbidden")
+	default:
+		return nil, errors.New("forbidden")
+	}
+
+	return s.repo.GetById(userId)
+}
