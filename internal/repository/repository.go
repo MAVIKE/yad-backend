@@ -55,6 +55,7 @@ type Order interface {
 type MenuItem interface {
 	GetById(menuItemId int) (*domain.MenuItem, error)
 	UpdateMenuItem(restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
+	Create(menuItem *domain.MenuItem, categoryId int) (int, error)
 }
 
 type Repository struct {

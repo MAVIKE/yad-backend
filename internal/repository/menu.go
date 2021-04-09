@@ -127,3 +127,36 @@ func (r *MenuItemPg) UpdateMenuItem(restaurantId int, menuItemId int, categoryId
 
 	return tx.Commit()
 }
+
+func (r *MenuItemPg) Create(menuItem *domain.MenuItem, categoryId int) (int, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	var menuItemId int
+
+	query := fmt.Sprintf(
+		`INSERT INTO %s (restaurant_id, title, image, description, price)
+		VALUES ($1, $2, $3, $4, $5) RETURNING id`, menuItemsTable)
+	row := r.db.QueryRow(query, menuItem.RestaurantId, menuItem.Title, menuItem.Image, menuItem.Description,
+		menuItem.Price)
+	err = row.Scan(&menuItemId)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	var categoryItemsId int
+	query = fmt.Sprintf(
+		`INSERT INTO %s (category_id, menu_item_id)
+		VALUES ($1, $2) RETURNING id`, categoryItemsTable)
+	row = r.db.QueryRow(query, categoryId, menuItemId)
+	err = row.Scan(&categoryItemsId)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	return menuItemId, tx.Commit()
+}
