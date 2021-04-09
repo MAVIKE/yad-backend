@@ -1,4 +1,4 @@
-name: main-CI-CD
+name: stage-CI-CD
 
 on:
   push:
@@ -79,7 +79,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    needs: [lint, swag, test]
+    needs: [lint, swag, build, test]
 
     steps:
       - name: Checkout develop
@@ -131,7 +131,7 @@ jobs:
             docker run \
             -v $(echo $LOGS_PATH):/logs -d \
             --restart always \
-            --publish 9000:9000 \
+            --publish 9001:9000 \
             --name $(echo $CONTAINER_NAME) \
             --link=yad-backend-stage-db:db \
             -v main-yad:/img \

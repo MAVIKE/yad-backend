@@ -1,4 +1,4 @@
-name: stage-CI-CD
+name: main-CI-CD
 
 on:
   push:
@@ -79,7 +79,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    needs: [lint, swag, test]
+    needs: [lint, swag, build, test]
 
     steps:
       - name: Checkout fb-70-ci-cd-configuration
