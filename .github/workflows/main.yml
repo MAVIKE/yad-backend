@@ -134,5 +134,5 @@ jobs:
             --publish 9000:9000 \
             --name $(echo $CONTAINER_NAME) \
             --link=yad-backend-db:db \
-            -v main-img:/img \
+            -v main-img:/root/img \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
