@@ -20,8 +20,14 @@ RUN go mod download -x
 RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN make swag
 
+# copy config
+RUN if [ "$MODE" = "stage" ]; then \
+    make stage_config; \
+    else \
+    make config; \
+    fi
+
 # build go app
-RUN make config
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/app.out ./cmd/app/main.go
 
 FROM alpine:latest

@@ -1,0 +1,16 @@
+port: ":9001"
+
+db:
+  name: "docker_db"
+
+token:
+  signing_key: "qrkjk#4#%35FSFJlja#4353KSFjH"
+  access_token_ttl: 720
+
+docker_db:
+  username: "postgres"
+  password: "1234"
+  host: "db"
+  port: "5433"
+  dbname: "postgres"
+  sslmode: "disable"
