@@ -10,9 +10,9 @@ on:
 
 env:
   REGISTRY: "registry.digitalocean.com/yad-backend"
-  IMAGE_NAME: "yad-backend"
+  IMAGE_NAME: "yad-backend-stage"
   CONTAINER_NAME: "yad-backend-stage"
-  LOGS_PATH: "/root/yad-backend/api/logs/prod"
+  LOGS_PATH: "/root/yad-backend-stage/api/logs/prod"
 
 jobs:
   lint:
@@ -54,7 +54,7 @@ jobs:
         with:
           go-version: '1.15'
 
-      - name: Checkout code
+      - name: Checkout develop
         uses: actions/checkout@v2
 
       - name: Build app
@@ -63,9 +63,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout develop
-        uses: actions/checkout@v2
-
       - name: Set up Go 1.15
         uses: actions/setup-go@v2
         with:
@@ -134,5 +131,5 @@ jobs:
             --publish 9001:9000 \
             --name $(echo $CONTAINER_NAME) \
             --link=yad-backend-stage-db:db \
-            -v main-yad:/img \
+            -v stage-img:/img \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)

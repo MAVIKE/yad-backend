@@ -3,10 +3,10 @@ name: main-CI-CD
 on:
   push:
     branches:
-      - fb-70-ci-cd-configuration
+      - main
   pull_request:
     branches:
-      - fb-70-ci-cd-configuration
+      - main
 
 env:
   REGISTRY: "registry.digitalocean.com/yad-backend"
@@ -24,7 +24,7 @@ jobs:
         with:
           go-version: '1.15'
 
-      - name: Checkout fb-70-ci-cd-configuration
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Run lint
@@ -39,7 +39,7 @@ jobs:
         with:
           go-version: '1.15'
 
-      - name: Checkout fb-70-ci-cd-configuration
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Generate swagger
@@ -54,7 +54,7 @@ jobs:
         with:
           go-version: '1.15'
 
-      - name: Checkout code
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Build app
@@ -63,15 +63,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout fb-70-ci-cd-configuration
-        uses: actions/checkout@v2
-
       - name: Set up Go 1.15
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
 
-      - name: Checkout fb-70-ci-cd-configuration
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Test
@@ -82,7 +79,7 @@ jobs:
     needs: [lint, swag, build, test]
 
     steps:
-      - name: Checkout fb-70-ci-cd-configuration
+      - name: Checkout main
         uses: actions/checkout@v2
 
       - name: Build container image
