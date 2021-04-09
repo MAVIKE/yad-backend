@@ -2,10 +2,7 @@ version: '3.8'
 
 services:
   app:
-    restart: always
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    build: ./Dockerfile
     ports:
       - 9000:9000
     depends_on:
