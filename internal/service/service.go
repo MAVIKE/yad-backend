@@ -38,6 +38,7 @@ type Restaurant interface {
 	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
 	SignUp(restaurant *domain.Restaurant, clientType string) (int, error)
 	UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error)
+	DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error
 }
 
 type Courier interface {

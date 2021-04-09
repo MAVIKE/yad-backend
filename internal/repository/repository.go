@@ -31,6 +31,7 @@ type Restaurant interface {
 	GetMenu(restaurantId int) ([]*domain.MenuItem, error)
 	Create(restaurant *domain.Restaurant) (int, error)
 	UpdateImage(restaurantId int, image string) error
+	DeleteCategory(restaurantId int, categoryId int) error
 }
 
 type Category interface {
