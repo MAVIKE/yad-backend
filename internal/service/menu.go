@@ -65,3 +65,23 @@ func (s *MenuItemService) Create(clientId int, clientType string, menuItem *doma
 
 	return s.repo.Create(menuItem, categoryId)
 }
+
+func (s *MenuItemService) UpdateImage(clientId int, clientType string, restaurantId int, menuItemId int, image string) (*domain.MenuItem, error) {
+	if clientType != restaurantType || restaurantId != clientId {
+		return nil, errors.New("Forbidden")
+	}
+
+	menuItem, err := s.repo.GetById(menuItemId)
+	if err != nil {
+		return nil, err
+	}
+	if menuItem.RestaurantId != restaurantId {
+		return nil, errors.New("No such menu item for this restaurant")
+	}
+
+	if err := s.repo.UpdateImage(menuItemId, image); err != nil {
+		return nil, err
+	}
+
+	return s.repo.GetById(menuItemId)
+}
