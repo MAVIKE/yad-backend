@@ -215,8 +215,7 @@ type orderUpdate struct {
 // @Router /orders/{oid} [put]
 func (h *Handler) updateOrder(ctx echo.Context) error {
 	var input orderUpdate
-	_, _, err := h.getClientParams(ctx)
-
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -232,6 +231,15 @@ func (h *Handler) updateOrder(ctx echo.Context) error {
 
 	if _, err := govalidator.ValidateStruct(input); err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	update := &domain.Order{
+		Status: input.Status,
+	}
+
+	err = h.services.Order.Update(clientId, clientType, orderId, update)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, nil)

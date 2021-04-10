@@ -87,6 +87,37 @@ func (s *OrderService) Delete(clientId int, clientType string, orderId int) erro
 	return s.repo.Delete(orderId)
 }
 
+func (s *OrderService) Update(clientId int, clientType string, orderId int, input *domain.Order) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("Order not found")
+		}
+		return err
+	}
+
+	if (input.Status - order.Status) != 1 {
+		return errors.New("Invalid new order status")
+	}
+
+	switch input.Status {
+	case consts.OrderPaid:
+		break
+	case consts.OrderPreparing:
+		break
+	case consts.OrderWaitingForCourier:
+		break
+	case consts.OrderEnRoute:
+		break
+	case consts.OrderDelivered:
+		break
+	default:
+		return errors.New("Order status input error")
+	}
+
+	return s.repo.Update(orderId, input)
+}
+
 func (s *OrderService) GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error) {
 	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
 		return nil, errors.New("Forbidden")

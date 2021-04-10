@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -56,6 +57,50 @@ func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
 func (r *OrderPg) Delete(orderId int) error {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, ordersTable)
 	_, err := r.db.Exec(query, orderId)
+	return err
+}
+
+func (r *OrderPg) Update(orderId int, input *domain.Order) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.CourierId != 0 {
+		setValues = append(setValues, fmt.Sprintf("courier_id=$%d", argId))
+		args = append(args, input.CourierId)
+		argId++
+	}
+
+	// TODO: будут ли обновляться общая стоимость и стоимость доставки в этом методе?
+	if input.DeliveryPrice != 0 {
+		setValues = append(setValues, fmt.Sprintf("delivery_price=$%d", argId))
+		args = append(args, input.DeliveryPrice)
+		argId++
+	}
+
+	if input.TotalPrice != 0 {
+		setValues = append(setValues, fmt.Sprintf("total_price=$%d", argId))
+		args = append(args, input.TotalPrice)
+		argId++
+	}
+
+	if input.Status != 0 {
+		setValues = append(setValues, fmt.Sprintf("status=$%d", argId))
+		args = append(args, input.Status)
+		argId++
+	}
+
+	if input.Paid != nil {
+		setValues = append(setValues, fmt.Sprintf("paid=$%d", argId))
+		args = append(args, input.Paid)
+		argId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=$%d`,
+		ordersTable, setQuery, argId)
+	args = append(args, orderId)
+	_, err := r.db.Exec(query, args...)
 
 	return err
 }
