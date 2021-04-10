@@ -233,7 +233,7 @@ func (h *Handler) createMenuItem(ctx echo.Context) error {
 // @Failure 400 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/menu/image [get]
+// @Router /restaurants/menu/image [get]
 func (h *Handler) getMenuItemImage(ctx echo.Context) error {
 	_, _, err := h.getClientParams(ctx)
 	if err != nil {

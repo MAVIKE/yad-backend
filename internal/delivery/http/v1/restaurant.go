@@ -247,7 +247,7 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	if err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
-	
+
 	if !isImage(file.Filename) {
 		return newResponse(ctx, http.StatusBadRequest, errors.New("not image").Error())
 	}
