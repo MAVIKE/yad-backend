@@ -153,9 +153,14 @@ func (r *RestaurantPg) DeleteCategory(restaurantId int, categoryId int) error {
 	query := fmt.Sprintf(`SELECT id FROM %s WHERE restaurant_id = $1 AND id = $2`, categoriesTable)
 	row := r.db.QueryRow(query, restaurantId, categoryId)
 	err = row.Scan(&id)
-	if err == sql.ErrNoRows {
-		_ = tx.Rollback()
-		return errors.New("category does not belong to this restaurant")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			_ = tx.Rollback()
+			return errors.New("category does not belong to this restaurant")
+		} else {
+			_ = tx.Rollback()
+			return err
+		}
 	}
 
 	query = fmt.Sprintf(`DELETE FROM %s WHERE category_id = $1`, categoryItemsTable)
