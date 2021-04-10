@@ -88,6 +88,7 @@ func (s *OrderService) Delete(clientId int, clientType string, orderId int) erro
 	return s.repo.Delete(orderId)
 }
 
+// TODO: обновление общей стоимости заказа лучше сделать в методах добавления, обновления, удаления позиции заказа
 func (s *OrderService) Update(clientId int, clientType string, orderId int, input *domain.Order) error {
 	order, err := s.repo.GetById(orderId)
 	if err != nil {
@@ -122,14 +123,17 @@ func (s *OrderService) Update(clientId int, clientType string, orderId int, inpu
 
 		input.CourierId = courierId
 		break
-
-	case consts.OrderPreparing:
+	case consts.OrderPreparing, consts.OrderWaitingForCourier:
+		if !(clientType == restaurantType && order.RestaurantId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
 		break
-	case consts.OrderWaitingForCourier:
-		break
-	case consts.OrderEnRoute:
-		break
-	case consts.OrderDelivered:
+	case consts.OrderEnRoute, consts.OrderDelivered:
+		if !(clientType == courierType && order.CourierId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
 		break
 	default:
 		return errors.New("Order status input error")

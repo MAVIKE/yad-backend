@@ -71,19 +71,6 @@ func (r *OrderPg) Update(orderId int, input *domain.Order) error {
 		argId++
 	}
 
-	// TODO: будут ли обновляться общая стоимость и стоимость доставки в этом методе?
-	if input.DeliveryPrice != 0 {
-		setValues = append(setValues, fmt.Sprintf("delivery_price=$%d", argId))
-		args = append(args, input.DeliveryPrice)
-		argId++
-	}
-
-	if input.TotalPrice != 0 {
-		setValues = append(setValues, fmt.Sprintf("total_price=$%d", argId))
-		args = append(args, input.TotalPrice)
-		argId++
-	}
-
 	if input.Status != 0 {
 		setValues = append(setValues, fmt.Sprintf("status=$%d", argId))
 		args = append(args, input.Status)
