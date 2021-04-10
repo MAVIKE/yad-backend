@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
@@ -139,4 +141,41 @@ func (r *RestaurantPg) UpdateImage(restaurantId int, image string) error {
 	query := fmt.Sprintf(`UPDATE %s AS r SET image = $1 WHERE r.id = $2`, restaurantsTable)
 	_, err := r.db.Exec(query, image, restaurantId)
 	return err
+}
+
+func (r *RestaurantPg) DeleteCategory(restaurantId int, categoryId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	id := 0
+	query := fmt.Sprintf(`SELECT id FROM %s WHERE restaurant_id = $1 AND id = $2`, categoriesTable)
+	row := r.db.QueryRow(query, restaurantId, categoryId)
+	err = row.Scan(&id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			_ = tx.Rollback()
+			return errors.New("category does not belong to this restaurant")
+		} else {
+			_ = tx.Rollback()
+			return err
+		}
+	}
+
+	query = fmt.Sprintf(`DELETE FROM %s WHERE category_id = $1`, categoryItemsTable)
+	_, err = r.db.Exec(query, categoryId)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	query = fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, categoriesTable)
+	_, err = r.db.Exec(query, categoryId)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }
