@@ -1,5 +1,11 @@
 APP=cmd/app/main.go
 
+docker_build:
+	docker-compose build app
+
+docker_run:
+	docker-compose up app
+
 build:
 	go build -o bin/app.out $(APP)
 
@@ -12,6 +18,9 @@ lint:
 
 config:
 	cp configs/config.yml.example configs/config.yml
+
+stage_config:
+	cp configs/stage-config.yml.example configs/config.yml
 
 swag:
 	swag init --parseDependency -d ./internal/delivery/http -o ./docs/swagger -g handler.go

@@ -8,12 +8,14 @@ import (
 )
 
 type MenuItemService struct {
-	repo repository.MenuItem
+	repo         repository.MenuItem
+	categoryRepo repository.Category
 }
 
-func NewMenuItemService(repo repository.MenuItem) *MenuItemService {
+func NewMenuItemService(repo repository.MenuItem, categoryRepo repository.Category) *MenuItemService {
 	return &MenuItemService{
-		repo: repo,
+		repo:         repo,
+		categoryRepo: categoryRepo,
 	}
 }
 
@@ -41,4 +43,25 @@ func (s *MenuItemService) GetById(clientId int, clientType string, menuItemId in
 	}
 
 	return menuItem, nil
+}
+
+func (s *MenuItemService) UpdateMenuItem(clientId int, clientType string, restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error {
+	if !(clientType == restaurantType && restaurantId == clientId) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.UpdateMenuItem(restaurantId, menuItemId, categoryId, input)
+}
+
+func (s *MenuItemService) Create(clientId int, clientType string, menuItem *domain.MenuItem, categoryId int) (int, error) {
+	if !(clientType == restaurantType && menuItem.RestaurantId == clientId) {
+		return 0, errors.New("forbidden")
+	}
+
+	category, err := s.categoryRepo.GetById(categoryId)
+	if clientId != category.RestaurantId || err != nil {
+		return 0, errors.New("forbidden")
+	}
+
+	return s.repo.Create(menuItem, categoryId)
 }

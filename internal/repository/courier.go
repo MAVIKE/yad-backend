@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type CourierPg struct {
@@ -81,4 +82,67 @@ func (r *CourierPg) GetById(courierId int) (*domain.Courier, error) {
 	courier.Address = location
 
 	return courier, err
+}
+
+func (r *CourierPg) Update(courierId int, input *domain.Courier) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
+	args = append(args, input.WorkingStatus)
+	argId++
+
+	if input.Name != "" {
+		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
+		args = append(args, input.Name)
+		argId++
+	}
+
+	if input.Password != "" {
+		setValues = append(setValues, fmt.Sprintf("password_hash=$%d", argId))
+		args = append(args, input.Password)
+		argId++
+	}
+
+	if input.Phone != "" {
+		setValues = append(setValues, fmt.Sprintf("phone=$%d", argId))
+		args = append(args, input.Phone)
+		argId++
+	}
+
+	if input.Email != "" {
+		setValues = append(setValues, fmt.Sprintf("email=$%d", argId))
+		args = append(args, input.Email)
+		argId++
+	}
+
+	if input.Address.Latitude != 0 && input.Address.Longitude != 0 {
+		query := fmt.Sprintf(`UPDATE %s as l
+								SET latitude = $1, longitude = $2
+								FROM %s as c
+								WHERE c.id = $3 AND c.address_id = l.id`, locationsTable, couriersTable)
+		_, err := r.db.Exec(query, input.Address.Latitude, input.Address.Longitude, courierId)
+		if err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=$%d`,
+		couriersTable, setQuery, argId)
+	args = append(args, courierId)
+
+	if _, err = tx.Exec(query, args...); err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS couriers (
     password_hash VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     address_id INT REFERENCES locations (id) ON DELETE CASCADE NOT NULL,
-    working_status INT NOT NULL
+    working_status INT NOT NULL CHECK (working_status BETWEEN 0 AND 2)
 );
 
 CREATE TABLE IF NOT EXISTS restaurants (

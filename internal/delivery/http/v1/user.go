@@ -2,9 +2,9 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
-
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo/v4"
 )
@@ -20,16 +20,18 @@ func (h *Handler) initUserRoutes(api *echo.Group) {
 	{
 		users.POST("/sign-up", h.usersSignUp)
 		users.POST("/sign-in", h.usersSignIn)
+		users.Use(h.identity)
+		users.PUT("/:uid", h.userUpdate)
+		users.GET("/:uid", h.getUserById)
 	}
 }
 
 type userSignUpInput struct {
-	Name      string  `json:"name"`
-	Phone     string  `json:"phone" valid:"required,numeric,length(11|11)"`
-	Password  string  `json:"password" valid:"required,length(8|50)"`
-	Email     string  `json:"email" valid:"email"`
-	Latitude  float64 `json:"latitude" valid:"required,latitude"`
-	Longitude float64 `json:"longitude" valid:"required,longitude"`
+	Name     string        `json:"name"`
+	Phone    string        `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password string        `json:"password" valid:"required,length(8|50)"`
+	Email    string        `json:"email" valid:"email"`
+	Address  locationInput `json:"address" valid:"required"`
 }
 
 // @Summary User SignUp
@@ -61,8 +63,8 @@ func (h *Handler) usersSignUp(ctx echo.Context) error {
 		Password: input.Password,
 		Email:    input.Email,
 		Address: &domain.Location{
-			Latitude:  input.Latitude,
-			Longitude: input.Longitude,
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
 		},
 	}
 
@@ -112,4 +114,98 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
 	})
+}
+
+type userUpdateInput struct {
+	Name     string        `json:"name"`
+	Password string        `json:"password" valid:"required,length(8|50)"`
+	Email    string        `json:"email" valid:"email"`
+	Address  locationInput `json:"address" valid:"required"`
+}
+
+// @Summary Update User
+// @Security UserAuth
+// @Tags users
+// @Description update user
+// @ModuleID userUpdate
+// @Accept  json
+// @Produce  json
+// @Param uid path string true "User id"
+// @Param input body userUpdateInput true "user update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/{uid} [put]
+func (h *Handler) userUpdate(ctx echo.Context) error {
+	var input userUpdateInput
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	userId, err := strconv.Atoi(ctx.Param("uid"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid userId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	update := &domain.User{
+		Name:     input.Name,
+		Password: input.Password,
+		Email:    input.Email,
+		Address: &domain.Location{
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
+		},
+	}
+
+	err = h.services.User.Update(clientId, clientType, userId, update)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Get User By Id
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags users
+// @Description get user by id
+// @ModuleID getUserById
+// @Accept  json
+// @Produce  json
+// @Param id path string true "user id"
+// @Success 200 {object} domain.User
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/{id} [get]
+func (h *Handler) getUserById(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	userId, err := strconv.Atoi(ctx.Param("uid"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid user")
+	}
+
+	user, err := h.services.User.GetById(clientId, clientType, userId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, user)
 }

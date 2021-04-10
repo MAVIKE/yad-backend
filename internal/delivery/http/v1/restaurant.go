@@ -1,7 +1,11 @@
 package v1
 
 import (
+	"github.com/labstack/echo/v4/middleware"
+	"io"
+	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -17,6 +21,8 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.POST("/sign-up", h.restaurantsSignUp)
 		restaurants.GET("/", h.getRestaurants)
 		restaurants.GET("/:rid", h.getRestaurantById)
+		restaurants.GET("/image", h.getRestaurantImage)
+		restaurants.PUT("/:rid/image", h.updateRestaurantImage, middleware.BodyLimit("10M"))
 	}
 }
 
@@ -58,13 +64,12 @@ func (h *Handler) restaurantsSignIn(ctx echo.Context) error {
 }
 
 type restaurantSignUpInput struct {
-	Name          string  `json:"name"`
-	Phone         string  `json:"phone" valid:"required,numeric,length(11|11)"`
-	Password      string  `json:"password" valid:"required,length(8|50)"`
-	Latitude      float64 `json:"latitude" valid:"required,latitude"`
-	Longitude     float64 `json:"longitude" valid:"required,longitude"`
-	WorkingStatus int     `json:"working_status"`
-	Image         string  `json:"image" valid:"required,length(1|200)"`
+	Name          string        `json:"name"`
+	Phone         string        `json:"phone" valid:"required,numeric,length(11|11)"`
+	Password      string        `json:"password" valid:"required,length(8|50)"`
+	Address       locationInput `json:"address" valid:"required"`
+	WorkingStatus int           `json:"working_status"`
+	Image         string        `json:"image" valid:"required,length(1|200)"`
 }
 
 // @Summary Restaurant SignUp
@@ -99,8 +104,8 @@ func (h *Handler) restaurantsSignUp(ctx echo.Context) error {
 		Phone:    input.Phone,
 		Password: input.Password,
 		Address: &domain.Location{
-			Latitude:  input.Latitude,
-			Longitude: input.Longitude,
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
 		},
 		WorkingStatus: input.WorkingStatus,
 		Image:         input.Image,
@@ -174,4 +179,90 @@ func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, restaurant)
+}
+
+type imageInput struct {
+	Path string `json:"image"`
+}
+
+// TODO: swagger
+func (h *Handler) getRestaurantImage(ctx echo.Context) error {
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	var image imageInput
+
+	if err := ctx.Bind(&image); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, "Bad request")
+	}
+
+	return ctx.File(image.Path)
+}
+
+// TODO: swagger
+func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	// TODO: move checking to service
+	if clientType != "restaurant" && restaurantId != clientId {
+		return newResponse(ctx, http.StatusBadRequest, "Forbidden")
+	}
+
+	_, err = h.services.Restaurant.GetById(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	// TODO: check file extension
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+	defer src.Close()
+
+	// TODO: static dir
+	fileName := "img/restaurant_" + ctx.Param("rid") + "_" + RandomString(5) + "_" + file.Filename
+	dst, err := os.Create(fileName)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+	defer dst.Close()
+
+	if _, err = io.Copy(dst, src); err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurant, err := h.services.Restaurant.UpdateImage(clientId, clientType, restaurantId, fileName)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, restaurant)
+}
+
+// TODO: move to another package (pkg?)
+func RandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+
+	return string(s)
 }

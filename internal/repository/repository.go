@@ -12,12 +12,16 @@ type Admin interface {
 type User interface {
 	Create(user *domain.User) (int, error)
 	GetByCredentials(phone, password string) (*domain.User, error)
+	GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Order, error)
+	Update(userId int, input *domain.User) error
+	GetById(userId int) (*domain.User, error)
 }
 
 type Courier interface {
 	Create(courier *domain.Courier) (int, error)
 	GetByCredentials(phone, password string) (*domain.Courier, error)
 	GetById(courierId int) (*domain.Courier, error)
+	Update(courierId int, input *domain.Courier) error
 }
 
 type Restaurant interface {
@@ -26,6 +30,7 @@ type Restaurant interface {
 	GetById(restaurantId int) (*domain.Restaurant, error)
 	GetMenu(restaurantId int) ([]*domain.MenuItem, error)
 	Create(restaurant *domain.Restaurant) (int, error)
+	UpdateImage(restaurantId int, image string) error
 }
 
 type Category interface {
@@ -37,16 +42,20 @@ type Category interface {
 
 type Order interface {
 	Create(order *domain.Order) (int, error)
-	GetAllItems(orderId int) ([]*domain.OrderItem, error)
 	GetById(orderId int) (*domain.Order, error)
+	GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
+	GetAllItems(orderId int) ([]*domain.OrderItem, error)
 	GetItemById(orderItemId int) (*domain.OrderItem, error)
 	UpdateItem(orderItemId, menuItemsCount int) error
 	DeleteItem(orderItemId int, orderId int) error
+	GetActiveCourierOrder(courierId int) (*domain.Order, error)
 }
 
 type MenuItem interface {
 	GetById(menuItemId int) (*domain.MenuItem, error)
+	UpdateMenuItem(restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
+	Create(menuItem *domain.MenuItem, categoryId int) (int, error)
 }
 
 type Repository struct {

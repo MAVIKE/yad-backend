@@ -26,6 +26,9 @@ type Admin interface {
 type User interface {
 	SignIn(phone, password string) (*Tokens, error)
 	SignUp(user *domain.User) (int, error)
+	GetAllOrders(clientId int, clientType string, userId int, activeOrdersFlag bool) ([]*domain.Order, error)
+	Update(clientId int, clientType string, userId int, input *domain.User) error
+	GetById(clientId int, clientType string, userId int) (*domain.User, error)
 }
 
 type Restaurant interface {
@@ -34,12 +37,14 @@ type Restaurant interface {
 	SignIn(phone, password string) (*Tokens, error)
 	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
 	SignUp(restaurant *domain.Restaurant, clientType string) (int, error)
+	UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error)
 }
 
 type Courier interface {
 	SignIn(phone, password string) (*Tokens, error)
 	SignUp(courier *domain.Courier, clientType string) (int, error)
 	GetById(clientId int, clientType string, courierId int) (*domain.Courier, error)
+	Update(clientId int, clientType string, courierId int, input *domain.Courier) error
 }
 
 type Category interface {
@@ -51,16 +56,20 @@ type Category interface {
 
 type Order interface {
 	Create(clientId int, clientType string, order *domain.Order) (int, error)
-	GetAllItems(clientId int, clientType string, orderId int) ([]*domain.OrderItem, error)
 	GetById(clientId int, clientType string, orderId int) (*domain.Order, error)
+	GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error)
 	CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error)
+	GetAllItems(clientId int, clientType string, orderId int) ([]*domain.OrderItem, error)
 	GetItemById(clientId int, clientType string, orderId, orderItemId int) (*domain.OrderItem, error)
 	UpdateItem(clientId int, clientType string, orderId, orderItemId, menuItemsCount int) error
 	DeleteItem(clientId int, clientType string, orderId int, orderItemId int) error
+	GetActiveCourierOrder(clientId int, clientType string, courierId int) (*domain.Order, error)
 }
 
 type MenuItem interface {
 	GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error)
+	UpdateMenuItem(clientId int, clientType string, restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
+	Create(clientId int, clientType string, menuItem *domain.MenuItem, categoryId int) (int, error)
 }
 
 type Service struct {
@@ -83,10 +92,10 @@ func NewService(deps Deps) *Service {
 	return &Service{
 		Admin:      NewAdminService(deps.Repos.Admin, deps.TokenManager, deps.AccessTokenTTL),
 		User:       NewUserService(deps.Repos.User, deps.TokenManager, deps.AccessTokenTTL),
-		Courier:    NewCourierService(deps.Repos.Courier, deps.TokenManager, deps.AccessTokenTTL),
+		Courier:    NewCourierService(deps.Repos.Courier, deps.Repos.Order, deps.TokenManager, deps.AccessTokenTTL),
 		Restaurant: NewRestaurantService(deps.Repos.Restaurant, deps.TokenManager, deps.AccessTokenTTL),
 		Category:   NewCategoryService(deps.Repos.Category),
 		Order:      NewOrderService(deps.Repos.Order),
-		MenuItem:   NewMenuItemService(deps.Repos.MenuItem),
+		MenuItem:   NewMenuItemService(deps.Repos.MenuItem, deps.Repos.Category),
 	}
 }

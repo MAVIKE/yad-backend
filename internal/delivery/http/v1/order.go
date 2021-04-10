@@ -25,6 +25,23 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 			orderItems.PUT("/:id", h.updateOrderItem)
 		}
 	}
+	restaurants := api.Group("/restaurants")
+	{
+		restaurants.Use(h.identity)
+		restaurants.GET("/:rid/orders/", h.getActiveRestaurantOrders)
+	}
+
+	users := api.Group("/users")
+	{
+		users.Use(h.identity)
+		users.GET("/:id/orders", h.usersGetAllOrders)
+	}
+
+	couriers := api.Group("/couriers")
+	{
+		couriers.Use(h.identity)
+		couriers.GET("/:cid/orders", h.getActiveCourierOrder)
+	}
 }
 
 type orderInput struct {
@@ -325,4 +342,106 @@ func (h *Handler) updateOrderItem(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Get All Active Orders For Restaurant
+// @Security RestaurantAuth
+// @Tags orders
+// @Description get all active orders for restaurant
+// @ModuleID getActiveRestaurantOrders
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Success 200 {array} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/orders/ [get]
+func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	orders, err := h.services.Order.GetActiveRestaurantOrders(clientId, clientType, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orders)
+}
+
+// @Summary Get All Orders
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags orders
+// @Description get all orders for user
+// @ModuleID getAllOrders
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} domain.Order
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/:id/orders [get]
+func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	userId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || userId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid userId")
+	}
+
+	orderStatus := ctx.QueryParam("status")
+	activeOrdersFlag := false
+	if orderStatus == "active" {
+		activeOrdersFlag = true
+	}
+
+	orders, err := h.services.User.GetAllOrders(clientId, clientType, userId, activeOrdersFlag)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, orders)
+}
+
+// @Summary Get Active Order
+// @Security CourierAuth
+// @Tags couriers
+// @Description get active order for courier
+// @ModuleID getActiveCourierOrder
+// @Accept  json
+// @Produce  json
+// @Param cid path string true "Courier id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/{cid}/orders [get]
+func (h *Handler) getActiveCourierOrder(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	courierId, err := strconv.Atoi(ctx.Param("cid"))
+	if err != nil || courierId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	order, err := h.services.Order.GetActiveCourierOrder(clientId, clientType, courierId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, order)
 }
