@@ -160,3 +160,9 @@ func (r *MenuItemPg) Create(menuItem *domain.MenuItem, categoryId int) (int, err
 
 	return menuItemId, tx.Commit()
 }
+
+func (r *MenuItemPg) UpdateImage(menuItemId int, image string) error {
+	query := fmt.Sprintf(`UPDATE %s AS r SET image = $1 WHERE r.id = $2`, menuItemsTable)
+	_, err := r.db.Exec(query, image, menuItemId)
+	return err
+}
