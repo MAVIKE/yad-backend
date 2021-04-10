@@ -384,11 +384,13 @@ func (h *Handler) getActiveRestaurantOrders(ctx echo.Context) error {
 // @ModuleID getAllOrders
 // @Accept  json
 // @Produce  json
+// @Param uid path string true "User id"
+// @Param status query string false "Status"
 // @Success 200 {array} domain.Order
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /users/:id/orders [get]
+// @Router /users/{uid}/orders [get]
 func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -416,7 +418,7 @@ func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
 
 // @Summary Get Active Order
 // @Security CourierAuth
-// @Tags couriers
+// @Tags orders
 // @Description get active order for courier
 // @ModuleID getActiveCourierOrder
 // @Accept  json

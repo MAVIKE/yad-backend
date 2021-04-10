@@ -185,12 +185,12 @@ func (h *Handler) userUpdate(ctx echo.Context) error {
 // @ModuleID getUserById
 // @Accept  json
 // @Produce  json
-// @Param id path string true "user id"
+// @Param uid path string true "user id"
 // @Success 200 {object} domain.User
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /users/{id} [get]
+// @Router /users/{uid} [get]
 func (h *Handler) getUserById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {

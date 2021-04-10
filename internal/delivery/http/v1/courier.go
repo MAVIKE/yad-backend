@@ -124,12 +124,12 @@ func (h *Handler) couriersSignIn(ctx echo.Context) error {
 // @ModuleID getCourierById
 // @Accept  json
 // @Produce  json
-// @Param id path string true "Courier id"
+// @Param cid path string true "Courier id"
 // @Success 200 {object} domain.Courier
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /couriers/{id} [get]
+// @Router /couriers/{cid} [get]
 func (h *Handler) getCourierById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {

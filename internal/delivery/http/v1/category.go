@@ -116,12 +116,12 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param rid path string true "Restaurant id"
-// @Param id path string true "Category id"
+// @Param cid path string true "Category id"
 // @Success 200 {object} domain.Category
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/categories/{id} [get]
+// @Router /restaurants/{rid}/categories/{cid} [get]
 func (h *Handler) getCategoryById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
