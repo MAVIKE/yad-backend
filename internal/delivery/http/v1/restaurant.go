@@ -1,11 +1,11 @@
 package v1
 
 import (
+	"errors"
+	"github.com/MAVIKE/yad-backend/pkg/download"
+	"github.com/MAVIKE/yad-backend/pkg/random"
 	"github.com/labstack/echo/v4/middleware"
-	"io"
-	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -182,11 +182,19 @@ func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurant)
 }
 
-type imageInput struct {
-	Path string `json:"image"`
-}
-
-// TODO: swagger
+// @Summary Get Restaurant Image
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description get restaurant image
+// @ModuleID getRestaurantImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "binary file"
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/image [get]
 func (h *Handler) getRestaurantImage(ctx echo.Context) error {
 	_, _, err := h.getClientParams(ctx)
 	if err != nil {
@@ -202,7 +210,18 @@ func (h *Handler) getRestaurantImage(ctx echo.Context) error {
 	return ctx.File(image.Path)
 }
 
-// TODO: swagger
+// @Summary Update Restaurant Image
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description update restaurant image
+// @ModuleID updateRestaurantImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} domain.Restaurant
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/image [put]
 func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -224,27 +243,17 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	// TODO: check file extension
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
-
-	src, err := file.Open()
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	
+	if !isImage(file.Filename) {
+		return newResponse(ctx, http.StatusBadRequest, errors.New("not image").Error())
 	}
-	defer src.Close()
 
-	// TODO: static dir
-	fileName := "img/restaurant_" + ctx.Param("rid") + "_" + RandomString(5) + "_" + file.Filename
-	dst, err := os.Create(fileName)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-	defer dst.Close()
-
-	if _, err = io.Copy(dst, src); err != nil {
+	fileName := imageDir + "restaurant_" + ctx.Param("rid") + "_" + random.GetString(5) + "_" + file.Filename
+	if err := download.Download(file, fileName); err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
@@ -254,18 +263,6 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, restaurant)
-}
-
-// TODO: move to another package (pkg?)
-func RandomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
-	}
-
-	return string(s)
 }
 
 // @Summary Delete Category
