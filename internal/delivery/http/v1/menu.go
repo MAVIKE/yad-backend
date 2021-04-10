@@ -17,6 +17,7 @@ func (h *Handler) initMenuRoutes(api *echo.Group) {
 		menu.POST("/:rid/menu/", h.createMenuItem)
 		menu.GET("/:rid/menu/:id", h.getMenuItemById)
 		menu.PUT("/:rid/menu/:id", h.updateMenuItem)
+		menu.GET("/image", h.getMenuItemImage)
 	}
 }
 
@@ -212,4 +213,33 @@ func (h *Handler) createMenuItem(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: menuItemId,
 	})
+}
+
+// @Summary Get Menu Item Image
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description get menu item image
+// @ModuleID getMenuItemImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "binary file"
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /menu/image [get]
+func (h *Handler) getMenuItemImage(ctx echo.Context) error {
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	var image imageInput
+
+	if err := ctx.Bind(&image); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, "Bad request")
+	}
+
+	// TODO: check if img for menu/restaurant or make one function & endpoint ?
+	return ctx.File(image.Path)
 }
