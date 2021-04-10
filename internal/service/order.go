@@ -1,9 +1,11 @@
 package service
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 )
@@ -63,6 +65,26 @@ func (s *OrderService) GetById(clientId int, clientType string, orderId int) (*d
 	}
 
 	return order, nil
+}
+
+func (s *OrderService) Delete(clientId int, clientType string, orderId int) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("Order not found")
+		}
+		return err
+	}
+
+	if !(clientType == userType && order.UserId == clientId) {
+		return errors.New("Forbidden")
+	}
+
+	if order.Status != consts.OrderCreated {
+		return errors.New("You can't delete a paid order")
+	}
+
+	return s.repo.Delete(orderId)
 }
 
 func (s *OrderService) GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error) {

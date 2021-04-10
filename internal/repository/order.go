@@ -53,6 +53,13 @@ func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
 	return order, err
 }
 
+func (r *OrderPg) Delete(orderId int) error {
+	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, ordersTable)
+	_, err := r.db.Exec(query, orderId)
+
+	return err
+}
+
 func (r *OrderPg) GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, error) {
 	var orders []*domain.Order
 

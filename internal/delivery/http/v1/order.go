@@ -173,7 +173,7 @@ func (h *Handler) getOrderById(ctx echo.Context) error {
 // @Failure default {object} response
 // @Router /orders/{oid} [delete]
 func (h *Handler) deleteOrder(ctx echo.Context) error {
-	_, _, err := h.getClientParams(ctx)
+	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -183,10 +183,10 @@ func (h *Handler) deleteOrder(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
 	}
 
-	// err = h.services.Order.Delete(clientId, clientType, orderId, orderItemId)
-	// if err != nil {
-	// 	return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	// }
+	err = h.services.Order.Delete(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
 
 	return ctx.JSON(http.StatusOK, nil)
 }
