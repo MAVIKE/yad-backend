@@ -162,3 +162,31 @@ func (r *OrderPg) GetActiveCourierOrder(courierId int) (*domain.Order, error) {
 
 	return order, err
 }
+
+// TODO: стоит вынести в репозиторий курьера
+func (r *OrderPg) GetNearestCourierId(userId int) (int, error) {
+	var courierId int
+
+	query := fmt.Sprintf(
+		`SELECT tmp.id FROM
+		(
+			SELECT c.id, get_distance(l.latitude, l.longitude, ua.latitude, ua.longitude) AS distance
+			FROM %s AS c
+				INNER JOIN %s AS l ON c.address_id = l.id,
+				(
+					SELECT ul.latitude, ul.longitude
+					FROM %s AS u
+						INNER JOIN %s AS ul ON u.address_id = ul.id
+					WHERE u.id = $1
+				) AS ua
+			WHERE c.working_status = $2
+			ORDER BY distance
+		) AS tmp
+		LIMIT 1`,
+		couriersTable, locationsTable, usersTable, locationsTable)
+
+	row := r.db.QueryRow(query, userId, consts.CourierWaiting)
+	err := row.Scan(&courierId)
+
+	return courierId, err
+}

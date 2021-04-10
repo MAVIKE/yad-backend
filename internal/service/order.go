@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -102,7 +103,26 @@ func (s *OrderService) Update(clientId int, clientType string, orderId int, inpu
 
 	switch input.Status {
 	case consts.OrderPaid:
+		if !(clientType == userType && order.UserId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
+
+		curTime := time.Now()
+		input.Paid = &curTime
+
+		courierId, err := s.repo.GetNearestCourierId(order.UserId)
+		if err != nil {
+			// TODO: свободного курьера может не быть - что делать?
+			if err == sql.ErrNoRows {
+				return errors.New("Free courier not found")
+			}
+			return err
+		}
+
+		input.CourierId = courierId
 		break
+
 	case consts.OrderPreparing:
 		break
 	case consts.OrderWaitingForCourier:

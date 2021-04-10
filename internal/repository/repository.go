@@ -53,6 +53,7 @@ type Order interface {
 	UpdateItem(orderItemId, menuItemsCount int) error
 	DeleteItem(orderItemId int, orderId int) error
 	GetActiveCourierOrder(courierId int) (*domain.Order, error)
+	GetNearestCourierId(userId int) (int, error)
 }
 
 type MenuItem interface {
