@@ -267,8 +267,8 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 
 type restaurantUpdateInput struct {
 	Name          string        `json:"name"`
-	Password      string        `json:"password" valid:"required,length(8|50)"`
-	Address       locationInput `json:"address" valid:"required"`
+	Password      string        `json:"password" valid:"length(8|50)"`
+	Address       locationInput `json:"address"`
 	WorkingStatus int           `json:"working_status"`
 }
 

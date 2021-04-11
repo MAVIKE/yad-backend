@@ -149,7 +149,13 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, courier)
 }
 
-type courierUpdate courierSignUpInput
+type courierUpdate struct {
+	Name          string        `json:"name"`
+	Password      string        `json:"password" valid:"length(8|50)"`
+	Email         string        `json:"email" valid:"email"`
+	Address       locationInput `json:"address"`
+	WorkingStatus int           `json:"working_status"`
+}
 
 // @Summary Update Courier
 // @Security CourierAuth
@@ -188,7 +194,6 @@ func (h *Handler) updateCourier(ctx echo.Context) error {
 
 	update := &domain.Courier{
 		Name:     input.Name,
-		Phone:    input.Phone,
 		Password: input.Password,
 		Email:    input.Email,
 		Address: &domain.Location{
