@@ -23,6 +23,7 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.GET("/:rid", h.getRestaurantById)
 		restaurants.GET("/image", h.getRestaurantImage)
 		restaurants.PUT("/:rid/image", h.updateRestaurantImage, middleware.BodyLimit("10M"))
+		restaurants.PUT("/:rid", h.updateRestaurant)
 	}
 }
 
@@ -262,4 +263,65 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, restaurant)
+}
+
+type restaurantUpdateInput struct {
+	Name          string        `json:"name"`
+	Password      string        `json:"password" valid:"length(8|50)"`
+	Address       locationInput `json:"address"`
+	WorkingStatus int           `json:"working_status"`
+}
+
+// @Summary Update Restaurant
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description update restaurant
+// @ModuleID updateRestaurant
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Param input body restaurantUpdateInput true "restaurant update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid} [put]
+func (h *Handler) updateRestaurant(ctx echo.Context) error {
+	var input restaurantUpdateInput
+
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	update := &domain.Restaurant{
+		Name:     input.Name,
+		Password: input.Password,
+		Address: &domain.Location{
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
+		},
+		WorkingStatus: input.WorkingStatus,
+	}
+
+	err = h.services.Restaurant.Update(clientId, clientType, restaurantId, update)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }

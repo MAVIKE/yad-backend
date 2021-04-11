@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"time"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -70,4 +71,18 @@ func (s *RestaurantService) UpdateImage(clientId int, clientType string, restaur
 	}
 
 	return s.repo.GetById(restaurantId)
+}
+
+func (s *RestaurantService) Update(clientId int, clientType string, restaurantId int, input *domain.Restaurant) error {
+	switch input.WorkingStatus {
+	case consts.RestaurantUnable, consts.RestaurantWorking:
+		break
+	default:
+		return errors.New("working_status input error")
+	}
+	if !(clientType == restaurantType && restaurantId == clientId || clientType == adminType) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.Update(restaurantId, input)
 }
