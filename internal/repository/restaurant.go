@@ -142,7 +142,7 @@ func (r *RestaurantPg) UpdateImage(restaurantId int, image string) error {
 	return err
 }
 
-func (r *RestaurantPg) Update(userId int, input *domain.Restaurant) error {
+func (r *RestaurantPg) Update(restaurantId int, input *domain.Restaurant) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -173,7 +173,7 @@ func (r *RestaurantPg) Update(userId int, input *domain.Restaurant) error {
 								SET latitude = $1, longitude = $2
 								FROM %s as c
 								WHERE c.id = $3 AND c.address_id = l.id`, locationsTable, restaurantsTable)
-		_, err := r.db.Exec(query, input.Address.Latitude, input.Address.Longitude, userId)
+		_, err := r.db.Exec(query, input.Address.Latitude, input.Address.Longitude, restaurantId)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -183,7 +183,7 @@ func (r *RestaurantPg) Update(userId int, input *domain.Restaurant) error {
 	setQuery := strings.Join(setValues, ", ")
 	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=$%d`,
 		restaurantsTable, setQuery, argId)
-	args = append(args, userId)
+	args = append(args, restaurantId)
 
 	if _, err = tx.Exec(query, args...); err != nil {
 		_ = tx.Rollback()
