@@ -1,5 +1,15 @@
 # Yet Another Delivery Backend
 
+[![default-CI](https://github.com/MAVIKE/yad-backend/actions/workflows/default.yml/badge.svg)](https://github.com/MAVIKE/yad-backend/actions/workflows/default.yml)
+[![main-CI-CD](https://github.com/MAVIKE/yad-backend/actions/workflows/main.yml/badge.svg)](https://github.com/MAVIKE/yad-backend/actions/workflows/main.yml)
+[![stage-CI-CD](https://github.com/MAVIKE/yad-backend/actions/workflows/stage.yml/badge.svg)](https://github.com/MAVIKE/yad-backend/actions/workflows/stage.yml)
+[![Go Report Card](https://goreportcard.com/report/github.com/MAVIKE/yad-backend)](https://goreportcard.com/report/github.com/MAVIKE/yad-backend)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/MAVIKE/yad-backend)
+![Lines of code](https://img.shields.io/tokei/lines/github/MAVIKE/yad-backend)
+![Github Repository Size](https://img.shields.io/github/repo-size/MAVIKE/yad-backend)
+![License](https://img.shields.io/badge/license-MIT-green)
+![GitHub last commit](https://img.shields.io/github/last-commit/MAVIKE/yad-backend)
+
 <!-- ToC start -->
 ## Содержание
 
