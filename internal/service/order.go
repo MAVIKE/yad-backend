@@ -120,21 +120,17 @@ func (s *OrderService) Update(clientId int, clientType string, orderId int, inpu
 			}
 			return err
 		}
-
 		input.CourierId = courierId
-		break
 	case consts.OrderPreparing, consts.OrderWaitingForCourier:
 		if !(clientType == restaurantType && order.RestaurantId == clientId) {
 			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
 			return errors.New(errMessage)
 		}
-		break
 	case consts.OrderEnRoute, consts.OrderDelivered:
 		if !(clientType == courierType && order.CourierId == clientId) {
 			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
 			return errors.New(errMessage)
 		}
-		break
 	default:
 		return errors.New("Order status input error")
 	}
