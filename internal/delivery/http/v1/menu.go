@@ -323,7 +323,7 @@ func (h *Handler) updateMenuItemImage(ctx echo.Context) error {
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/:rid/menu/:id [delete]
+// @Router /restaurants/{rid}/menu/{id} [delete]
 func (h *Handler) deleteMenuItem(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 

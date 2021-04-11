@@ -98,5 +98,7 @@ func (s *MenuItemService) Delete(clientId int, clientType string, restaurantId i
 		return errors.New(errMessage)
 	}
 
+	// TODO : добавить проверку на то, что данное блюдо есть в активных заказах
+
 	return s.repo.DeleteItem(menuItemId)
 }
