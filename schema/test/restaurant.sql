@@ -9,10 +9,10 @@ INSERT INTO restaurants (name, phone, password_hash, address_id, working_status,
 VALUES ('Restaurant2', '77777777777', 'password', 7, 1, 'img/image2.jpg');
 
 INSERT INTO menu_items (restaurant_id, title, image, description, price)
-VALUES (1, 'Big Tasty', 'Taratatata', 'Mmmmmmm', 1);
+VALUES (1, 'Big Tasty', 'Taratatata', 'Mmmmmmm', 200);
 
 INSERT INTO menu_items (restaurant_id, title, image, description, price)
-VALUES (1, 'Hamburger', 'image2', 'description2', 1);
+VALUES (1, 'Hamburger', 'image2', 'description2', 50);
 
 INSERT INTO menu_items (restaurant_id, title, image, description, price)
-VALUES (2, 'Margarita pizza', 'image3', 'description3', 1);
+VALUES (2, 'Margarita pizza', 'image3', 'description3', 400);
