@@ -2,9 +2,10 @@ package repository
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
-	"strings"
 )
 
 type RestaurantPg struct {
@@ -152,9 +153,11 @@ func (r *RestaurantPg) Update(restaurantId int, input *domain.Restaurant) error 
 	args := make([]interface{}, 0)
 	argId := 1
 
-	setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
-	args = append(args, input.WorkingStatus)
-	argId++
+	if input.WorkingStatus != 0 {
+		setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
+		args = append(args, input.WorkingStatus)
+		argId++
+	}
 
 	if input.Name != "" {
 		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
