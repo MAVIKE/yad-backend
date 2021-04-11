@@ -71,19 +71,3 @@ func (s *RestaurantService) UpdateImage(clientId int, clientType string, restaur
 
 	return s.repo.GetById(restaurantId)
 }
-
-func (s *RestaurantService) DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error {
-	if !(clientType == restaurantType && restaurantId == clientId) {
-		return errors.New("forbidden")
-	}
-
-	return s.repo.DeleteCategory(restaurantId, categoryId)
-}
-
-func (s *RestaurantService) UpdateCategory(clientId int, clientType string, restaurantId int, categoryId int, input *domain.Category) error {
-	if !(clientType == restaurantType && restaurantId == clientId) {
-		return errors.New("forbidden")
-	}
-
-	return s.repo.UpdateCategory(restaurantId, categoryId, input)
-}

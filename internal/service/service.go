@@ -38,8 +38,6 @@ type Restaurant interface {
 	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
 	SignUp(restaurant *domain.Restaurant, clientType string) (int, error)
 	UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error)
-	DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error
-	UpdateCategory(clientId int, clientType string, restaurantId int, categoryId int, input *domain.Category) error
 }
 
 type Courier interface {
@@ -54,6 +52,8 @@ type Category interface {
 	Create(clientId int, clientType string, category *domain.Category) (int, error)
 	GetById(clientId int, clientType string, restaurantId int, categoryId int) (*domain.Category, error)
 	GetAllItems(clientId int, clientType string, restaurantId int, categoryId int) ([]*domain.MenuItem, error)
+	DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error
+	UpdateCategory(clientId int, clientType string, restaurantId int, categoryId int, input *domain.Category) error
 }
 
 type Order interface {

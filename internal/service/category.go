@@ -70,3 +70,19 @@ func (s *CategoryService) GetAllItems(clientId int, clientType string, restauran
 
 	return menu, err
 }
+
+func (s *CategoryService) DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error {
+	if !(clientType == restaurantType && restaurantId == clientId) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.DeleteCategory(restaurantId, categoryId)
+}
+
+func (s *CategoryService) UpdateCategory(clientId int, clientType string, restaurantId int, categoryId int, input *domain.Category) error {
+	if !(clientType == restaurantType && restaurantId == clientId) {
+		return errors.New("forbidden")
+	}
+
+	return s.repo.UpdateCategory(restaurantId, categoryId, input)
+}
