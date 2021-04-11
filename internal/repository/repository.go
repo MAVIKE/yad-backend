@@ -61,6 +61,7 @@ type MenuItem interface {
 	UpdateMenuItem(restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
 	Create(menuItem *domain.MenuItem, categoryId int) (int, error)
 	UpdateImage(menuItemId int, image string) error
+	DeleteItem(menuItemId int) error
 }
 
 type Repository struct {

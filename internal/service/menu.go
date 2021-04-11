@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -84,4 +85,18 @@ func (s *MenuItemService) UpdateImage(clientId int, clientType string, restauran
 	}
 
 	return s.repo.GetById(menuItemId)
+}
+
+func (s *MenuItemService) Delete(clientId int, clientType string, restaurantId int, menuItemId int) error {
+	menuItem, err := s.repo.GetById(menuItemId)
+	if err != nil {
+		return err
+	}
+
+	if !(clientType == restaurantType && menuItem.RestaurantId == clientId && restaurantId == clientId) {
+		errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+		return errors.New(errMessage)
+	}
+
+	return s.repo.DeleteItem(menuItemId)
 }

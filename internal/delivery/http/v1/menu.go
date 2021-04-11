@@ -24,6 +24,7 @@ func (h *Handler) initMenuRoutes(api *echo.Group) {
 		// TODO: update query path
 		menu.GET("/menu/image", h.getMenuItemImage)
 		menu.PUT("/:rid/menu/:id/image", h.updateMenuItemImage, middleware.BodyLimit("10M"))
+		menu.DELETE("/:rid/menu/:id", h.deleteMenuItem)
 	}
 }
 
@@ -308,4 +309,42 @@ func (h *Handler) updateMenuItemImage(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, menuItem)
+}
+
+// @Summary Delete MenuItem
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description delete menu item
+// @ModuleID deleteMenuItem
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "MenuItem id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/:rid/menu/:id [delete]
+func (h *Handler) deleteMenuItem(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	menuItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || menuItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid menuItemId")
+	}
+
+	err = h.services.MenuItem.Delete(clientId, clientType, restaurantId, menuItemId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }
