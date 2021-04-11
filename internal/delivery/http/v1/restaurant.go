@@ -23,7 +23,6 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.GET("/:rid", h.getRestaurantById)
 		restaurants.GET("/image", h.getRestaurantImage)
 		restaurants.PUT("/:rid/image", h.updateRestaurantImage, middleware.BodyLimit("10M"))
-		restaurants.DELETE("/:rid/categories/:cid", h.deleteCategory)
 	}
 }
 
@@ -263,43 +262,4 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, restaurant)
-}
-
-// @Summary Delete Category
-// @Security RestaurantAuth
-// @Tags restaurants
-// @Description delete category
-// @ModuleID deleteCategory
-// @Accept  json
-// @Produce  json
-// @Param rid path string true "Restaurant id"
-// @Param cid path string true "Category id"
-// @Success 200 {object} response
-// @Failure 400,403,404 {object} response
-// @Failure 500 {object} response
-// @Failure default {object} response
-// @Router /restaurants/{rid}/menu/{cid} [delete]
-func (h *Handler) deleteCategory(ctx echo.Context) error {
-	clientId, clientType, err := h.getClientParams(ctx)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
-	if err != nil || restaurantId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
-	}
-
-	categoryId, err := strconv.Atoi(ctx.Param("cid"))
-	if err != nil || categoryId == 0 {
-		return newResponse(ctx, http.StatusBadRequest, "Invalid categoryId")
-	}
-
-	err = h.services.Restaurant.DeleteCategory(clientId, clientType, restaurantId, categoryId)
-
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, nil)
 }
