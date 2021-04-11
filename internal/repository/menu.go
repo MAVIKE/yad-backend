@@ -166,3 +166,26 @@ func (r *MenuItemPg) UpdateImage(menuItemId int, image string) error {
 	_, err := r.db.Exec(query, image, menuItemId)
 	return err
 }
+
+func (r *MenuItemPg) DeleteItem(menuItemId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf(`DELETE FROM %s WHERE menu_item_id = $1`, categoryItemsTable)
+	_, err = r.db.Exec(query, menuItemId)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	query = fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, menuItemsTable)
+	_, err = r.db.Exec(query, menuItemId)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}

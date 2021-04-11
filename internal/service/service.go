@@ -75,6 +75,7 @@ type MenuItem interface {
 	UpdateMenuItem(clientId int, clientType string, restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
 	Create(clientId int, clientType string, menuItem *domain.MenuItem, categoryId int) (int, error)
 	UpdateImage(clientId int, clientType string, restaurantId int, menuItemId int, image string) (*domain.MenuItem, error)
+	Delete(clientId int, clientType string, restaurantId int, menuItemId int) error
 }
 
 type Service struct {
