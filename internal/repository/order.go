@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -56,6 +57,37 @@ func (r *OrderPg) GetById(orderId int) (*domain.Order, error) {
 func (r *OrderPg) Delete(orderId int) error {
 	query := fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, ordersTable)
 	_, err := r.db.Exec(query, orderId)
+	return err
+}
+
+func (r *OrderPg) Update(orderId int, input *domain.Order) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.CourierId != 0 {
+		setValues = append(setValues, fmt.Sprintf("courier_id=$%d", argId))
+		args = append(args, input.CourierId)
+		argId++
+	}
+
+	if input.Status != 0 {
+		setValues = append(setValues, fmt.Sprintf("status=$%d", argId))
+		args = append(args, input.Status)
+		argId++
+	}
+
+	if input.Paid != nil {
+		setValues = append(setValues, fmt.Sprintf("paid=$%d", argId))
+		args = append(args, input.Paid)
+		argId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=$%d`,
+		ordersTable, setQuery, argId)
+	args = append(args, orderId)
+	_, err := r.db.Exec(query, args...)
 
 	return err
 }
@@ -116,4 +148,32 @@ func (r *OrderPg) GetActiveCourierOrder(courierId int) (*domain.Order, error) {
 	err := row.Scan(&order.Id, &order.UserId, &order.RestaurantId, &order.CourierId, &order.DeliveryPrice, &order.TotalPrice, &order.Status, &order.Paid)
 
 	return order, err
+}
+
+// TODO: стоит вынести в репозиторий курьера
+func (r *OrderPg) GetNearestCourierId(userId int) (int, error) {
+	var courierId int
+
+	query := fmt.Sprintf(
+		`SELECT tmp.id FROM
+		(
+			SELECT c.id, get_distance(l.latitude, l.longitude, ua.latitude, ua.longitude) AS distance
+			FROM %s AS c
+				INNER JOIN %s AS l ON c.address_id = l.id,
+				(
+					SELECT ul.latitude, ul.longitude
+					FROM %s AS u
+						INNER JOIN %s AS ul ON u.address_id = ul.id
+					WHERE u.id = $1
+				) AS ua
+			WHERE c.working_status = $2
+			ORDER BY distance
+		) AS tmp
+		LIMIT 1`,
+		couriersTable, locationsTable, usersTable, locationsTable)
+
+	row := r.db.QueryRow(query, userId, consts.CourierWaiting)
+	err := row.Scan(&courierId)
+
+	return courierId, err
 }

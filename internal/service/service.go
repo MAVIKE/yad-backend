@@ -59,6 +59,7 @@ type Order interface {
 	Create(clientId int, clientType string, order *domain.Order) (int, error)
 	GetById(clientId int, clientType string, orderId int) (*domain.Order, error)
 	Delete(clientId int, clientType string, orderId int) error
+	Update(clientId int, clientType string, orderId int, status *domain.Order) error
 	GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error)
 	CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error)
 	GetAllItems(clientId int, clientType string, orderId int) ([]*domain.OrderItem, error)

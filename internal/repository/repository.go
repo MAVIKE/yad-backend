@@ -45,6 +45,7 @@ type Order interface {
 	Create(order *domain.Order) (int, error)
 	GetById(orderId int) (*domain.Order, error)
 	Delete(orderId int) error
+	Update(orderId int, input *domain.Order) error
 	GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
 	GetAllItems(orderId int) ([]*domain.OrderItem, error)
@@ -52,6 +53,7 @@ type Order interface {
 	UpdateItem(orderItemId, menuItemsCount int) error
 	DeleteItem(orderItemId int, orderId int) error
 	GetActiveCourierOrder(courierId int) (*domain.Order, error)
+	GetNearestCourierId(userId int) (int, error)
 }
 
 type MenuItem interface {

@@ -16,6 +16,7 @@ func (h *Handler) initOrderRoutes(api *echo.Group) {
 		orders.POST("/", h.createOrder)
 		orders.GET("/:oid", h.getOrderById)
 		orders.DELETE("/:oid", h.deleteOrder)
+		orders.PUT("/:oid", h.updateOrder)
 
 		orderItems := orders.Group("/:oid/items")
 		{
@@ -174,6 +175,7 @@ func (h *Handler) getOrderById(ctx echo.Context) error {
 // @Router /orders/{oid} [delete]
 func (h *Handler) deleteOrder(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
+
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -184,6 +186,58 @@ func (h *Handler) deleteOrder(ctx echo.Context) error {
 	}
 
 	err = h.services.Order.Delete(clientId, clientType, orderId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+type orderUpdate struct {
+	Status int `json:"status" valid:"range(0|5)"`
+}
+
+// @Summary Update Order
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Security CourierAuth
+// @Tags orders
+// @Description update order
+// @ModuleID updateOrder
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "Order id"
+// @Param input body orderUpdate true "order update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /orders/{oid} [put]
+func (h *Handler) updateOrder(ctx echo.Context) error {
+	var input orderUpdate
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("oid"))
+	if err != nil || orderId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid orderId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	update := &domain.Order{
+		Status: input.Status,
+	}
+
+	err = h.services.Order.Update(clientId, clientType, orderId, update)
 	if err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}

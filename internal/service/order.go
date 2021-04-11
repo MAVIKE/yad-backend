@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -85,6 +86,56 @@ func (s *OrderService) Delete(clientId int, clientType string, orderId int) erro
 	}
 
 	return s.repo.Delete(orderId)
+}
+
+// TODO: обновление общей стоимости заказа лучше сделать в методах добавления, обновления, удаления позиции заказа
+func (s *OrderService) Update(clientId int, clientType string, orderId int, input *domain.Order) error {
+	order, err := s.repo.GetById(orderId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("Order not found")
+		}
+		return err
+	}
+
+	if (input.Status - order.Status) != 1 {
+		return errors.New("Invalid new order status")
+	}
+
+	switch input.Status {
+	case consts.OrderPaid:
+		if !(clientType == userType && order.UserId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
+
+		curTime := time.Now()
+		input.Paid = &curTime
+
+		courierId, err := s.repo.GetNearestCourierId(order.UserId)
+		if err != nil {
+			// TODO: свободного курьера может не быть - что делать?
+			if err == sql.ErrNoRows {
+				return errors.New("Free courier not found")
+			}
+			return err
+		}
+		input.CourierId = courierId
+	case consts.OrderPreparing, consts.OrderWaitingForCourier:
+		if !(clientType == restaurantType && order.RestaurantId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
+	case consts.OrderEnRoute, consts.OrderDelivered:
+		if !(clientType == courierType && order.CourierId == clientId) {
+			errMessage := fmt.Sprintf("Forbidden for %s", clientType)
+			return errors.New(errMessage)
+		}
+	default:
+		return errors.New("Order status input error")
+	}
+
+	return s.repo.Update(orderId, input)
 }
 
 func (s *OrderService) GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error) {
