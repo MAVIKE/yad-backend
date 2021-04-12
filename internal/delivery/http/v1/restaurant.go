@@ -1,11 +1,11 @@
 package v1
 
 import (
+	"errors"
+	"github.com/MAVIKE/yad-backend/pkg/download"
+	"github.com/MAVIKE/yad-backend/pkg/random"
 	"github.com/labstack/echo/v4/middleware"
-	"io"
-	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
@@ -23,6 +23,7 @@ func (h *Handler) initRestaurantRoutes(api *echo.Group) {
 		restaurants.GET("/:rid", h.getRestaurantById)
 		restaurants.GET("/image", h.getRestaurantImage)
 		restaurants.PUT("/:rid/image", h.updateRestaurantImage, middleware.BodyLimit("10M"))
+		restaurants.PUT("/:rid", h.updateRestaurant)
 	}
 }
 
@@ -181,11 +182,19 @@ func (h *Handler) getRestaurantById(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurant)
 }
 
-type imageInput struct {
-	Path string `json:"image"`
-}
-
-// TODO: swagger
+// @Summary Get Restaurant Image
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description get restaurant image
+// @ModuleID getRestaurantImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "binary file"
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/image [get]
 func (h *Handler) getRestaurantImage(ctx echo.Context) error {
 	_, _, err := h.getClientParams(ctx)
 	if err != nil {
@@ -201,7 +210,18 @@ func (h *Handler) getRestaurantImage(ctx echo.Context) error {
 	return ctx.File(image.Path)
 }
 
-// TODO: swagger
+// @Summary Update Restaurant Image
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description update restaurant image
+// @ModuleID updateRestaurantImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} domain.Restaurant
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/image [put]
 func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -223,27 +243,17 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	// TODO: check file extension
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	src, err := file.Open()
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	if !isImage(file.Filename) {
+		return newResponse(ctx, http.StatusBadRequest, errors.New("not image").Error())
 	}
-	defer src.Close()
 
-	// TODO: static dir
-	fileName := "img/restaurant_" + ctx.Param("rid") + "_" + RandomString(5) + "_" + file.Filename
-	dst, err := os.Create(fileName)
-	if err != nil {
-		return newResponse(ctx, http.StatusInternalServerError, err.Error())
-	}
-	defer dst.Close()
-
-	if _, err = io.Copy(dst, src); err != nil {
+	fileName := imageDir + "restaurant_" + ctx.Param("rid") + "_" + random.GetString(5) + "_" + file.Filename
+	if err := download.Download(file, fileName); err != nil {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
@@ -255,14 +265,63 @@ func (h *Handler) updateRestaurantImage(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, restaurant)
 }
 
-// TODO: move to another package (pkg?)
-func RandomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+type restaurantUpdateInput struct {
+	Name          string        `json:"name"`
+	Password      string        `json:"password" valid:"length(8|50)"`
+	Address       locationInput `json:"address"`
+	WorkingStatus int           `json:"working_status"`
+}
 
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
+// @Summary Update Restaurant
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description update restaurant
+// @ModuleID updateRestaurant
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Param input body restaurantUpdateInput true "restaurant update info"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid} [put]
+func (h *Handler) updateRestaurant(ctx echo.Context) error {
+	var input restaurantUpdateInput
+
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return string(s)
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	update := &domain.Restaurant{
+		Name:     input.Name,
+		Password: input.Password,
+		Address: &domain.Location{
+			Latitude:  input.Address.Latitude,
+			Longitude: input.Address.Longitude,
+		},
+		WorkingStatus: input.WorkingStatus,
+	}
+
+	err = h.services.Restaurant.Update(clientId, clientType, restaurantId, update)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }

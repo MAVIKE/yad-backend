@@ -5,8 +5,8 @@ const (
 	CourierWaiting = 1
 	CourierWorking = 2
 
-	RestaurantUnable  = 0
-	RestaurantWorking = 1
+	RestaurantUnable  = 1
+	RestaurantWorking = 2
 
 	OrderCreated           = 0
 	OrderPaid              = 1

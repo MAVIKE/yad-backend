@@ -18,6 +18,8 @@ func (h *Handler) initCategoryRoutes(api *echo.Group) {
 		categories.GET("/", h.getCategories)
 		categories.GET("/:id", h.getCategoryById)
 		categories.GET("/:cid/menu", h.getMenuByCategoryId)
+		categories.DELETE("/:cid", h.deleteCategory)
+		categories.PUT("/:cid", h.updateCategory)
 	}
 }
 
@@ -116,12 +118,12 @@ func (h *Handler) getCategories(ctx echo.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param rid path string true "Restaurant id"
-// @Param id path string true "Category id"
+// @Param cid path string true "Category id"
 // @Success 200 {object} domain.Category
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /restaurants/{rid}/categories/{id} [get]
+// @Router /restaurants/{rid}/categories/{cid} [get]
 func (h *Handler) getCategoryById(ctx echo.Context) error {
 	clientId, clientType, err := h.getClientParams(ctx)
 	if err != nil {
@@ -183,4 +185,94 @@ func (h *Handler) getMenuByCategoryId(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, menuItems)
+}
+
+// @Summary Delete Category
+// @Security RestaurantAuth
+// @Tags categories
+// @Description delete category
+// @ModuleID deleteCategory
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Param cid path string true "Category id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/menu/{cid} [delete]
+func (h *Handler) deleteCategory(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	categoryId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || categoryId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid categoryId")
+	}
+
+	err = h.services.Category.DeleteCategory(clientId, clientType, restaurantId, categoryId)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
+}
+
+// @Summary Update Category
+// @Security RestaurantAuth
+// @Tags categories
+// @Description update category
+// @ModuleID updateCategory
+// @Accept  json
+// @Produce  json
+// @Param rid path string true "Restaurant id"
+// @Param cid path string true "Category id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/categories/{cid} [put]
+func (h *Handler) updateCategory(ctx echo.Context) error {
+	var input categoryInput
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	categoryId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || categoryId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid categoryId")
+	}
+
+	if err := ctx.Bind(&input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if _, err := govalidator.ValidateStruct(input); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	category := new(domain.Category)
+	category.Title = input.Title
+
+	err = h.services.Category.UpdateCategory(clientId, clientType, restaurantId, categoryId, category)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }

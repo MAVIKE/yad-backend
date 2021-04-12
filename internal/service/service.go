@@ -38,6 +38,7 @@ type Restaurant interface {
 	GetMenu(clientId int, clientType string, restaurantId int) ([]*domain.MenuItem, error)
 	SignUp(restaurant *domain.Restaurant, clientType string) (int, error)
 	UpdateImage(clientId int, clientType string, restaurantId int, image string) (*domain.Restaurant, error)
+	Update(clientId int, clientType string, restaurantId int, input *domain.Restaurant) error
 }
 
 type Courier interface {
@@ -52,11 +53,15 @@ type Category interface {
 	Create(clientId int, clientType string, category *domain.Category) (int, error)
 	GetById(clientId int, clientType string, restaurantId int, categoryId int) (*domain.Category, error)
 	GetAllItems(clientId int, clientType string, restaurantId int, categoryId int) ([]*domain.MenuItem, error)
+	DeleteCategory(clientId int, clientType string, restaurantId int, categoryId int) error
+	UpdateCategory(clientId int, clientType string, restaurantId int, categoryId int, input *domain.Category) error
 }
 
 type Order interface {
 	Create(clientId int, clientType string, order *domain.Order) (int, error)
 	GetById(clientId int, clientType string, orderId int) (*domain.Order, error)
+	Delete(clientId int, clientType string, orderId int) error
+	Update(clientId int, clientType string, orderId int, status *domain.Order) error
 	GetActiveRestaurantOrders(clientId int, clientType string, restaurantId int) ([]*domain.Order, error)
 	CreateItem(clientId int, clientType string, orderItem *domain.OrderItem) (int, error)
 	GetAllItems(clientId int, clientType string, orderId int) ([]*domain.OrderItem, error)
@@ -70,6 +75,8 @@ type MenuItem interface {
 	GetById(clientId int, clientType string, menuItemId int, restaurantId int) (*domain.MenuItem, error)
 	UpdateMenuItem(clientId int, clientType string, restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
 	Create(clientId int, clientType string, menuItem *domain.MenuItem, categoryId int) (int, error)
+	UpdateImage(clientId int, clientType string, restaurantId int, menuItemId int, image string) (*domain.MenuItem, error)
+	Delete(clientId int, clientType string, restaurantId int, menuItemId int) error
 }
 
 type Service struct {

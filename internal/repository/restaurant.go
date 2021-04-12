@@ -2,6 +2,8 @@ package repository
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
 )
@@ -139,4 +141,57 @@ func (r *RestaurantPg) UpdateImage(restaurantId int, image string) error {
 	query := fmt.Sprintf(`UPDATE %s AS r SET image = $1 WHERE r.id = $2`, restaurantsTable)
 	_, err := r.db.Exec(query, image, restaurantId)
 	return err
+}
+
+func (r *RestaurantPg) Update(restaurantId int, input *domain.Restaurant) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.WorkingStatus != 0 {
+		setValues = append(setValues, fmt.Sprintf("working_status=$%d", argId))
+		args = append(args, input.WorkingStatus)
+		argId++
+	}
+
+	if input.Name != "" {
+		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
+		args = append(args, input.Name)
+		argId++
+	}
+
+	if input.Password != "" {
+		setValues = append(setValues, fmt.Sprintf("password_hash=$%d", argId))
+		args = append(args, input.Password)
+		argId++
+	}
+
+	if input.Address.Latitude != 0 && input.Address.Longitude != 0 {
+		query := fmt.Sprintf(`UPDATE %s as l
+								SET latitude = $1, longitude = $2
+								FROM %s as c
+								WHERE c.id = $3 AND c.address_id = l.id`, locationsTable, restaurantsTable)
+		_, err := r.db.Exec(query, input.Address.Latitude, input.Address.Longitude, restaurantId)
+		if err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=$%d`,
+		restaurantsTable, setQuery, argId)
+	args = append(args, restaurantId)
+
+	if _, err = tx.Exec(query, args...); err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }

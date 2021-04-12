@@ -31,6 +31,7 @@ type Restaurant interface {
 	GetMenu(restaurantId int) ([]*domain.MenuItem, error)
 	Create(restaurant *domain.Restaurant) (int, error)
 	UpdateImage(restaurantId int, image string) error
+	Update(restaurantId int, input *domain.Restaurant) error
 }
 
 type Category interface {
@@ -38,11 +39,15 @@ type Category interface {
 	Create(category *domain.Category) (int, error)
 	GetById(categoryId int) (*domain.Category, error)
 	GetAllItems(categoryId int) ([]*domain.MenuItem, error)
+	DeleteCategory(restaurantId int, categoryId int) error
+	UpdateCategory(restaurantId int, categoryId int, input *domain.Category) error
 }
 
 type Order interface {
 	Create(order *domain.Order) (int, error)
 	GetById(orderId int) (*domain.Order, error)
+	Delete(orderId int) error
+	Update(orderId int, input *domain.Order) error
 	GetActiveRestaurantOrders(restaurantId int) ([]*domain.Order, error)
 	CreateItem(orderItem *domain.OrderItem) (int, error)
 	GetAllItems(orderId int) ([]*domain.OrderItem, error)
@@ -50,12 +55,15 @@ type Order interface {
 	UpdateItem(orderItemId, menuItemsCount int) error
 	DeleteItem(orderItemId int, orderId int) error
 	GetActiveCourierOrder(courierId int) (*domain.Order, error)
+	GetNearestCourierId(userId int) (int, error)
 }
 
 type MenuItem interface {
 	GetById(menuItemId int) (*domain.MenuItem, error)
 	UpdateMenuItem(restaurantId int, menuItemId int, categoryId int, input *domain.MenuItem) error
 	Create(menuItem *domain.MenuItem, categoryId int) (int, error)
+	UpdateImage(menuItemId int, image string) error
+	DeleteItem(menuItemId int) error
 }
 
 type Repository struct {

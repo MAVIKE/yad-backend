@@ -1,8 +1,12 @@
 package v1
 
 import (
+	"errors"
 	"github.com/MAVIKE/yad-backend/internal/domain"
+	"github.com/MAVIKE/yad-backend/pkg/download"
+	"github.com/MAVIKE/yad-backend/pkg/random"
 	"github.com/asaskevich/govalidator"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 	"strconv"
 
@@ -17,6 +21,10 @@ func (h *Handler) initMenuRoutes(api *echo.Group) {
 		menu.POST("/:rid/menu/", h.createMenuItem)
 		menu.GET("/:rid/menu/:id", h.getMenuItemById)
 		menu.PUT("/:rid/menu/:id", h.updateMenuItem)
+		// TODO: update query path
+		menu.GET("/menu/image", h.getMenuItemImage)
+		menu.PUT("/:rid/menu/:id/image", h.updateMenuItemImage, middleware.BodyLimit("10M"))
+		menu.DELETE("/:rid/menu/:id", h.deleteMenuItem)
 	}
 }
 
@@ -212,4 +220,131 @@ func (h *Handler) createMenuItem(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, idResponse{
 		Id: menuItemId,
 	})
+}
+
+// @Summary Get Menu Item Image
+// @Security UserAuth
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description get menu item image
+// @ModuleID getMenuItemImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "binary file"
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/menu/image [get]
+func (h *Handler) getMenuItemImage(ctx echo.Context) error {
+	_, _, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	var image imageInput
+
+	if err := ctx.Bind(&image); err != nil {
+		return newResponse(ctx, http.StatusBadRequest, "Bad request")
+	}
+
+	// TODO: check if img for menu/restaurant or make one function & endpoint ?
+	return ctx.File(image.Path)
+}
+
+// @Summary Update Menu Item Image
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description update menu item image
+// @ModuleID updateMenuItemImage
+// @Accept json
+// @Produce json
+// @Success 200 {object} domain.MenuItem
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/menu/{id}/image [put]
+func (h *Handler) updateMenuItemImage(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	// TODO: move checking to service
+	if clientType != "restaurant" && restaurantId != clientId {
+		return newResponse(ctx, http.StatusBadRequest, "Forbidden")
+	}
+
+	menuItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || menuItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid menuItemId")
+	}
+
+	_, err = h.services.MenuItem.GetById(clientId, clientType, menuItemId, restaurantId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return newResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if !isImage(file.Filename) {
+		return newResponse(ctx, http.StatusBadRequest, errors.New("not image").Error())
+	}
+
+	fileName := imageDir + "menu_" + ctx.Param("id") + "_" + random.GetString(5) + "_" + file.Filename
+	if err := download.Download(file, fileName); err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	menuItem, err := h.services.MenuItem.UpdateImage(clientId, clientType, restaurantId, menuItemId, fileName)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, menuItem)
+}
+
+// @Summary Delete MenuItem
+// @Security RestaurantAuth
+// @Tags restaurants
+// @Description delete menu item
+// @ModuleID deleteMenuItem
+// @Accept  json
+// @Produce  json
+// @Param oid path string true "MenuItem id"
+// @Success 200 {object} response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /restaurants/{rid}/menu/{id} [delete]
+func (h *Handler) deleteMenuItem(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	restaurantId, err := strconv.Atoi(ctx.Param("rid"))
+	if err != nil || restaurantId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid restaurantId")
+	}
+
+	menuItemId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || menuItemId == 0 {
+		return newResponse(ctx, http.StatusBadRequest, "Invalid menuItemId")
+	}
+
+	err = h.services.MenuItem.Delete(clientId, clientType, restaurantId, menuItemId)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, nil)
 }

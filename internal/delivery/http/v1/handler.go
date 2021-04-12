@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -14,11 +15,6 @@ import (
 type Handler struct {
 	services     *service.Service
 	tokenManager *auth.Manager
-}
-
-type locationInput struct {
-	Latitude  float64 `json:"latitude" valid:"required,latitude"`
-	Longitude float64 `json:"longitude" valid:"required,longitude"`
 }
 
 func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler {
@@ -98,4 +94,25 @@ func (h *Handler) getToken(ctx echo.Context) (string, error) {
 	}
 
 	return headerParts[1], nil
+}
+
+type locationInput struct {
+	Latitude  float64 `json:"latitude" valid:"required,latitude"`
+	Longitude float64 `json:"longitude" valid:"required,longitude"`
+}
+
+const imageDir = "img/"
+
+type imageInput struct {
+	Path string `json:"image" valid:"required"`
+}
+
+func isImage(fileName string) bool {
+	ext := filepath.Ext(fileName)
+	switch ext {
+	case ".png", ".jpg", ".jpeg":
+		return true
+	default:
+		return false
+	}
 }
