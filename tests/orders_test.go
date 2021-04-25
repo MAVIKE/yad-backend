@@ -10,18 +10,7 @@ import (
 	"github.com/MAVIKE/yad-backend/internal/domain"
 )
 
-func (s *APITestSuite) TestUserGetOrder() {
-	order := domain.Order{
-		Id:            1,
-		UserId:        1,
-		RestaurantId:  1,
-		CourierId:     0,
-		DeliveryPrice: 100,
-		TotalPrice:    900,
-		Status:        0,
-		Paid:          nil,
-	}
-
+func (s *APITestSuite) TestUserGetOrderOk() {
 	userId := 1
 	clientType := userType
 
@@ -47,11 +36,14 @@ func (s *APITestSuite) TestUserGetOrder() {
 	err = json.Unmarshal(respData, &respOrder)
 	s.NoError(err)
 
-	// s.Require().Equal(1, len(respOffers.Data))
-	s.Require().Equal(order.Id, respOrder.Id)
-	s.Require().Equal(order.UserId, respOrder.UserId)
-	s.Require().Equal(order.RestaurantId, respOrder.RestaurantId)
-	s.Require().Equal(order.CourierId, respOrder.CourierId)
+	s.Require().Equal(orders[0].Id, respOrder.Id)
+	s.Require().Equal(orders[0].UserId, respOrder.UserId)
+	s.Require().Equal(orders[0].RestaurantId, respOrder.RestaurantId)
+	s.Require().Equal(orders[0].CourierId, respOrder.CourierId)
+	s.Require().Equal(orders[0].DeliveryPrice, respOrder.DeliveryPrice)
+	s.Require().Equal(orders[0].TotalPrice, respOrder.TotalPrice)
+	s.Require().Equal(orders[0].Status, respOrder.Status)
+	s.Require().Equal(orders[0].Paid, respOrder.Paid)
 }
 
 func (s *APITestSuite) TestUserGetOrderForbidden() {
