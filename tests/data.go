@@ -34,8 +34,8 @@ var (
 			Password: "password",
 			Email:    "test1@mail.ru",
 			Address: &domain.Location{
-				Longitude: 50,
-				Latitude:  87,
+				Latitude:  50,
+				Longitude: 87,
 			},
 		},
 	}

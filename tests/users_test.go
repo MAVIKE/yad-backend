@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/MAVIKE/yad-backend/internal/domain"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -97,6 +98,77 @@ func (s *APITestSuite) TestUserSignInError_NotExists() {
 	}
 	req.Header.Set("Content-type", "application/json")
 
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserGetOk() {
+	userId := 1
+	clientType := userType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("GET", "/api/v1/users/1", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	var user domain.User
+	respData, err := ioutil.ReadAll(resp.Body)
+	s.NoError(err)
+
+	err = json.Unmarshal(respData, &user)
+	s.NoError(err)
+
+	s.Require().Equal(users[0].Id, user.Id)
+	s.Require().Equal(users[0].Name, user.Name)
+	s.Require().Equal(users[0].Phone, user.Phone)
+	s.Require().Equal("", user.Password)
+	s.Require().Equal(users[0].Email, user.Email)
+	s.Require().Equal(users[0].Address, user.Address)
+}
+
+func (s *APITestSuite) TestUserGetError_WrongId() {
+	userId := 2
+	clientType := userType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("GET", "/api/v1/users/1", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserGetError_WrongClientType() {
+	userId := 1
+	clientType := courierType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("GET", "/api/v1/users/1", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
 

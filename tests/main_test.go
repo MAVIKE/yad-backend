@@ -33,8 +33,8 @@ const (
 	schemaDir = "../schema/"
 
 	// adminType      = "admin"
-	userType = "user"
-	// courierType    = "courier"
+	userType    = "user"
+	courierType = "courier"
 	// restaurantType = "restaurant"
 )
 
