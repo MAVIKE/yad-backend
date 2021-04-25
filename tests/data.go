@@ -25,4 +25,18 @@ var (
 			Paid:          nil,
 		},
 	}
+
+	users = []domain.User{
+		{
+			Id:       1,
+			Name:     "user1",
+			Phone:    "71234567890",
+			Password: "password",
+			Email:    "test1@mail.ru",
+			Address: &domain.Location{
+				Longitude: 50,
+				Latitude:  87,
+			},
+		},
+	}
 )

@@ -60,3 +60,45 @@ func (s *APITestSuite) TestUserSignUpError_EmptyRequiredFields() {
 
 	s.Require().Equal(http.StatusBadRequest, resp.Result().StatusCode)
 }
+
+func (s *APITestSuite) TestUserSignInOk() {
+	reqBody := `{"phone":"71234567890","password":"password"}`
+	req, err := http.NewRequest("POST", "/api/v1/users/sign-in", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserSignInError_WrongPassword() {
+	reqBody := `{"phone":"71234567890","password":"wrong_password"}`
+	req, err := http.NewRequest("POST", "/api/v1/users/sign-in", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserSignInError_NotExists() {
+	reqBody := `{"phone":"71234567899","password":"password"}`
+	req, err := http.NewRequest("POST", "/api/v1/users/sign-in", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
