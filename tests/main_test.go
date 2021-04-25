@@ -1,6 +1,13 @@
 package tests
 
 import (
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"testing"
+	"time"
+
 	handler "github.com/MAVIKE/yad-backend/internal/delivery/http"
 	"github.com/MAVIKE/yad-backend/internal/repository"
 	"github.com/MAVIKE/yad-backend/internal/service"
@@ -10,12 +17,6 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/suite"
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
-	"os"
-	"testing"
-	"time"
 )
 
 const (
@@ -28,6 +29,8 @@ const (
 
 	signingKey     = "test"
 	accessTokenTTL = 720
+
+	schemaDir = "../schema/"
 )
 
 type APITestSuite struct {
@@ -139,7 +142,7 @@ func (s *APITestSuite) initApp() {
 }
 
 func (s *APITestSuite) initDB() error {
-	schema, err := ioutil.ReadFile("../schema/init.sql")
+	schema, err := ioutil.ReadFile(schemaDir + "init.sql")
 	if err != nil {
 		return err
 	}
@@ -148,7 +151,7 @@ func (s *APITestSuite) initDB() error {
 }
 
 func (s *APITestSuite) downDB() error {
-	schema, err := ioutil.ReadFile("../schema/down.sql")
+	schema, err := ioutil.ReadFile(schemaDir + "down.sql")
 	if err != nil {
 		return err
 	}
@@ -177,9 +180,27 @@ func (s *APITestSuite) TestPing() {
 // https://pkg.go.dev/github.com/stretchr/testify/suite
 // SetupTest or BeforeTest ?
 func (s *APITestSuite) SetupTest() {
-	// TODO init test SQL data
+	filenames := []string{
+		"admin.sql",
+		"user.sql",
+		"courier.sql",
+		"restaurant.sql",
+		"category.sql",
+		"order.sql",
+	}
+	for _, filename := range filenames {
+		schema, err := ioutil.ReadFile(schemaDir + "test/" + filename)
+		if err != nil {
+			s.FailNow("Failed to populate db", err)
+		}
+		s.db.MustExec(string(schema))
+	}
 }
 
 func (s *APITestSuite) AfterTest() {
-	// TODO clean data
+	schema, err := ioutil.ReadFile(schemaDir + "truncate.sql")
+	if err != nil {
+		s.FailNow("Failed to truncate db", err)
+	}
+	s.db.MustExec(string(schema))
 }
