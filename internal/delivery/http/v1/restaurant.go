@@ -2,11 +2,12 @@ package v1
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/MAVIKE/yad-backend/pkg/download"
 	"github.com/MAVIKE/yad-backend/pkg/random"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
-	"strconv"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/asaskevich/govalidator"
@@ -38,7 +39,7 @@ type restaurantsSignInInput struct {
 // @ModuleID restaurantSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign up info"
+// @Param input body restaurantsSignInInput true "sign up info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response

@@ -14,7 +14,7 @@ func (h *Handler) initAdminRoutes(api *echo.Group) {
 	}
 }
 
-type signInInput struct {
+type adminSignInInput struct {
 	Name     string `json:"name" valid:"length(4|32)"`
 	Password string `json:"password" valid:"length(4|50)"`
 }
@@ -25,14 +25,14 @@ type signInInput struct {
 // @ModuleID adminSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign in info"
+// @Param input body adminSignInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /admins/sign-in [post]
 func (h *Handler) adminsSignIn(ctx echo.Context) error {
-	var input signInInput
+	var input adminSignInInput
 
 	if err := ctx.Bind(&input); err != nil {
 		return newResponse(ctx, http.StatusBadRequest, err.Error())
