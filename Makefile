@@ -12,6 +12,9 @@ build:
 run:
 	go run $(APP)
 
+test:
+	go test github.com/MAVIKE/yad-backend/tests
+
 lint:
 	go fmt ./...
 	golangci-lint run
