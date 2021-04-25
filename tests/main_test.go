@@ -31,6 +31,11 @@ const (
 	accessTokenTTL = 720
 
 	schemaDir = "../schema/"
+
+	// adminType      = "admin"
+	userType    = "user"
+	courierType = "courier"
+	// restaurantType = "restaurant"
 )
 
 type APITestSuite struct {
@@ -180,6 +185,12 @@ func (s *APITestSuite) TestPing() {
 // https://pkg.go.dev/github.com/stretchr/testify/suite
 // SetupTest or BeforeTest ?
 func (s *APITestSuite) SetupTest() {
+	schema, err := ioutil.ReadFile(schemaDir + "truncate.sql")
+	if err != nil {
+		s.FailNow("Failed to truncate db", err)
+	}
+	s.db.MustExec(string(schema))
+
 	filenames := []string{
 		"admin.sql",
 		"user.sql",
@@ -188,6 +199,7 @@ func (s *APITestSuite) SetupTest() {
 		"category.sql",
 		"order.sql",
 	}
+
 	for _, filename := range filenames {
 		schema, err := ioutil.ReadFile(schemaDir + "test/" + filename)
 		if err != nil {
@@ -197,10 +209,6 @@ func (s *APITestSuite) SetupTest() {
 	}
 }
 
-func (s *APITestSuite) AfterTest() {
-	schema, err := ioutil.ReadFile(schemaDir + "truncate.sql")
-	if err != nil {
-		s.FailNow("Failed to truncate db", err)
-	}
-	s.db.MustExec(string(schema))
+func (s *APITestSuite) getJWT(clientId int, clientType string) (string, error) {
+	return s.tokenManager.NewJWT(clientId, clientType, accessTokenTTL)
 }
