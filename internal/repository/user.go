@@ -3,10 +3,11 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+
 	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/jmoiron/sqlx"
-	"strings"
 )
 
 type UserPg struct {
@@ -73,10 +74,14 @@ func (r *UserPg) GetAllOrders(userId int, activeOrdersFlag bool) ([]*domain.Orde
 	var err error
 
 	if activeOrdersFlag {
-		query = fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
+		query = fmt.Sprintf(`SELECT id, user_id, restaurant_id, COALESCE(courier_id, 0) AS courier_id,
+			delivery_price, total_price, status, paid 
+		FROM %s WHERE user_id = $1 and status BETWEEN $2 AND $3`, ordersTable)
 		rows, err = r.db.Query(query, userId, consts.OrderPaid, consts.OrderEnRoute)
 	} else {
-		query = fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, ordersTable)
+		query = fmt.Sprintf(`SELECT id, user_id, restaurant_id, COALESCE(courier_id, 0) AS courier_id,
+			delivery_price, total_price, status, paid 
+		FROM %s WHERE user_id = $1`, ordersTable)
 		rows, err = r.db.Query(query, userId)
 	}
 
