@@ -96,7 +96,6 @@ func (s *APITestSuite) TestUserGetOrderError_Forbidden() {
 	req.Header.Set("Authorization", "Bearer "+jwt)
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
-
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
 
@@ -559,6 +558,5 @@ func (s *APITestSuite) TestUserDeleteOrderError_PaidOrder() {
 
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
-
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
