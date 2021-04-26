@@ -81,6 +81,7 @@ http://localhost:9000/swagger/index.html
 ├── schema           // SQL файлы с миграциями
 ├── configs          // файлы конфигурации
 ├── docs             // документация
+├── tests            // интеграционные тесты
 └── .github          // файлы настройки Github Actions
 ```
 
