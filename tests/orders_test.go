@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -231,6 +232,80 @@ func (s *APITestSuite) TestCourierUserGetOrdersError_Forbidden() {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+jwt)
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserCreateOrdersOk() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	expectedId := 4
+	reqBody := `{"restaurant_id":2}`
+	req, err := http.NewRequest("POST", "/api/v1/orders/", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	respData, err := ioutil.ReadAll(resp.Body)
+	s.NoError(err)
+	var respBody struct {
+		Id int `json:"id"`
+	}
+	err = json.Unmarshal(respData, &respBody)
+	s.NoError(err)
+
+	s.Require().Equal(expectedId, respBody.Id)
+}
+
+func (s *APITestSuite) TestUserCreateOrdersError_Forbidden() {
+	clientId := 1
+	clientType := courierType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"restaurant_id":2}`
+	req, err := http.NewRequest("POST", "/api/v1/orders/", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserCreateOrdersError_WrongRestaurantId() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"restaurant_id":5}`
+	req, err := http.NewRequest("POST", "/api/v1/orders/", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
 
