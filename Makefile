@@ -13,7 +13,7 @@ run:
 	go run $(APP)
 
 test:
-	go test github.com/MAVIKE/yad-backend/tests
+	go test -v ./tests/
 
 lint:
 	go fmt ./...
