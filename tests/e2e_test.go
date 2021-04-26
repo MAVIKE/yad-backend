@@ -248,4 +248,110 @@ func (s *APITestSuite) TestE2EOk() {
 	// Get order
 	order.TotalPrice = 800
 	testGetOrder(s, jwt, &order)
+
+	// User set status 1
+	reqBody = `{"status":1}`
+	req, err = http.NewRequest("PUT", "/api/v1/orders/5", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp = httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	// Get order
+	order.CourierId = 4
+	order.Status = 1
+	testGetOrder(s, jwt, &order)
+
+	// Restaurant set status 2
+	clientId = 1
+	clientType = restaurantType
+	restaurantJWT, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody = `{"status":2}`
+	req, err = http.NewRequest("PUT", "/api/v1/orders/5", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+restaurantJWT)
+	req.Header.Set("Content-type", "application/json")
+
+	resp = httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	// Get order
+	order.Status = 2
+	testGetOrder(s, jwt, &order)
+
+	// Restaurant set status 3
+	reqBody = `{"status":3}`
+	req, err = http.NewRequest("PUT", "/api/v1/orders/5", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+restaurantJWT)
+	req.Header.Set("Content-type", "application/json")
+
+	resp = httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	// Get order
+	order.Status = 3
+	testGetOrder(s, jwt, &order)
+
+	// Restaurant set status 2
+	clientId = 4
+	clientType = courierType
+	restaurantJWT, err = s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody = `{"status":4}`
+	req, err = http.NewRequest("PUT", "/api/v1/orders/5", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+restaurantJWT)
+	req.Header.Set("Content-type", "application/json")
+
+	resp = httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	// Get order
+	order.Status = 4
+	testGetOrder(s, jwt, &order)
+
+	// Restaurant set status 2
+	reqBody = `{"status":5}`
+	req, err = http.NewRequest("PUT", "/api/v1/orders/5", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+restaurantJWT)
+	req.Header.Set("Content-type", "application/json")
+
+	resp = httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+
+	// Get order
+	order.Status = 5
+	testGetOrder(s, jwt, &order)
 }
