@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"strconv"
 	"time"
@@ -60,6 +61,7 @@ func Run(configPath string) {
 	handlers := handler.NewHandler(services, tokenManager)
 
 	app := echo.New()
+	app.Use(middleware.Logger())
 	handlers.Init(app)
 
 	if err := app.Start(viper.GetString("port")); err != nil {
