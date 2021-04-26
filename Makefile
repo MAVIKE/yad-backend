@@ -15,6 +15,9 @@ run:
 test:
 	go test -v ./tests/
 
+e2e_test:
+	go test -tags=e2e -v ./tests/
+  
 test_count:
 	go test -v ./tests/ | grep -c RUN
 
