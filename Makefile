@@ -13,7 +13,10 @@ run:
 	go run $(APP)
 
 test:
-	go test -v ./tests/
+	go test -v ./tests/ | grep -c RUN
+
+test_count:
+	go test -v ./tests/ | grep -c RUN
 
 lint:
 	go fmt ./...
