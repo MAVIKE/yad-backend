@@ -69,7 +69,7 @@ func (s *APITestSuite) TestCourierSignUpError_NotAdmin() {
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
 
-func (s *APITestSuite) TestCourierSignUpError_WrongPhone() {
+func (s *APITestSuite) TestCourierSignUpError_NoUniquePhone() {
 	userId := 1
 	clientType := userType
 
@@ -91,4 +91,28 @@ func (s *APITestSuite) TestCourierSignUpError_WrongPhone() {
 	s.app.ServeHTTP(resp, req)
 
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestCourierSignUpError_EmptyRequiredFields() {
+	userId := 1
+	clientType := userType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	name, phone, password, email, address, working_status := "test_courier", "71234567899", "", "test_courier@test.ru", "{\"latitude\":45,\"longitude\":42}", 0
+	reqBody := fmt.Sprintf(`{"name":"%s","phone":"%s","password":"%s","email":"%s","address":%s,"working_status":%d}`, name, phone, password, email, address, working_status)
+
+	req, err := http.NewRequest("POST", "/api/v1/couriers/sign-up", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Content-type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusBadRequest, resp.Result().StatusCode)
 }
