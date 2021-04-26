@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/MAVIKE/yad-backend/internal/consts"
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"io/ioutil"
 	"net/http"
@@ -217,16 +218,16 @@ func (s *APITestSuite) TestCourierGetError_WrongId() {
 }
 
 func (s *APITestSuite) TestCourierUpdateOk() {
-	userId := 1
+	userId := 5
 	clientType := courierType
 
 	jwt, err := s.getJWT(userId, clientType)
 	s.NoError(err)
 
-	working_status, address := 1, "{\"latitude\":45,\"longitude\":42}"
+	working_status, address := consts.CourierWorking, "{\"latitude\":45,\"longitude\":42}"
 	reqBody := fmt.Sprintf(`{"working_status":%d,"address":%s}`, working_status, address)
 
-	req, err := http.NewRequest("PUT", "/api/v1/couriers/1", bytes.NewBuffer([]byte(reqBody)))
+	req, err := http.NewRequest("PUT", "/api/v1/couriers/5", bytes.NewBuffer([]byte(reqBody)))
 	if err != nil {
 		s.FailNow("Failed to build request", err)
 	}
