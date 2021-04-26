@@ -35,7 +35,7 @@ const (
 	// adminType      = "admin"
 	userType    = "user"
 	courierType = "courier"
-	// restaurantType = "restaurant"
+	restaurantType = "restaurant"
 )
 
 type APITestSuite struct {
