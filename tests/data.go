@@ -59,4 +59,19 @@ var (
 			},
 		},
 	}
+
+	couriers = []domain.Courier{
+		{
+			Id:       1,
+			Name:     "courier1",
+			Phone:    "71234567891",
+			Password: "password",
+			Email:    "test1@mail.ru",
+			Address: &domain.Location{
+				Latitude:  52,
+				Longitude: 89,
+			},
+			WorkingStatus: 0,
+		},
+	}
 )

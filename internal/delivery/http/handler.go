@@ -6,7 +6,6 @@ import (
 	v1 "github.com/MAVIKE/yad-backend/internal/delivery/http/v1"
 	"github.com/MAVIKE/yad-backend/internal/service"
 	"github.com/MAVIKE/yad-backend/pkg/auth"
-	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	_ "github.com/MAVIKE/yad-backend/docs/swagger"
@@ -49,7 +48,6 @@ func NewHandler(services *service.Service, tokenManager *auth.Manager) *Handler 
 // @name Authorization
 
 func (h *Handler) Init(router *echo.Echo) {
-	router.Use(middleware.Logger())
 	router.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	router.GET("/ping", func(c echo.Context) error {
