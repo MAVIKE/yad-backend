@@ -35,7 +35,7 @@ func (r *MenuItemPg) GetById(menuItemId int) (*domain.MenuItem, error) {
 	menuItem := new(domain.MenuItem)
 
 	query := fmt.Sprintf(
-		`SELECT m.id, m.restaurant_id, m.title, m.image, m.description
+		`SELECT m.id, m.restaurant_id, m.title, m.image, m.description, m.price
 		FROM %s AS m
 		WHERE m.id = $1`,
 		menuItemsTable)
@@ -43,7 +43,7 @@ func (r *MenuItemPg) GetById(menuItemId int) (*domain.MenuItem, error) {
 	row := r.db.QueryRow(query, menuItemId)
 
 	err := row.Scan(&menuItem.Id, &menuItem.RestaurantId, &menuItem.Title, &menuItem.Image,
-		&menuItem.Description)
+		&menuItem.Description, &menuItem.Price)
 
 	return menuItem, err
 }

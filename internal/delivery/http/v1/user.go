@@ -89,7 +89,7 @@ type userSignInInput struct {
 // @ModuleID userSignIn
 // @Accept  json
 // @Produce  json
-// @Param input body signInInput true "sign in info"
+// @Param input body userSignInInput true "sign in info"
 // @Success 200 {object} tokenResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response

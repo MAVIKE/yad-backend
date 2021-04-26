@@ -68,6 +68,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Test
-        run: go test ./...
+      - name: Integration Tests
+        run:
+          make test
   
