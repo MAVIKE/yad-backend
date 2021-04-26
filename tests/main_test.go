@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"github.com/labstack/echo/v4/middleware"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -32,7 +33,7 @@ const (
 
 	schemaDir = "../schema/"
 
-	// adminType      = "admin"
+	adminType      = "admin"
 	userType    = "user"
 	courierType = "courier"
 	// restaurantType = "restaurant"
@@ -143,6 +144,9 @@ func (s *APITestSuite) initApp() {
 	s.handlers = handler.NewHandler(s.services, s.tokenManager)
 
 	s.app = echo.New()
+	s.app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Output: ioutil.Discard,
+	}))
 	s.handlers.Init(s.app)
 }
 
