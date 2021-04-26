@@ -219,7 +219,7 @@ func (s *APITestSuite) TestUserGetOrdersError_Forbidden() {
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
 
-func (s *APITestSuite) TestCourierUserGetOrdersError_Forbidden() {
+func (s *APITestSuite) TestCourierGetOrdersError_Forbidden() {
 	clientId := 1
 	clientType := userType
 
@@ -238,13 +238,13 @@ func (s *APITestSuite) TestCourierUserGetOrdersError_Forbidden() {
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
 
-func (s *APITestSuite) TestUserCreateOrdersOk() {
+func (s *APITestSuite) TestUserCreateOrderOk() {
 	clientId := 1
 	clientType := userType
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
-	expectedId := 4
+	expectedId := 5
 	reqBody := `{"restaurant_id":2}`
 	req, err := http.NewRequest("POST", "/api/v1/orders/", bytes.NewBuffer([]byte(reqBody)))
 	if err != nil {
@@ -270,7 +270,7 @@ func (s *APITestSuite) TestUserCreateOrdersOk() {
 	s.Require().Equal(expectedId, respBody.Id)
 }
 
-func (s *APITestSuite) TestUserCreateOrdersError_Forbidden() {
+func (s *APITestSuite) TestUserCreateOrderError_Forbidden() {
 	clientId := 1
 	clientType := courierType
 	jwt, err := s.getJWT(clientId, clientType)
@@ -291,7 +291,7 @@ func (s *APITestSuite) TestUserCreateOrdersError_Forbidden() {
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
 
-func (s *APITestSuite) TestUserCreateOrdersError_WrongRestaurantId() {
+func (s *APITestSuite) TestUserCreateOrderError_WrongRestaurantId() {
 	clientId := 1
 	clientType := userType
 	jwt, err := s.getJWT(clientId, clientType)
@@ -299,6 +299,195 @@ func (s *APITestSuite) TestUserCreateOrdersError_WrongRestaurantId() {
 
 	reqBody := `{"restaurant_id":5}`
 	req, err := http.NewRequest("POST", "/api/v1/orders/", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserUpdateOrderOk() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":1}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/1", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestCourierUpdateOrderOk() {
+	clientId := 3
+	clientType := courierType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":4}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/4", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestRestaurantUpdateOrderOk() {
+	clientId := 2
+	clientType := restaurantType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":2}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/3", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserUpdateOrderError_WrongStatus() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":6}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/1", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusBadRequest, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestCourierUpdateOrderError_ReducedStatus() {
+	clientId := 3
+	clientType := courierType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":2}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/4", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserUpdateOrderError_OrderNotFound() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":1}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/10", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserUpdateOrderError_Forbidden() {
+	clientId := 2
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":1}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/1", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestCourierUpdateOrderError_Forbidden() {
+	clientId := 1
+	clientType := courierType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":4}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/4", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestRestaurantUpdateOrderError_Forbidden() {
+	clientId := 1
+	clientType := restaurantType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	reqBody := `{"status":2}`
+	req, err := http.NewRequest("PUT", "/api/v1/orders/3", bytes.NewBuffer([]byte(reqBody)))
 	if err != nil {
 		s.FailNow("Failed to build request", err)
 	}

@@ -33,9 +33,9 @@ const (
 	schemaDir = "../schema/"
 
 	// adminType      = "admin"
-	userType    = "user"
-	courierType = "courier"
-	// restaurantType = "restaurant"
+	userType       = "user"
+	courierType    = "courier"
+	restaurantType = "restaurant"
 )
 
 type APITestSuite struct {

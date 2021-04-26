@@ -34,6 +34,16 @@ var (
 			Status:        1,
 			Paid:          nil,
 		},
+		{
+			Id:            4,
+			UserId:        3,
+			RestaurantId:  1,
+			CourierId:     3,
+			DeliveryPrice: 100,
+			TotalPrice:    700,
+			Status:        3,
+			Paid:          nil,
+		},
 	}
 
 	users = []domain.User{

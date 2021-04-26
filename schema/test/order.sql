@@ -26,3 +26,12 @@ VALUES (3, 4, 3);
 
 INSERT INTO order_items (order_id, menu_item_id, count)
 VALUES (3, 5, 1);
+
+-- user3 orders
+-- Order 4
+INSERT INTO orders (user_id, restaurant_id, courier_id, delivery_price, total_price, status)
+VALUES (3, 1, 3, 100, 700, 3);
+
+INSERT INTO order_items (order_id, menu_item_id, count)
+VALUES (4, 2, 3);
+
