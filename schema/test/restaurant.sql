@@ -16,7 +16,7 @@ VALUES ('Restaurant2', '71234567893', 'password', 11, 2, 'img/image1.jpg');
 
 -- Menu items for restaurant 1
 INSERT INTO menu_items (restaurant_id, title, image, description, price)
-VALUES (1, 'Title1', 'img/image1.jpg', 'Descrption1', 100);
+VALUES (1, 'Title1', 'img/image1.jpg', 'description1', 100);
 
 INSERT INTO menu_items (restaurant_id, title, image, description, price)
 VALUES (1, 'Title2', 'img/image1.jpg', 'description2', 200);
