@@ -39,4 +39,42 @@ var (
 			},
 		},
 	}
+	restaurants = []domain.Restaurant{
+		{
+			Id:       1,
+			Name:     "Restaurant1",
+			Phone:    "71234567891",
+			Password: "password",
+			WorkingStatus: 1,
+			Address: &domain.Location{
+				Latitude:  52,
+				Longitude: 85,
+			},
+			Image: "img/image1.jpg",
+		},
+		{
+			Id:       2,
+			Name:     "Restaurant2",
+			Phone:    "71234567892",
+			Password: "password",
+			WorkingStatus: 1,
+			Address: &domain.Location{
+				Latitude:  55,
+				Longitude: 85,
+			},
+			Image: "img/image1.jpg",
+		},
+		{
+			Id:       3,
+			Name:     "Restaurant2",
+			Phone:    "71234567893",
+			Password: "password",
+			WorkingStatus: 2,
+			Address: &domain.Location{
+				Latitude:  56,
+				Longitude: 87,
+			},
+			Image: "img/image1.jpg",
+		},
+	}
 )

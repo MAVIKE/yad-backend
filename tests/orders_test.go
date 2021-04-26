@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -26,7 +25,6 @@ func (s *APITestSuite) TestUserGetOrderOk() {
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
 
-	fmt.Println(resp.Body.String())
 	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
 
 	var respOrder domain.Order
@@ -62,6 +60,5 @@ func (s *APITestSuite) TestUserGetOrderForbidden() {
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
 
-	fmt.Println(resp.Body.String())
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
