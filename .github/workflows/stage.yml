@@ -71,8 +71,9 @@ jobs:
       - name: Checkout develop
         uses: actions/checkout@v2
 
-      - name: Test
-        run: go test ./...
+      - name: Integration Tests
+        run:
+          make test
   build_and_push:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
