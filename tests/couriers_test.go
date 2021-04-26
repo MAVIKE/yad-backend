@@ -215,3 +215,47 @@ func (s *APITestSuite) TestCourierGetError_WrongId() {
 
 	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
 }
+
+func (s *APITestSuite) TestCourierUpdateOk() {
+	userId := 1
+	clientType := courierType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	working_status, address := 1, "{\"latitude\":45,\"longitude\":42}"
+	reqBody := fmt.Sprintf(`{"working_status":%d,"address":%s}`, working_status, address)
+
+	req, err := http.NewRequest("PUT", "/api/v1/couriers/1", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Content-type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestCourierUpdateError_WrongAddress() {
+	userId := 1
+	clientType := courierType
+
+	jwt, err := s.getJWT(userId, clientType)
+	s.NoError(err)
+
+	working_status, address := 1, "{\"latitude\":-1000,\"longitude\":-1000}"
+	reqBody := fmt.Sprintf(`{"working_status":%d,"address":%s}`, working_status, address)
+
+	req, err := http.NewRequest("PUT", "/api/v1/couriers/1", bytes.NewBuffer([]byte(reqBody)))
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Content-type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+jwt)
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusBadRequest, resp.Result().StatusCode)
+}
