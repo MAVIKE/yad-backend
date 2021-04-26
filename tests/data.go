@@ -95,8 +95,8 @@ var (
 				Longitude: 87,
 			},
 			Image: "img/image1.jpg",
-    },
-  }
+		},
+  	}
 	couriers = []domain.Courier{
 		{
 			Id:       1,
@@ -109,6 +109,32 @@ var (
 				Longitude: 89,
 			},
 			WorkingStatus: 0,
+		},
+	}
+	menuItems = []domain.MenuItem{
+		{
+			Id:           1,
+			RestaurantId: 1,
+			Title:        "Title1",
+			Image:        "img/image1.jpg",
+			Description:  "description1",
+			Price:        100,
+		},
+		{
+			Id:           2,
+			RestaurantId: 1,
+			Title:        "Title2",
+			Image:        "img/image1.jpg",
+			Description:  "description2",
+			Price:        200,
+		},
+		{
+			Id:           3,
+			RestaurantId: 1,
+			Title:        "Title3",
+			Image:        "img/image1.jpg",
+			Description:  "description3",
+			Price:        300,
 		},
 	}
 )
