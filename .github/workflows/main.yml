@@ -73,7 +73,7 @@ jobs:
 
       - name: Integration Tests
         run:
-          make test
+          make e2e_test
   build_and_push:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
