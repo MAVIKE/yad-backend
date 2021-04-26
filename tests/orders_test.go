@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +13,6 @@ import (
 func (s *APITestSuite) TestUserGetOrderOk() {
 	clientId := 1
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -51,7 +49,6 @@ func (s *APITestSuite) TestUserGetOrderOk() {
 func (s *APITestSuite) TestCourierGetOrderOk() {
 	clientId := 1
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -88,7 +85,6 @@ func (s *APITestSuite) TestCourierGetOrderOk() {
 func (s *APITestSuite) TestUserGetOrderError_Forbidden() {
 	clientId := 2
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -107,7 +103,6 @@ func (s *APITestSuite) TestUserGetOrderError_Forbidden() {
 func (s *APITestSuite) TestCourierGetOrderError_Forbidden() {
 	clientId := 2
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -126,7 +121,6 @@ func (s *APITestSuite) TestCourierGetOrderError_Forbidden() {
 func (s *APITestSuite) TestUserGetOrdersOk() {
 	clientId := 1
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -165,7 +159,6 @@ func (s *APITestSuite) TestUserGetOrdersOk() {
 func (s *APITestSuite) TestCourierGetOrdersOk() {
 	clientId := 2
 	clientType := courierType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -178,7 +171,6 @@ func (s *APITestSuite) TestCourierGetOrdersOk() {
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
 
-	fmt.Println(resp.Body.String())
 	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
 
 	var respOrder domain.Order
@@ -203,7 +195,6 @@ func (s *APITestSuite) TestCourierGetOrdersOk() {
 func (s *APITestSuite) TestUserGetOrdersError_Forbidden() {
 	clientId := 1
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -222,7 +213,6 @@ func (s *APITestSuite) TestUserGetOrdersError_Forbidden() {
 func (s *APITestSuite) TestCourierGetOrdersError_Forbidden() {
 	clientId := 1
 	clientType := userType
-
 	jwt, err := s.getJWT(clientId, clientType)
 	s.NoError(err)
 
@@ -494,6 +484,78 @@ func (s *APITestSuite) TestRestaurantUpdateOrderError_Forbidden() {
 
 	req.Header.Set("Authorization", "Bearer "+jwt)
 	req.Header.Set("Content-type", "application/json")
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserDeleteOrderOk() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("DELETE", "/api/v1/orders/1", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+jwt)
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusOK, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserDeleteOrderError_OrderNotFound() {
+	clientId := 1
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("DELETE", "/api/v1/orders/10", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+jwt)
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserDeleteOrderError_Forbidden() {
+	clientId := 2
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("DELETE", "/api/v1/orders/1", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+jwt)
+
+	resp := httptest.NewRecorder()
+	s.app.ServeHTTP(resp, req)
+
+	s.Require().Equal(http.StatusInternalServerError, resp.Result().StatusCode)
+}
+
+func (s *APITestSuite) TestUserDeleteOrderError_PaidOrder() {
+	clientId := 2
+	clientType := userType
+	jwt, err := s.getJWT(clientId, clientType)
+	s.NoError(err)
+
+	req, err := http.NewRequest("DELETE", "/api/v1/orders/3", nil)
+	if err != nil {
+		s.FailNow("Failed to build request", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+jwt)
 
 	resp := httptest.NewRecorder()
 	s.app.ServeHTTP(resp, req)
