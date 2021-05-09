@@ -157,7 +157,7 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 // @ModuleID getCurrentCourier
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} token.Response
+// @Success 200 {object} tokenResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
