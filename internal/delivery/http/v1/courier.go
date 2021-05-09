@@ -37,7 +37,7 @@ type courierSignUpInput struct {
 // @Accept  json
 // @Produce  json
 // @Param input body courierSignUpInput true "sign up info"
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} idResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -74,8 +74,8 @@ func (h *Handler) couriersSignUp(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: id,
 	})
 }
 
@@ -157,7 +157,7 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 // @ModuleID getCurrentCourier
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -172,8 +172,8 @@ func (h *Handler) getCurrentCourier(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusForbidden, "Only for courier client type")
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": clientId,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: clientId,
 	})
 }
 

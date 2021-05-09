@@ -42,7 +42,7 @@ type userSignUpInput struct {
 // @Accept  json
 // @Produce  json
 // @Param input body userSignUpInput true "sign up info"
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} idResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -74,8 +74,8 @@ func (h *Handler) usersSignUp(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: id,
 	})
 }
 
@@ -124,7 +124,7 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 // @ModuleID getCurrentUser
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} tokenResponse
+// @Success 200 {object} idResponse
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
@@ -139,8 +139,8 @@ func (h *Handler) getCurrentUser(ctx echo.Context) error {
 		return newResponse(ctx, http.StatusForbidden, "Only for user client type")
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"id": clientId,
+	return ctx.JSON(http.StatusOK, idResponse{
+		Id: clientId,
 	})
 }
 
