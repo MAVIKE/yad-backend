@@ -23,6 +23,7 @@ func (h *Handler) initUserRoutes(api *echo.Group) {
 		users.Use(h.identity)
 		users.PUT("/:uid", h.userUpdate)
 		users.GET("/:uid", h.getUserById)
+		users.GET("/current", h.getCurrentUser)
 	}
 }
 
@@ -113,6 +114,33 @@ func (h *Handler) usersSignIn(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, tokenResponse{
 		AccessToken: token.AccessToken,
+	})
+}
+
+// @Summary Get Current User Id
+// @Security UserAuth
+// @Tags users
+// @Description get current user id
+// @ModuleID getCurrentUser
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} token.Response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /users/current [get]
+func (h *Handler) getCurrentUser(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	if clientType != "user" {
+		return newResponse(ctx, http.StatusForbidden, "Only for user client type")
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"id": clientId,
 	})
 }
 
