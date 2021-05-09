@@ -16,6 +16,7 @@ func (h *Handler) initCourierRoutes(api *echo.Group) {
 		couriers.Use(h.identity)
 		couriers.POST("/sign-up", h.couriersSignUp)
 		couriers.GET("/:id", h.getCourierById)
+		couriers.GET("/current", h.getCurrentCourier)
 		couriers.PUT("/:id", h.updateCourier)
 	}
 }
@@ -147,6 +148,33 @@ func (h *Handler) getCourierById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, courier)
+}
+
+// @Summary Get Current Courier Id
+// @Security CourierAuth
+// @Tags couriers
+// @Description get current courier id
+// @ModuleID getCurrentCourier
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} token.Response
+// @Failure 400,403,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /couriers/current [get]
+func (h *Handler) getCurrentCourier(ctx echo.Context) error {
+	clientId, clientType, err := h.getClientParams(ctx)
+	if err != nil {
+		return newResponse(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	if clientType != "courier" {
+		return newResponse(ctx, http.StatusForbidden, "Only for courier client type")
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"id": clientId,
+	})
 }
 
 type courierUpdate struct {
