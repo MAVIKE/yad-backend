@@ -120,6 +120,7 @@ func (h *Handler) couriersSignIn(ctx echo.Context) error {
 // @Summary Get Courier By Id
 // @Security UserAuth
 // @Security RestaurantAuth
+// @Security CourierAuth
 // @Tags couriers
 // @Description get courier by id
 // @ModuleID getCourierById

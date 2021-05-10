@@ -2,8 +2,9 @@ package service
 
 import (
 	"errors"
-	"github.com/MAVIKE/yad-backend/internal/consts"
 	"time"
+
+	"github.com/MAVIKE/yad-backend/internal/consts"
 
 	"github.com/MAVIKE/yad-backend/internal/domain"
 	"github.com/MAVIKE/yad-backend/internal/repository"
@@ -54,7 +55,7 @@ func (s *RestaurantService) GetAll(clientId int, clientType string) ([]*domain.R
 }
 
 func (s *RestaurantService) GetById(clientId int, clientType string, restaurantId int) (*domain.Restaurant, error) {
-	if !(clientType == userType || clientType == restaurantType && restaurantId == clientId) {
+	if clientType == restaurantType && restaurantId != clientId {
 		return nil, errors.New("Forbidden")
 	}
 

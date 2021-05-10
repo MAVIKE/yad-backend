@@ -511,7 +511,7 @@ func (h *Handler) usersGetAllOrders(ctx echo.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param cid path string true "Courier id"
-// @Success 200 {object} response
+// @Success 200 {object} domain.Order
 // @Failure 400,403,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
